@@ -7,11 +7,10 @@
 {% macro btn_primary(label, href=None, type=None, extra='') -%}
   {% set tag = 'a' if href else 'button' %}
   <{{ tag }} {% if href %}href="{{ href }}"{% else %}type="{{ type or 'submit' }}"{% endif %}
-    class="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm
-           transition-all duration-200 hover:bg-teal-700 hover:shadow-md active:scale-[0.98]
-           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2
-           disabled:cursor-not-allowed disabled:opacity-60
-           dark:bg-teal-500 dark:text-gray-950 dark:hover:bg-teal-400 {{ extra }}">
+    class="inline-flex items-center justify-center gap-2 rounded-xl bg-terra-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm
+           transition-all duration-200 hover:bg-terra-400 hover:shadow-md active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terra-400 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-60 {{ extra }}">
     {{ label }}
   </{{ tag }}>
 {%- endmacro %}
@@ -54,11 +53,10 @@
 {# Кнопка с индикатором загрузки: добавляет spinner при submit (см. static/js/ui-init.js) #}
 {% macro btn_submit_loading(label, extra='') -%}
   <button type="submit" data-loading-btn
-    class="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm
-           transition-all duration-200 hover:bg-teal-700 hover:shadow-md active:scale-[0.98]
-           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2
-           disabled:cursor-wait disabled:opacity-70
-           dark:bg-teal-500 dark:text-gray-950 dark:hover:bg-teal-400 {{ extra }}">
+    class="inline-flex items-center justify-center gap-2 rounded-xl bg-terra-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm
+           transition-all duration-200 hover:bg-terra-400 hover:shadow-md active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terra-400 focus-visible:ring-offset-2
+           disabled:cursor-wait disabled:opacity-70 {{ extra }}">
     <span data-loading-spinner class="hidden h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
     <span data-loading-label>{{ label }}</span>
   </button>

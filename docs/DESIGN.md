@@ -31,7 +31,7 @@ CSP-сборка `@alpinejs/csp`, но она не поддерживает inli
 - **Тени**: только `shadow-sm`/`shadow-md`/`shadow-lg` (дропдауны/модалки). Никаких резких теней.
 - **Типографика**: заголовки — Manrope (`font-display`, `tracking-tight`), текст — Inter. Палитра текста: `charcoal-900` (светлая) / `gray-100` (тёмная), вторичный — `gray-500`.
 - **Цвета бренда** (Tailwind-конфиг в `base.html`):
-  - `teal-500/600` — основной акцент (CTA, ссылки, focus-состояния);
+  - `terra-500/600` — основной акцент (CTA, кнопки, focus-состояния);
   - `charcoal-*` — текст и тёмные поверхности;
   - `sand-*` — тёплый фон секций;
   - `brass-*` — золотые акценты (бейджи, оценки);
@@ -42,7 +42,7 @@ CSP-сборка `@alpinejs/csp`, но она не поддерживает inli
 - Все кликабельные элементы: `transition-all duration-200`.
 - Hover: смена цвета фона, `hover:shadow-md`, для карточек-ссылок — `hover:-translate-y-0.5`.
 - Active: `active:scale-[0.98]` на кнопках.
-- Focus: всегда `focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2` — доступность обязательна.
+- Focus: всегда `focus-visible:ring-2 focus-visible:ring-terra-400 focus-visible:ring-offset-2` — доступность обязательна.
 - Состояние загрузки: кнопки отправки форм — макрос `btn_submit_loading()` (спиннер + «Отправляем…»), логика в `ui-init.js`.
 - Появление/скрытие Alpine-элементов: `x-transition` с `duration-200`.
 
@@ -73,8 +73,8 @@ CSP-сборка `@alpinejs/csp`, но она не поддерживает inli
 
 | Файл | Содержимое |
 |---|---|
-| `navbar.html` | Шапка: логотип, меню, тема, колокольчик, дропдаун аккаунта, мобильное меню (Alpine) |
-| `footer.html` | Футер: 4 колонки (mobile-first), контакты, дисклеймер |
+| `navbar.html` | Шапка: логотип, меню, тема, колокольчик, дропдаун аккаунта, мобильное меню (Alpine). Всегда тёмная (charcoal) — сочетается с hero |
+| `footer.html` | Футер: 4 колонки (mobile-first), контакты, дисклеймер. Тёмный (charcoal) |
 | `buttons.html` | Макросы: `btn_primary`, `btn_secondary`, `btn_ghost`, `btn_danger`, `btn_submit_loading` |
 | `cards.html` | Макросы: `card`, `stat_card`, `link_card`, `section_head` |
 | `fields.html` | Макросы форм: `field_input`, `field_textarea`, `field_select`, `field_checkbox` |

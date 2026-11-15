@@ -40,7 +40,7 @@
   --shadow-warm: 0 24px 70px rgba(96, 46, 20, 0.28);
   --font-display: "Georgia", "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
   --font-body: "Inter", "Segoe UI", "Helvetica Neue", Arial, system-ui, sans-serif;
-  --container: 1240px;
+  --container: 1152px;
   --header-h: 76px;
   --gutter: clamp(18px, 4vw, 36px);
   --section-y: clamp(58px, 8vw, 108px);

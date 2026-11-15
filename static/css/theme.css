@@ -22,3 +22,19 @@ h1, h2, h3, h4, h5, h6,
 [x-cloak] {
   display: none !important;
 }
+
+/* Компоненты нового стека (шапка, футер) — без подчёркиваний ссылок
+   (legacy app.css добавляет их всем <a>, см. правило a { text-decoration }). */
+#site-header a,
+#site-header button,
+.site-footer a,
+.site-footer button {
+  text-decoration: none;
+}
+
+/* Сброс браузерных стилей кнопок: preflight Tailwind отключён на время миграции,
+   поэтому без этого у всех кнопок видна системная рамка outset и серый фон. */
+button {
+  border: 0 solid transparent;
+  background: transparent;
+}
