@@ -1,11 +1,12 @@
 """Аналитика для владельца и админ-панели."""
+
 from __future__ import annotations
 
 import csv
 import io
 from datetime import date, timedelta
 
-from core import get_settings, money, parse_iso_date, ru_date, utc_stamp
+from core import get_settings, money, ru_date, utc_stamp
 from database import get_db
 
 MONTH_LABEL = ("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек")
@@ -23,14 +24,16 @@ def overview() -> dict:
     ).fetchone()["n"]
     stats["today_guests"] = db.execute(
         "SELECT COALESCE(SUM(guests_count), 0) AS n FROM bookings WHERE date = ? "
-        "AND status IN ('pending', 'confirmed', 'completed')", (today_s,)
+        "AND status IN ('pending', 'confirmed', 'completed')",
+        (today_s,),
     ).fetchone()["n"]
-    stats["pending"] = db.execute(
-        "SELECT COUNT(*) AS n FROM bookings WHERE status = 'pending'"
-    ).fetchone()["n"]
+    stats["pending"] = db.execute("SELECT COUNT(*) AS n FROM bookings WHERE status = 'pending'").fetchone()[
+        "n"
+    ]
     stats["week"] = db.execute(
         "SELECT COUNT(*) AS n FROM bookings WHERE date BETWEEN ? AND ? "
-        "AND status IN ('pending', 'confirmed', 'completed')", (week_start, today_s)
+        "AND status IN ('pending', 'confirmed', 'completed')",
+        (week_start, today_s),
     ).fetchone()["n"]
     month_bookings = db.execute(
         "SELECT COUNT(*) AS n, COALESCE(SUM(guests_count), 0) AS guests FROM bookings "
@@ -43,13 +46,16 @@ def overview() -> dict:
     stats["revenue_estimate"] = month_bookings["n"] * avg_check
     stats["avg_check"] = avg_check
     stats["users"] = db.execute("SELECT COUNT(*) AS n FROM users WHERE role = 'guest'").fetchone()["n"]
-    stats["reviews_pending"] = db.execute("SELECT COUNT(*) AS n FROM reviews WHERE status = 'pending'").fetchone()["n"]
-    stats["tables"] = db.execute(
-        "SELECT COUNT(*) AS n FROM dining_tables WHERE is_active = 1"
+    stats["reviews_pending"] = db.execute(
+        "SELECT COUNT(*) AS n FROM reviews WHERE status = 'pending'"
     ).fetchone()["n"]
+    stats["tables"] = db.execute("SELECT COUNT(*) AS n FROM dining_tables WHERE is_active = 1").fetchone()[
+        "n"
+    ]
     occupied = db.execute(
         "SELECT COALESCE(SUM((end_min - start_min) / 60.0), 0) AS hours FROM bookings "
-        "WHERE date = ? AND status IN ('pending', 'confirmed')", (today_s,)
+        "WHERE date = ? AND status IN ('pending', 'confirmed')",
+        (today_s,),
     ).fetchone()["hours"]
     capacity_hours = max(1, stats["tables"] * 10)
     stats["occupancy_today"] = min(100, round(occupied / capacity_hours * 100))
@@ -63,18 +69,21 @@ def daily_counts(days: int = 14) -> list[dict]:
     start = today - timedelta(days=days - 1)
     rows = db.execute(
         "SELECT date, COUNT(*) AS n FROM bookings WHERE date BETWEEN ? AND ? "
-        "AND status != 'cancelled' GROUP BY date", (start.isoformat(), today.isoformat())
+        "AND status != 'cancelled' GROUP BY date",
+        (start.isoformat(), today.isoformat()),
     ).fetchall()
     counts = {row["date"]: row["n"] for row in rows}
     values = []
     for offset in range(days):
         day = start + timedelta(days=offset)
-        values.append({
-            "date": day,
-            "label": f"{day.day} {MONTH_LABEL[day.month - 1]}",
-            "weekday": ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")[day.weekday()],
-            "count": counts.get(day.isoformat(), 0),
-        })
+        values.append(
+            {
+                "date": day,
+                "label": f"{day.day} {MONTH_LABEL[day.month - 1]}",
+                "weekday": ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")[day.weekday()],
+                "count": counts.get(day.isoformat(), 0),
+            }
+        )
     return values
 
 
@@ -90,26 +99,34 @@ def daily_chart(days: int = 14) -> dict:
     bars = []
     for index, item in enumerate(data):
         bar_h = plot_h * item["count"] / max_count if item["count"] else 0
-        bars.append({
-            "x": round(left + index * step + (step - bar_w) / 2, 1),
-            "y": round(top + plot_h - bar_h, 1),
-            "w": round(bar_w, 1),
-            "h": round(bar_h, 1),
-            "label": item["label"],
-            "weekday": item["weekday"],
-            "count": item["count"],
-            "cx": round(left + index * step + step / 2, 1),
-        })
+        bars.append(
+            {
+                "x": round(left + index * step + (step - bar_w) / 2, 1),
+                "y": round(top + plot_h - bar_h, 1),
+                "w": round(bar_w, 1),
+                "h": round(bar_h, 1),
+                "label": item["label"],
+                "weekday": item["weekday"],
+                "count": item["count"],
+                "cx": round(left + index * step + step / 2, 1),
+            }
+        )
     grid = []
     for step_index in range(5):
         value = round(max_count * step_index / 4)
         y = top + plot_h - plot_h * step_index / 4
         grid.append({"y": round(y, 1), "label": value})
     return {
-        "width": width, "height": height, "left": left, "right": right, "top": top,
-        "bottom": bottom, "plot_h": plot_h, "bars": bars, "grid": grid,
+        "width": width,
+        "height": height,
+        "left": left,
+        "right": right,
+        "top": top,
+        "bottom": bottom,
+        "plot_h": plot_h,
+        "bars": bars,
+        "grid": grid,
     }
-
 
 
 def hall_stats() -> list[dict]:
@@ -132,12 +149,16 @@ def hall_stats() -> list[dict]:
 
 
 def top_dishes(limit: int = 5) -> list:
-    return get_db().execute(
-        "SELECT d.name, d.slug, d.price, COUNT(f.user_id) AS favorites "
-        "FROM dishes d LEFT JOIN favorites f ON f.dish_id = d.id "
-        "WHERE d.is_active = 1 GROUP BY d.id ORDER BY favorites DESC, d.is_signature DESC LIMIT ?",
-        (limit,),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT d.name, d.slug, d.price, COUNT(f.user_id) AS favorites "
+            "FROM dishes d LEFT JOIN favorites f ON f.dish_id = d.id "
+            "WHERE d.is_active = 1 GROUP BY d.id ORDER BY favorites DESC, d.is_signature DESC LIMIT ?",
+            (limit,),
+        )
+        .fetchall()
+    )
 
 
 def status_counts() -> dict:
@@ -164,8 +185,13 @@ def guest_insights(days: int = 90) -> dict:
         "SELECT COUNT(*) AS n FROM bookings WHERE date >= ? AND status != 'cancelled'", (since,)
     ).fetchone()["n"]
     conversion = round(visitors / booked * 100) if booked else 0
-    return {"period_days": days, "repeat_guests": repeat, "visitors": visitors,
-            "booked": booked, "conversion": conversion}
+    return {
+        "period_days": days,
+        "repeat_guests": repeat,
+        "visitors": visitors,
+        "booked": booked,
+        "conversion": conversion,
+    }
 
 
 def weekday_stats(weeks: int = 8) -> list[dict]:
@@ -176,7 +202,8 @@ def weekday_stats(weeks: int = 8) -> list[dict]:
         "SELECT strftime('%w', date) AS weekday_num, COUNT(*) AS bookings, "
         "COALESCE(AVG(guests_count), 0) AS avg_guests, COALESCE(SUM(guests_count), 0) AS guests "
         "FROM bookings WHERE date >= ? AND status IN ('confirmed', 'completed') "
-        "GROUP BY weekday_num", (since,),
+        "GROUP BY weekday_num",
+        (since,),
     ).fetchall()
     by_num = {int(row["weekday_num"]): dict(row) for row in rows}
     weekdays = ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
@@ -187,11 +214,15 @@ def weekday_stats(weeks: int = 8) -> list[dict]:
     for index, num in enumerate(order):
         row = by_num.get(num)
         avg = round((row["avg_guests"] or 0), 1) if row else 0
-        result.append({
-            "label": weekdays[index], "bookings": row["bookings"] if row else 0,
-            "guests": row["guests"] if row else 0, "avg_guests": avg,
-            "share": round(avg / max_avg * 100),
-        })
+        result.append(
+            {
+                "label": weekdays[index],
+                "bookings": row["bookings"] if row else 0,
+                "guests": row["guests"] if row else 0,
+                "avg_guests": avg,
+                "share": round(avg / max_avg * 100),
+            }
+        )
     return result
 
 
@@ -214,17 +245,27 @@ def hall_occupancy_month() -> list[dict]:
             "SELECT COUNT(*) AS n FROM dining_tables WHERE hall_id = ? AND is_active = 1", (hall["id"],)
         ).fetchone()["n"]
         capacity = max(1, tables * 10 * days_elapsed)
-        result.append({"name": hall["name"], "hours": round(hours), "capacity": capacity,
-                       "occupancy": min(100, round(hours / capacity * 100))})
+        result.append(
+            {
+                "name": hall["name"],
+                "hours": round(hours),
+                "capacity": capacity,
+                "occupancy": min(100, round(hours / capacity * 100)),
+            }
+        )
     return result
 
 
 def recent_audit(limit: int = 12) -> list:
-    return get_db().execute(
-        "SELECT a.*, u.name AS actor_name FROM audit_log a "
-        "LEFT JOIN users u ON u.id = a.actor_id ORDER BY a.created_at DESC LIMIT ?",
-        (limit,),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT a.*, u.name AS actor_name FROM audit_log a "
+            "LEFT JOIN users u ON u.id = a.actor_id ORDER BY a.created_at DESC LIMIT ?",
+            (limit,),
+        )
+        .fetchall()
+    )
 
 
 def export_bookings_csv() -> str:
@@ -238,19 +279,45 @@ def export_bookings_csv() -> str:
     output = io.StringIO()
     output.write("\ufeff")
     writer = csv.writer(output, delimiter=";", lineterminator="\r\n")
-    writer.writerow([
-        "Код", "Дата", "Время", "Окончание", "Статус", "Гость", "Телефон", "Email",
-        "Гостей", "Повод", "Комментарий", "Зал", "Стол", "Создана",
-    ])
+    writer.writerow(
+        [
+            "Код",
+            "Дата",
+            "Время",
+            "Окончание",
+            "Статус",
+            "Гость",
+            "Телефон",
+            "Email",
+            "Гостей",
+            "Повод",
+            "Комментарий",
+            "Зал",
+            "Стол",
+            "Создана",
+        ]
+    )
     from services.bookings import time_from_minutes
 
     for row in rows:
-        writer.writerow([
-            row["code"], row["date"], row["time"], time_from_minutes(row["end_min"]), row["status"],
-            row["guest_name"], row["guest_phone"], row["guest_email"] or "", row["guests_count"],
-            row["occasion"] or "", (row["comment"] or "").replace("\n", " "),
-            row["hall_name"], row["table_name"], row["created_at"],
-        ])
+        writer.writerow(
+            [
+                row["code"],
+                row["date"],
+                row["time"],
+                time_from_minutes(row["end_min"]),
+                row["status"],
+                row["guest_name"],
+                row["guest_phone"],
+                row["guest_email"] or "",
+                row["guests_count"],
+                row["occasion"] or "",
+                (row["comment"] or "").replace("\n", " "),
+                row["hall_name"],
+                row["table_name"],
+                row["created_at"],
+            ]
+        )
     return output.getvalue()
 
 

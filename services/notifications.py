@@ -1,4 +1,5 @@
 """Внутренние уведомления пользователей."""
+
 from __future__ import annotations
 
 from core import utc_stamp
@@ -15,17 +16,23 @@ def create_notification(user_id: int | None, title: str, body: str, link: str | 
 
 
 def unread_count(user_id: int) -> int:
-    row = get_db().execute(
-        "SELECT COUNT(*) AS n FROM notifications WHERE user_id = ? AND is_read = 0", (user_id,)
-    ).fetchone()
+    row = (
+        get_db()
+        .execute("SELECT COUNT(*) AS n FROM notifications WHERE user_id = ? AND is_read = 0", (user_id,))
+        .fetchone()
+    )
     return row["n"] if row else 0
 
 
 def list_notifications(user_id: int, limit: int = 50) -> list:
-    return get_db().execute(
-        "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT ?",
-        (user_id, limit),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT ?",
+            (user_id, limit),
+        )
+        .fetchall()
+    )
 
 
 def mark_all_read(user_id: int) -> None:

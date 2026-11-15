@@ -1,4 +1,5 @@
 """Генератор локальных SVG-иллюстраций блюд (запускается вручную)."""
+
 from __future__ import annotations
 
 import random
@@ -77,10 +78,10 @@ def herbs(x: int, y: int, color: str = "#5f8a45", scale: float = 1.0, flip: bool
 def steam(x: int, y: int, color: str = "#fff5df") -> str:
     return f"""
   <g fill="none" stroke="{color}" stroke-width="5" stroke-linecap="round" opacity=".27">
-    <path d="M{x-24} {y} C{x-44} {y-46} {x-4} {y-64} {x-22} {y-112}">
+    <path d="M{x - 24} {y} C{x - 44} {y - 46} {x - 4} {y - 64} {x - 22} {y - 112}">
       <animate attributeName="opacity" values=".15;.35;.15" dur="5s" repeatCount="indefinite"/>
     </path>
-    <path d="M{x+24} {y-6} C{x+44} {y-50} {x+6} {y-76} {x+26} {y-124}">
+    <path d="M{x + 24} {y - 6} C{x + 44} {y - 50} {x + 6} {y - 76} {x + 26} {y - 124}">
       <animate attributeName="opacity" values=".3;.12;.3" dur="6s" repeatCount="indefinite"/>
     </path>
   </g>"""
@@ -92,7 +93,7 @@ def plate(rx: int = 292, ry: int = 186, cy: int = 340) -> str:
   <ellipse cx="400" cy="{cy}" rx="{rx}" ry="{ry}" fill="#efe4d2"/>
   <ellipse cx="400" cy="{cy}" rx="{rx - 20}" ry="{ry - 16}" fill="#faf3e8"/>
   <ellipse cx="400" cy="{cy}" rx="{rx - 54}" ry="{ry - 44}" fill="#f5ead9"/>
-  <path d="M{400-rx+28} {cy-40} Q400 {cy-ry-4} {400+rx-28} {cy-40}" fill="none" stroke="#fff" stroke-width="5" opacity=".55"/>
+  <path d="M{400 - rx + 28} {cy - 40} Q400 {cy - ry - 4} {400 + rx - 28} {cy - 40}" fill="none" stroke="#fff" stroke-width="5" opacity=".55"/>
 """
 
 
@@ -114,7 +115,7 @@ def bowl(cy: int = 330, broth: str = "#b95c27") -> str:
   <ellipse cx="400" cy="{cy}" rx="244" ry="130" fill="{broth}"/>
   <ellipse cx="400" cy="{cy + 6}" rx="244" ry="130" fill="none" stroke="#7a2d12" stroke-width="8" opacity=".3"/>
   <ellipse cx="400" cy="{cy - 6}" rx="220" ry="112" fill="{broth}"/>
-  <path d="M170 {cy-10} Q400 {cy-210} 630 {cy-10}" fill="none" stroke="#fff" stroke-width="4" opacity=".18"/>
+  <path d="M170 {cy - 10} Q400 {cy - 210} 630 {cy - 10}" fill="none" stroke="#fff" stroke-width="4" opacity=".18"/>
 """
 
 
@@ -124,8 +125,8 @@ def rice_mound(seed: int = 3, cx: int = 400, cy: int = 330, rx: int = 200, ry: i
     for _ in range(420):
         angle = rnd.random() * 6.283
         radius = rnd.random() ** 0.6
-        x = cx + radius * rx * rnd.uniform(0.2, 1) * (1 if rnd.random() > .5 else -1)
-        y = cy + radius * ry * rnd.uniform(0.2, 1) * (1 if rnd.random() > .5 else -1)
+        x = cx + radius * rx * rnd.uniform(0.2, 1) * (1 if rnd.random() > 0.5 else -1)
+        y = cy + radius * ry * rnd.uniform(0.2, 1) * (1 if rnd.random() > 0.5 else -1)
         rot = rnd.randint(0, 180)
         length = rnd.randint(5, 11)
         color = rnd.choice(["#f3e2b8", "#e9d29b", "#f8ebc9", "#dcc389"])
@@ -149,9 +150,9 @@ def meat_chunks(seed: int = 4, cx: int = 400, cy: int = 300, count: int = 14) ->
         color = rnd.choice(colors)
         chunks.append(
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="9" fill="{color}" '
-            f'transform="rotate({rot} {x + w/2} {y + h/2})"/>'
-            f'<path d="M{x+8} {y+7} q{w/3} -6 {w-16} 1" stroke="#c1784d" stroke-width="3" '
-            f'fill="none" opacity=".45" transform="rotate({rot} {x + w/2} {y + h/2})"/>'
+            f'transform="rotate({rot} {x + w / 2} {y + h / 2})"/>'
+            f'<path d="M{x + 8} {y + 7} q{w / 3} -6 {w - 16} 1" stroke="#c1784d" stroke-width="3" '
+            f'fill="none" opacity=".45" transform="rotate({rot} {x + w / 2} {y + h / 2})"/>'
         )
     return "".join(chunks)
 
@@ -193,7 +194,7 @@ def make_plov() -> str:
     <path d="M500 286 q20 12 40 0" stroke="#c3ae89" stroke-width="4" fill="none"/>
   </g>
   {herbs(300, 250, "#5c8a46", 1.1, True)}
-  {herbs(520, 386, "#5c8a46", .9)}
+  {herbs(520, 386, "#5c8a46", 0.9)}
   <g transform="translate(260 410)">
     <path d="M0 0 q32 -26 64 0 q-8 30 -32 30 q-24 0 -32 -30" fill="#b23a2c"/>
     <path d="M24 -6 q8 -12 16 0" stroke="#f3d7b4" stroke-width="3" fill="none"/>
@@ -207,7 +208,7 @@ def make_plov() -> str:
 
 def make_lagman() -> str:
     noodles = "".join(
-        f'<path d="M{250 + i*11} {250 + (i%3)*30} q40 -34 80 0 q40 34 80 0 q40 -34 80 0" '
+        f'<path d="M{250 + i * 11} {250 + (i % 3) * 30} q40 -34 80 0 q40 34 80 0 q40 -34 80 0" '
         f'fill="none" stroke="#f0d9a8" stroke-width="7" stroke-linecap="round" opacity=".95"/>'
         for i in range(12)
     )
@@ -229,7 +230,7 @@ def make_lagman() -> str:
     <ellipse cx="480" cy="360" rx="24" ry="9" transform="rotate(22 480 360)"/>
     <ellipse cx="400" cy="390" rx="20" ry="8" transform="rotate(-8 400 390)"/>
   </g>
-  {herbs(560, 240, "#6b9b4d", .9, True)}
+  {herbs(560, 240, "#6b9b4d", 0.9, True)}
   {steam(400, 250)}
 """
     return svg_doc(body, "Лагман с тянутой лапшой и говядиной")
@@ -256,7 +257,7 @@ def make_shurpa() -> str:
   {steam(400, 240)}
   <circle cx="610" cy="430" r="34" fill="#efe5d5"/>
   <circle cx="610" cy="430" r="24" fill="#b53c2b"/>
-  {herbs(230, 430, "#628c46", .8, True)}
+  {herbs(230, 430, "#628c46", 0.8, True)}
 """
     return svg_doc(body, "Шурпа из баранины с овощами")
 
@@ -284,8 +285,8 @@ def make_manti() -> str:
     <ellipse cx="0" cy="-2" rx="36" ry="17" fill="#fffaf0"/>
     <path d="M-16 -8 q16 10 32 0" stroke="#e2d2b6" stroke-width="3" fill="none"/>
   </g>
-  {herbs(250, 410, "#5d8b45", .9, True)}
-  {herbs(570, 440, "#5d8b45", .8)}
+  {herbs(250, 410, "#5d8b45", 0.9, True)}
+  {herbs(570, 440, "#5d8b45", 0.8)}
   <g fill="#b23a2c">
     <ellipse cx="600" cy="380" rx="14" ry="8" transform="rotate(-30 600 380)"/>
     <ellipse cx="635" cy="400" rx="12" ry="7" transform="rotate(24 635 400)"/>
@@ -313,7 +314,7 @@ def make_samsa() -> str:
   {wood_bg(15, "#3c2a1d", "#180f0a")}
   {plate(300, 190, 340)}
   <g>{"".join(items)}</g>
-  {herbs(250, 420, "#5e8c47", .8, True)}
+  {herbs(250, 420, "#5e8c47", 0.8, True)}
   {steam(390, 210)}
   <circle cx="620" cy="430" r="38" fill="#f1e7d7"/>
   <circle cx="620" cy="430" r="28" fill="#b23e2d"/>
@@ -328,12 +329,14 @@ def make_shashlik() -> str:
         cubes = []
         for i in range(4):
             x = 230 + i * 82 + (row * 10)
-            cubes.append(f'<rect x="{x}" y="{y-26}" width="66" height="50" rx="12" fill="#713a22"/>'
-                         f'<path d="M{x+10} {y-14} h44" stroke="#a9623c" stroke-width="4" opacity=".5"/>')
+            cubes.append(
+                f'<rect x="{x}" y="{y - 26}" width="66" height="50" rx="12" fill="#713a22"/>'
+                f'<path d="M{x + 10} {y - 14} h44" stroke="#a9623c" stroke-width="4" opacity=".5"/>'
+            )
         skewers.append(f"""
     <g>
       <path d="M170 {y} L650 {y}" stroke="#c9a97a" stroke-width="7" stroke-linecap="round"/>
-      {''.join(cubes)}
+      {"".join(cubes)}
       <path d="M154 {y} q-10 -8 0 -16" stroke="#c9a97a" stroke-width="7" fill="none"/>
     </g>""")
     body = f"""
@@ -351,8 +354,8 @@ def make_shashlik() -> str:
   <g transform="translate(250 220) rotate(-18)">
     <path d="M0 0 q32 -18 64 0 q-32 24 -64 0" fill="#d9542e"/>
   </g>
-  {herbs(330, 430, "#5f8d47", .9)}
-  {herbs(500, 250, "#5f8d47", .9, True)}
+  {herbs(330, 430, "#5f8d47", 0.9)}
+  {herbs(500, 250, "#5f8d47", 0.9, True)}
   {steam(400, 220)}
 """
     return svg_doc(body, "Шашлык из баранины на углях")
@@ -390,15 +393,16 @@ def make_kebab() -> str:
     <path d="M0 0 q30 -20 60 0 q-30 26 -60 0" fill="#e7d3ab"/>
     <path d="M10 8 q20 8 40 0" stroke="#c0a678" stroke-width="3" fill="none"/>
   </g>
-  {herbs(320, 460, "#608e48", .9)}
+  {herbs(320, 460, "#608e48", 0.9)}
 """
     return svg_doc(body, "Люля-кебаб с печёными овощами")
 
 
 def make_eggplant() -> str:
     rolls = []
-    for index, (x, y, rot) in enumerate([(300, 300, -18), (380, 270, 8), (460, 300, 24),
-                                         (330, 380, -8), (430, 390, 12)]):
+    for index, (x, y, rot) in enumerate(
+        [(300, 300, -18), (380, 270, 8), (460, 300, 24), (330, 380, -8), (430, 390, 12)]
+    ):
         rolls.append(f"""
     <g transform="translate({x} {y}) rotate({rot})">
       <ellipse cx="0" cy="12" rx="52" ry="24" fill="#000" opacity=".18" filter="url(#soft)"/>
@@ -409,8 +413,17 @@ def make_eggplant() -> str:
     </g>""")
     seeds = "".join(
         f'<circle cx="{x}" cy="{y}" r="{r}" fill="#a71f36"/>'
-        for x, y, r in [(280, 240, 6), (300, 250, 4), (330, 230, 5), (500, 260, 6), (520, 280, 4),
-                        (470, 430, 5), (340, 440, 4), (270, 400, 5), (540, 360, 4)]
+        for x, y, r in [
+            (280, 240, 6),
+            (300, 250, 4),
+            (330, 230, 5),
+            (500, 260, 6),
+            (520, 280, 4),
+            (470, 430, 5),
+            (340, 440, 4),
+            (270, 400, 5),
+            (540, 360, 4),
+        ]
     )
     body = f"""
   {wood_bg(18, "#3b281b", "#160e0a")}
@@ -420,8 +433,8 @@ def make_eggplant() -> str:
   <g fill="#d76a4b">
     <circle cx="380" cy="450" r="17"/><circle cx="420" cy="458" r="14"/><circle cx="350" cy="462" r="12"/>
   </g>
-  {herbs(250, 300, "#5f8d48", .85, True)}
-  {herbs(560, 380, "#5f8d48", .85)}
+  {herbs(250, 300, "#5f8d48", 0.85, True)}
+  {herbs(560, 380, "#5f8d48", 0.85)}
   <g fill="#7d9c53" opacity=".8">
     <ellipse cx="300" cy="260" rx="12" ry="6" transform="rotate(-30 300 260)"/>
     <ellipse cx="480" cy="440" rx="12" ry="6" transform="rotate(20 480 440)"/>

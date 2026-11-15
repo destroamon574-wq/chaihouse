@@ -1,4 +1,5 @@
 """Тесты новых возможностей v1.1: календарь, аналитика, бэкап, уведомления, отзывы."""
+
 from __future__ import annotations
 
 from datetime import timedelta
@@ -31,8 +32,16 @@ def client(app):
     return app.test_client()
 
 
-def _make_booking(app, *, code="CH-TEST99", status="confirmed", hall_slug="osnovnoy-zal",
-                  days_ahead=1, guest_email="guest@chaihouse.ru", user_id=3):
+def _make_booking(
+    app,
+    *,
+    code="CH-TEST99",
+    status="confirmed",
+    hall_slug="osnovnoy-zal",
+    days_ahead=1,
+    guest_email="guest@chaihouse.ru",
+    user_id=3,
+):
     from database import get_db
 
     with app.app_context():
@@ -46,9 +55,24 @@ def _make_booking(app, *, code="CH-TEST99", status="confirmed", hall_slug="osnov
             "INSERT INTO bookings(code, user_id, hall_id, table_id, guest_name, guest_phone, "
             "guest_email, date, time, start_min, end_min, guests_count, occasion, status, "
             "created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (code, user_id, hall["id"], table["id"], "Тест Гость", "+79990000000", guest_email,
-             date_value, "19:00", 19 * 60, 21 * 60, 4, "Ужин", status,
-             "2026-01-01T10:00:00Z", "2026-01-01T10:00:00Z"),
+            (
+                code,
+                user_id,
+                hall["id"],
+                table["id"],
+                "Тест Гость",
+                "+79990000000",
+                guest_email,
+                date_value,
+                "19:00",
+                19 * 60,
+                21 * 60,
+                4,
+                "Ужин",
+                status,
+                "2026-01-01T10:00:00Z",
+                "2026-01-01T10:00:00Z",
+            ),
         )
         db.commit()
         row = db.execute("SELECT * FROM bookings WHERE code = ?", (code,)).fetchone()
@@ -126,9 +150,20 @@ def test_notify_not_configured(app):
 
     with app.app_context():
         assert telegram_configured() is False
-        assert notify_admins_new_booking({"guest_name": "X", "date": "2026-01-01", "time": "19:00",
-                                          "hall_name": "Зал", "table_name": "Стол 1",
-                                          "guests": 2, "code": "CH-1"}) is False
+        assert (
+            notify_admins_new_booking(
+                {
+                    "guest_name": "X",
+                    "date": "2026-01-01",
+                    "time": "19:00",
+                    "hall_name": "Зал",
+                    "table_name": "Стол 1",
+                    "guests": 2,
+                    "code": "CH-1",
+                }
+            )
+            is False
+        )
 
 
 def test_reminders_mark_and_skip_repeat(app):
@@ -140,9 +175,11 @@ def test_reminders_mark_and_skip_repeat(app):
         sent, skipped = send_upcoming_reminders()
         assert sent == 0
         assert skipped >= 1  # наша бронь без e-mail и без аккаунта — пропущена
-        reminded = get_db().execute(
-            "SELECT reminded_at FROM bookings WHERE code = 'CH-REM01'"
-        ).fetchone()["reminded_at"]
+        reminded = (
+            get_db()
+            .execute("SELECT reminded_at FROM bookings WHERE code = 'CH-REM01'")
+            .fetchone()["reminded_at"]
+        )
         assert reminded
         # Повторный запуск не находит броней
         assert send_upcoming_reminders() == (0, 0)
@@ -157,7 +194,13 @@ def test_hall_page_shows_hall_reviews(client, app):
         db.execute(
             "INSERT INTO reviews(user_id, booking_id, author_name, rating, text, status, created_at) "
             "VALUES (?, ?, ?, ?, ?, 'published', '2026-01-05T12:00:00Z')",
-            (3, booking["id"], "Тест Гость", 5, "Отличный зал, тёплый свет и вкусный плов!",),
+            (
+                3,
+                booking["id"],
+                "Тест Гость",
+                5,
+                "Отличный зал, тёплый свет и вкусный плов!",
+            ),
         )
         db.commit()
     response = client.get("/halls/osnovnoy-zal")
@@ -175,31 +218,32 @@ def test_home_shows_top_reviews(client, app):
 def test_owner_settings_saves_telegram(client, app):
     assert login(client, "owner@chaihouse.ru", "Owner#2026").status_code == 302
     token = extract_csrf(client.get("/owner/settings"))
-    response = client.post("/owner/settings", data={
-        "csrf_token": token,
-        "restaurant_name": "ЧайHouse",
-        "tagline": "Восточная кухня",
-        "phone": "+7 (495) 120-48-18",
-        "email": "hello@chaihouse.example",
-        "address": "Москва, Ходынский бульвар, 4",
-        "address_short": "Ходынский бульвар, 4",
-        "hours": "Ежедневно 12:00–00:00",
-        "lat": "55.790622",
-        "lng": "37.532186",
-        "avg_check": "2400",
-        "max_guests": "20",
-        "booking_note": "Подтверждаем бронь в течение 15 минут.",
-        "legal_name": "ООО «ЧайHouse»",
-        "telegram_bot_token": "12345:ABC-test",
-        "telegram_chat_id": "-100123",
-    })
+    response = client.post(
+        "/owner/settings",
+        data={
+            "csrf_token": token,
+            "restaurant_name": "ЧайHouse",
+            "tagline": "Восточная кухня",
+            "phone": "+7 (495) 120-48-18",
+            "email": "hello@chaihouse.example",
+            "address": "Москва, Ходынский бульвар, 4",
+            "address_short": "Ходынский бульвар, 4",
+            "hours": "Ежедневно 12:00–00:00",
+            "lat": "55.790622",
+            "lng": "37.532186",
+            "avg_check": "2400",
+            "max_guests": "20",
+            "booking_note": "Подтверждаем бронь в течение 15 минут.",
+            "legal_name": "ООО «ЧайHouse»",
+            "telegram_bot_token": "12345:ABC-test",
+            "telegram_chat_id": "-100123",
+        },
+    )
     assert response.status_code == 302
     from database import get_db
 
     with app.app_context():
-        row = get_db().execute(
-            "SELECT value FROM settings WHERE key = 'telegram_bot_token'"
-        ).fetchone()
+        row = get_db().execute("SELECT value FROM settings WHERE key = 'telegram_bot_token'").fetchone()
         assert row["value"] == "12345:ABC-test"
 
 

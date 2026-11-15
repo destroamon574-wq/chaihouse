@@ -1,4 +1,5 @@
 """Кабинет владельца: аналитика, роли, настройки и экспорт."""
+
 from __future__ import annotations
 
 from conftest import csrf_for, login
@@ -85,8 +86,9 @@ def test_owner_settings_update_changes_public_site(client, app):
     login(client, "owner@chaihouse.ru", "Owner#2026")
     token = csrf_for(client, "/owner/settings")
 
-    response = client.post("/owner/settings", data={"csrf_token": token, **SETTINGS_FORM},
-                           follow_redirects=False)
+    response = client.post(
+        "/owner/settings", data={"csrf_token": token, **SETTINGS_FORM}, follow_redirects=False
+    )
     assert response.status_code == 302
     assert _row(app, "SELECT value FROM settings WHERE key = 'restaurant_name'")["value"] == "ЧайHouse Тест"
     assert _row(app, "SELECT value FROM settings WHERE key = 'max_guests'")["value"] == "18"
@@ -98,8 +100,7 @@ def test_owner_settings_validation(client):
     token = csrf_for(client, "/owner/settings")
     response = client.post(
         "/owner/settings",
-        data={"csrf_token": token, **SETTINGS_FORM, "lat": "999", "email": "not-an-email",
-              "max_guests": "0"},
+        data={"csrf_token": token, **SETTINGS_FORM, "lat": "999", "email": "not-an-email", "max_guests": "0"},
     )
     assert response.status_code == 200
     body = response.get_data(as_text=True)

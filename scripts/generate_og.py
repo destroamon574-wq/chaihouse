@@ -1,4 +1,4 @@
-﻿from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 from math import cos, sin, pi
 
 W, H = 1200, 630
@@ -18,6 +18,7 @@ for radius in range(420, 0, -8):
     a = int(22 * (1 - radius / 420))
     d.ellipse([900 - radius, 300 - radius, 900 + radius, 300 + radius], fill=(233, 167, 82, a))
 
+
 # lattice pattern
 def star(draw, cx, cy, r, color):
     pts = []
@@ -26,6 +27,7 @@ def star(draw, cx, cy, r, color):
         rr = r if i % 2 == 0 else r * 0.42
         pts.append((cx + rr * cos(ang), cy + rr * sin(ang)))
     draw.polygon(pts, outline=color)
+
 
 for gy in range(0, H + 120, 120):
     for gx in range(0, W + 120, 120):
@@ -58,7 +60,9 @@ d.text((84, 316), "Восточная кухня, чай", font=georgia, fill=(2
 d.text((84, 364), "и неспешные вечера", font=georgia, fill=(232, 217, 194, 255))
 d.text((84, 470), "Плов · лагман · манты · шашлык · чай", font=segoe, fill=(198, 165, 115, 255))
 d.text((84, 530), "Москва, Ходынский бульвар, 4", font=segoe, fill=(185, 173, 156, 255))
-d.text((84, 564), "ТРЦ «Авиапарк», 3 этаж · ежедневно 12:00–00:00", font=segoe_small, fill=(150, 139, 123, 255))
+d.text(
+    (84, 564), "ТРЦ «Авиапарк», 3 этаж · ежедневно 12:00–00:00", font=segoe_small, fill=(150, 139, 123, 255)
+)
 
 # vignette
 for i in range(80):

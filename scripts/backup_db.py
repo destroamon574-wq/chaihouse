@@ -7,6 +7,7 @@
     schtasks /Create /SC DAILY /ST 21:00 /TN "ЧайHouse бэкап" ^
       /TR "python C:\\...\\scripts\\backup_db.py"
 """
+
 from __future__ import annotations
 
 import sys

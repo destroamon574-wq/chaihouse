@@ -1,4 +1,5 @@
 """Аутентификация, регистрация и роли."""
+
 from __future__ import annotations
 
 from conftest import csrf_for, extract_csrf, login
@@ -192,7 +193,12 @@ def test_password_change_invalidates_other_sessions(client, app):
     token = extract_csrf(client.get("/account/settings"))
     response = client.post(
         "/account/password",
-        data={"csrf_token": token, "current": "Guest#2026", "password": "NewGuest#2026", "password2": "NewGuest#2026"},
+        data={
+            "csrf_token": token,
+            "current": "Guest#2026",
+            "password": "NewGuest#2026",
+            "password2": "NewGuest#2026",
+        },
         follow_redirects=False,
     )
     assert response.status_code == 302

@@ -1,0 +1,7 @@
+# Инструменты разработки (не нужны в продакшене).
+# Установка: python -m pip install -r requirements-dev.txt
+ruff>=0.17,<0.18
+
+# djlint (форматер Jinja-шаблонов) не добавлен: на Python 3.15 не собирается
+# его зависимость PyYAML. Для шаблонов используем Prettier с плагином
+# prettier-plugin-jinja-template (после установки Node.js: npm install).

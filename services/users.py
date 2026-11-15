@@ -1,11 +1,21 @@
 """Пользователи, аутентификация, сброс пароля и приватность."""
+
 from __future__ import annotations
 
 from datetime import timedelta
 
 from core import (
-    clean_text, hash_password, hash_token, new_token, normalize_phone, parse_stamp,
-    password_errors, utc_now, utc_stamp, valid_email, verify_password,
+    clean_text,
+    hash_password,
+    hash_token,
+    new_token,
+    normalize_phone,
+    parse_stamp,
+    password_errors,
+    utc_now,
+    utc_stamp,
+    valid_email,
+    verify_password,
 )
 from database import get_db
 from services.audit import log_action
@@ -143,7 +153,9 @@ def request_password_reset(email: str) -> str | None:
     token = new_token(32)
     now = utc_stamp()
     expires = (utc_now() + timedelta(minutes=RESET_TTL_MINUTES)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    db.execute("UPDATE password_resets SET used_at = ? WHERE user_id = ? AND used_at IS NULL", (now, user["id"]))
+    db.execute(
+        "UPDATE password_resets SET used_at = ? WHERE user_id = ? AND used_at IS NULL", (now, user["id"])
+    )
     db.execute(
         "INSERT INTO password_resets(user_id, token_hash, expires_at, created_at) VALUES (?, ?, ?, ?)",
         (user["id"], hash_token(token), expires, now),
@@ -157,11 +169,15 @@ def request_password_reset(email: str) -> str | None:
 def find_reset(token: str):
     if not token or len(token) > 128:
         return None
-    row = get_db().execute(
-        "SELECT pr.*, u.email, u.name FROM password_resets pr "
-        "JOIN users u ON u.id = pr.user_id WHERE pr.token_hash = ?",
-        (hash_token(token),),
-    ).fetchone()
+    row = (
+        get_db()
+        .execute(
+            "SELECT pr.*, u.email, u.name FROM password_resets pr "
+            "JOIN users u ON u.id = pr.user_id WHERE pr.token_hash = ?",
+            (hash_token(token),),
+        )
+        .fetchone()
+    )
     if not row or row["used_at"]:
         return None
     expires = parse_stamp(row["expires_at"])
@@ -208,9 +224,7 @@ def delete_account(user_id: int, password: str) -> dict[str, str]:
         "guest_email = NULL, comment = NULL, updated_at = ? WHERE user_id = ?",
         (now, user_id),
     )
-    db.execute(
-        "UPDATE reviews SET user_id = NULL, author_name = 'Гость' WHERE user_id = ?", (user_id,)
-    )
+    db.execute("UPDATE reviews SET user_id = NULL, author_name = 'Гость' WHERE user_id = ?", (user_id,))
     log_action("user.deleted", "user", user_id, {"email": user["email"]}, actor_id=None)
     db.execute("DELETE FROM users WHERE id = ?", (user_id,))
     db.commit()
@@ -224,7 +238,8 @@ def export_user_data(user_id: int) -> dict:
         return {}
     bookings = db.execute(
         "SELECT code, date, time, guests_count, status, occasion, comment, created_at "
-        "FROM bookings WHERE user_id = ? ORDER BY date DESC", (user_id,)
+        "FROM bookings WHERE user_id = ? ORDER BY date DESC",
+        (user_id,),
     ).fetchall()
     favorites = db.execute(
         "SELECT d.name, d.price FROM favorites f JOIN dishes d ON d.id = f.dish_id WHERE f.user_id = ?",
@@ -239,8 +254,12 @@ def export_user_data(user_id: int) -> dict:
         (user_id,),
     ).fetchall()
     return {
-        "profile": {"name": user["name"], "email": user["email"], "phone": user["phone"],
-                    "created_at": user["created_at"]},
+        "profile": {
+            "name": user["name"],
+            "email": user["email"],
+            "phone": user["phone"],
+            "created_at": user["created_at"],
+        },
         "bookings": [dict(row) for row in bookings],
         "favorites": [dict(row) for row in favorites],
         "reviews": [dict(row) for row in reviews],

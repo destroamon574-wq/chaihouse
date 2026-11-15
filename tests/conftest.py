@@ -1,4 +1,5 @@
 """Общие фикстуры и помощники для pytest."""
+
 from __future__ import annotations
 
 import re
@@ -83,11 +84,15 @@ def first_table_id(app, hall_slug: str = "osnovnoy-zal", min_seats: int = 1) -> 
     from database import get_db
 
     with app.app_context():
-        row = get_db().execute(
-            "SELECT t.id FROM dining_tables t JOIN halls h ON h.id = t.hall_id "
-            "WHERE h.slug = ? AND t.is_active = 1 AND t.seats >= ? ORDER BY t.seats, t.id LIMIT 1",
-            (hall_slug, min_seats),
-        ).fetchone()
+        row = (
+            get_db()
+            .execute(
+                "SELECT t.id FROM dining_tables t JOIN halls h ON h.id = t.hall_id "
+                "WHERE h.slug = ? AND t.is_active = 1 AND t.seats >= ? ORDER BY t.seats, t.id LIMIT 1",
+                (hall_slug, min_seats),
+            )
+            .fetchone()
+        )
         assert row, "Не найден подходящий стол"
         return int(row["id"])
 

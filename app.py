@@ -1,4 +1,5 @@
 """Точка входа приложения «ЧайHouse»."""
+
 from __future__ import annotations
 
 import secrets
@@ -7,8 +8,20 @@ from pathlib import Path
 from flask import Flask, g, jsonify, render_template, request
 
 from core import (
-    Config, guests_label, inject_globals, load_logged_in_user, money, month_title, pretty_phone,
-    query_url, request_wants_json, ru_date, ru_datetime, status_meta, utc_now, validate_csrf,
+    Config,
+    guests_label,
+    inject_globals,
+    load_logged_in_user,
+    money,
+    month_title,
+    pretty_phone,
+    query_url,
+    request_wants_json,
+    ru_date,
+    ru_datetime,
+    status_meta,
+    utc_now,
+    validate_csrf,
 )
 from database import init_app as init_database, init_db
 from services.notifications import unread_count

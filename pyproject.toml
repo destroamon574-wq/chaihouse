@@ -1,0 +1,14 @@
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+# Консервативный набор: реальные ошибки и неиспользуемые импорты.
+select = ["E4", "E7", "E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+# В генераторах ассетов вызовы rnd() используются ради последовательности.
+"scripts/*" = ["F841"]
+
+[tool.ruff.format]
+quote-style = "double"

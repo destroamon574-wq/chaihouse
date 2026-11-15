@@ -1,4 +1,5 @@
 """Публичные страницы доступны без регистрации."""
+
 from __future__ import annotations
 
 import pytest

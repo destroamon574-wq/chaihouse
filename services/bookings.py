@@ -1,4 +1,5 @@
 """Бронирования: доступность, создание, статусы, календарь."""
+
 from __future__ import annotations
 
 import calendar
@@ -9,16 +10,28 @@ from datetime import date, datetime, timedelta, timezone
 from flask import current_app, g, session
 
 from core import (
-    clean_text, get_settings, normalize_phone, parse_iso_date, pretty_phone, ru_date,
-    utc_stamp, valid_email,
+    clean_text,
+    get_settings,
+    normalize_phone,
+    parse_iso_date,
+    ru_date,
+    utc_stamp,
+    valid_email,
 )
 from database import get_db
 from services.audit import log_action
 from services.common import paginate
 from services.notifications import create_notification
 
-OCCASIONS = ("Ужин", "Встреча с друзьями", "День рождения", "Свидание",
-             "Корпоратив", "Семейный праздник", "Другое")
+OCCASIONS = (
+    "Ужин",
+    "Встреча с друзьями",
+    "День рождения",
+    "Свидание",
+    "Корпоратив",
+    "Семейный праздник",
+    "Другое",
+)
 ACTIVE_STATUSES = ("pending", "confirmed")
 ADMIN_TRANSITIONS = {
     "pending": {"confirmed", "declined", "cancelled"},
@@ -96,12 +109,16 @@ def get_booking(code: str, with_details: bool = True):
 
 
 def get_booking_by_id(booking_id: int):
-    return get_db().execute(
-        "SELECT b.*, h.name AS hall_name, t.name AS table_name, t.seats AS table_seats "
-        "FROM bookings b JOIN halls h ON h.id = b.hall_id "
-        "JOIN dining_tables t ON t.id = b.table_id WHERE b.id = ?",
-        (booking_id,),
-    ).fetchone()
+    return (
+        get_db()
+        .execute(
+            "SELECT b.*, h.name AS hall_name, t.name AS table_name, t.seats AS table_seats "
+            "FROM bookings b JOIN halls h ON h.id = b.hall_id "
+            "JOIN dining_tables t ON t.id = b.table_id WHERE b.id = ?",
+            (booking_id,),
+        )
+        .fetchone()
+    )
 
 
 def remember_booking_access(code: str) -> None:
@@ -121,8 +138,7 @@ def has_booking_access(booking, user=None) -> bool:
     return booking["code"] in session.get("booking_codes", [])
 
 
-def _free_tables(db, hall_id: int, date_value: str, start_min: int, end_min: int,
-                 guests: int = 1) -> list:
+def _free_tables(db, hall_id: int, date_value: str, start_min: int, end_min: int, guests: int = 1) -> list:
     rows = db.execute(
         "SELECT t.* FROM dining_tables t WHERE t.hall_id = ? AND t.is_active = 1 AND t.seats >= ? "
         "ORDER BY t.seats, t.id",
@@ -153,7 +169,11 @@ def create_booking(form, user_id: int | None = None) -> tuple[dict | None, dict[
     errors: dict[str, str] = {}
 
     hall_id = _as_int(form.get("hall_id"))
-    hall = db.execute("SELECT * FROM halls WHERE id = ? AND is_active = 1", (hall_id,)).fetchone() if hall_id else None
+    hall = (
+        db.execute("SELECT * FROM halls WHERE id = ? AND is_active = 1", (hall_id,)).fetchone()
+        if hall_id
+        else None
+    )
     if not hall:
         errors["hall_id"] = "Выберите зал."
 
@@ -244,26 +264,52 @@ def create_booking(form, user_id: int | None = None) -> tuple[dict | None, dict[
             "INSERT INTO bookings(code, user_id, hall_id, table_id, guest_name, guest_phone, guest_email, "
             "date, time, start_min, end_min, guests_count, occasion, comment, status, created_at, updated_at) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)",
-            (code, user_id, hall_id, table["id"], name, phone, email_raw or None,
-             date_value.isoformat(), time_value, start_min, end_min, guests, occasion or None,
-             comment or None, now, now),
+            (
+                code,
+                user_id,
+                hall_id,
+                table["id"],
+                name,
+                phone,
+                email_raw or None,
+                date_value.isoformat(),
+                time_value,
+                start_min,
+                end_min,
+                guests,
+                occasion or None,
+                comment or None,
+                now,
+                now,
+            ),
         )
         log_action(
-            "booking.created", "booking", code,
-            {"hall_id": hall_id, "table_id": table["id"], "date": date_value.isoformat(),
-             "time": time_value, "guests": guests},
+            "booking.created",
+            "booking",
+            code,
+            {
+                "hall_id": hall_id,
+                "table_id": table["id"],
+                "date": date_value.isoformat(),
+                "time": time_value,
+                "guests": guests,
+            },
         )
         if user_id:
             create_notification(
-                user_id, "Заявка на бронь принята",
+                user_id,
+                "Заявка на бронь принята",
                 f"{ru_date(date_value, 'day')} в {time_value}, {hall['name']}, {table['name']}. "
                 "Подтвердим бронь в ближайшее время.",
                 f"/account/bookings/{code}",
             )
-        admin_rows = db.execute("SELECT id FROM users WHERE role IN ('admin', 'owner') AND is_active = 1").fetchall()
+        admin_rows = db.execute(
+            "SELECT id FROM users WHERE role IN ('admin', 'owner') AND is_active = 1"
+        ).fetchall()
         for admin in admin_rows:
             create_notification(
-                admin["id"], "Новая бронь",
+                admin["id"],
+                "Новая бронь",
                 f"{name}: {ru_date(date_value, 'day')} в {time_value}, {hall['name']}, {guests} чел.",
                 "/admin/bookings?status=pending",
             )
@@ -272,16 +318,26 @@ def create_booking(form, user_id: int | None = None) -> tuple[dict | None, dict[
         try:
             from services.notify import notify_admins_new_booking
 
-            notify_admins_new_booking({
-                "guest_name": name, "date": date_value.isoformat(), "time": time_value,
-                "hall_name": hall["name"], "table_name": table["name"],
-                "guests": guests, "code": code,
-            })
+            notify_admins_new_booking(
+                {
+                    "guest_name": name,
+                    "date": date_value.isoformat(),
+                    "time": time_value,
+                    "hall_name": hall["name"],
+                    "table_name": table["name"],
+                    "guests": guests,
+                    "code": code,
+                }
+            )
         except Exception:
             pass
         return {
-            "id": cursor.lastrowid, "code": code, "hall_name": hall["name"],
-            "table_name": table["name"], "date": date_value.isoformat(), "time": time_value,
+            "id": cursor.lastrowid,
+            "code": code,
+            "hall_name": hall["name"],
+            "table_name": table["name"],
+            "date": date_value.isoformat(),
+            "time": time_value,
             "guests": guests,
         }, {}
     except sqlite3.IntegrityError:
@@ -314,20 +370,31 @@ def availability(hall_id: int, date_value: date) -> dict:
             start = minutes_from_time(value)
             end = start + duration
             conflict = next(
-                (b for b in bookings if b["table_id"] == table["id"] and b["start_min"] < end and start < b["end_min"]),
+                (
+                    b
+                    for b in bookings
+                    if b["table_id"] == table["id"] and b["start_min"] < end and start < b["end_min"]
+                ),
                 None,
             )
             past = bool(is_today and start <= now_local.hour * 60 + now_local.minute + 30)
-            cells.append({
-                "time": value,
-                "end": time_from_minutes(end),
-                "free": conflict is None and not past,
-                "past": past,
-                "booking": conflict,
-            })
+            cells.append(
+                {
+                    "time": value,
+                    "end": time_from_minutes(end),
+                    "free": conflict is None and not past,
+                    "past": past,
+                    "booking": conflict,
+                }
+            )
         grid.append({"table": table, "cells": cells})
-    return {"tables": tables, "slots": slots, "grid": grid, "date": date_value,
-            "bookings_count": len(bookings)}
+    return {
+        "tables": tables,
+        "slots": slots,
+        "grid": grid,
+        "date": date_value,
+        "bookings_count": len(bookings),
+    }
 
 
 def month_calendar(hall_id: int, year: int, month: int) -> dict:
@@ -340,9 +407,12 @@ def month_calendar(hall_id: int, year: int, month: int) -> dict:
         (hall_id, first.isoformat(), last.isoformat()),
     ).fetchall()
     counts = {row["date"]: row["n"] for row in rows}
-    table_count = max(1, db.execute(
-        "SELECT COUNT(*) AS n FROM dining_tables WHERE hall_id = ? AND is_active = 1", (hall_id,)
-    ).fetchone()["n"])
+    table_count = max(
+        1,
+        db.execute(
+            "SELECT COUNT(*) AS n FROM dining_tables WHERE hall_id = ? AND is_active = 1", (hall_id,)
+        ).fetchone()["n"],
+    )
     today = today_local()
     max_day = today + timedelta(days=int(current_app.config.get("BOOKING_DAYS_AHEAD", 90)))
     weeks = []
@@ -360,15 +430,25 @@ def month_calendar(hall_id: int, year: int, month: int) -> dict:
                 level = "busy"
             else:
                 level = "some"
-            rendered.append({
-                "date": day, "day": day.day, "count": count, "level": level,
-                "past": day < today, "today": day == today, "bookable": today <= day <= max_day,
-            })
+            rendered.append(
+                {
+                    "date": day,
+                    "day": day.day,
+                    "count": count,
+                    "level": level,
+                    "past": day < today,
+                    "today": day == today,
+                    "bookable": today <= day <= max_day,
+                }
+            )
         weeks.append(rendered)
-    prev_month = (first - timedelta(days=1))
-    next_month = (last + timedelta(days=1))
+    prev_month = first - timedelta(days=1)
+    next_month = last + timedelta(days=1)
     return {
-        "year": year, "month": month, "weeks": weeks, "weekdays": ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"),
+        "year": year,
+        "month": month,
+        "weeks": weeks,
+        "weekdays": ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"),
         "prev": {"year": prev_month.year, "month": prev_month.month},
         "next": {"year": next_month.year, "month": next_month.month},
         "counts": counts,
@@ -399,17 +479,22 @@ def list_user_bookings(user_id: int, scope: str = "upcoming", status: str | None
 
 
 def upcoming_for_user(user_id: int, limit: int = 3) -> list:
-    return get_db().execute(
-        "SELECT b.*, h.name AS hall_name, t.name AS table_name FROM bookings b "
-        "JOIN halls h ON h.id = b.hall_id JOIN dining_tables t ON t.id = b.table_id "
-        "WHERE b.user_id = ? AND b.date >= ? AND b.status IN ('pending', 'confirmed') "
-        "ORDER BY b.date, b.time LIMIT ?",
-        (user_id, today_local().isoformat(), limit),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT b.*, h.name AS hall_name, t.name AS table_name FROM bookings b "
+            "JOIN halls h ON h.id = b.hall_id JOIN dining_tables t ON t.id = b.table_id "
+            "WHERE b.user_id = ? AND b.date >= ? AND b.status IN ('pending', 'confirmed') "
+            "ORDER BY b.date, b.time LIMIT ?",
+            (user_id, today_local().isoformat(), limit),
+        )
+        .fetchall()
+    )
 
 
-def list_all_bookings(status: str | None = None, date_value: str | None = None,
-                      q: str | None = None, page: int | str | None = 1) -> tuple[list, dict]:
+def list_all_bookings(
+    status: str | None = None, date_value: str | None = None, q: str | None = None, page: int | str | None = 1
+) -> tuple[list, dict]:
     db = get_db()
     where, params = [], []
     if status in ("pending", "confirmed", "cancelled", "declined", "completed"):
@@ -428,8 +513,9 @@ def list_all_bookings(status: str | None = None, date_value: str | None = None,
     rows = db.execute(
         "SELECT b.*, h.name AS hall_name, t.name AS table_name, t.seats AS table_seats "
         "FROM bookings b JOIN halls h ON h.id = b.hall_id "
-        "JOIN dining_tables t ON t.id = b.table_id" + where_sql +
-        " ORDER BY CASE b.status WHEN 'pending' THEN 0 WHEN 'confirmed' THEN 1 ELSE 2 END, "
+        "JOIN dining_tables t ON t.id = b.table_id"
+        + where_sql
+        + " ORDER BY CASE b.status WHEN 'pending' THEN 0 WHEN 'confirmed' THEN 1 ELSE 2 END, "
         "b.date ASC, b.time ASC LIMIT ? OFFSET ?",
         params + [pages["per_page"], pages["offset"]],
     ).fetchall()
@@ -437,12 +523,16 @@ def list_all_bookings(status: str | None = None, date_value: str | None = None,
 
 
 def bookings_for_day(date_value: str) -> list:
-    return get_db().execute(
-        "SELECT b.*, h.name AS hall_name, t.name AS table_name FROM bookings b "
-        "JOIN halls h ON h.id = b.hall_id JOIN dining_tables t ON t.id = b.table_id "
-        "WHERE b.date = ? AND b.status IN ('pending', 'confirmed') ORDER BY b.time",
-        (date_value,),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT b.*, h.name AS hall_name, t.name AS table_name FROM bookings b "
+            "JOIN halls h ON h.id = b.hall_id JOIN dining_tables t ON t.id = b.table_id "
+            "WHERE b.date = ? AND b.status IN ('pending', 'confirmed') ORDER BY b.time",
+            (date_value,),
+        )
+        .fetchall()
+    )
 
 
 def admin_week_grid(start_day: date) -> dict:
@@ -474,13 +564,16 @@ def admin_week_grid(start_day: date) -> dict:
     for offset in range(7):
         day = start_day + timedelta(days=offset)
         iso = day.isoformat()
-        days.append({
-            "date": day, "iso": iso,
-            "label": f"{day.day} {('янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек')[day.month - 1]}",
-            "weekday": ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")[day.weekday()],
-            "is_today": day == today_local(),
-            "totals": day_totals.get(iso, {"bookings": 0, "guests": 0}),
-        })
+        days.append(
+            {
+                "date": day,
+                "iso": iso,
+                "label": f"{day.day} {('янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек')[day.month - 1]}",
+                "weekday": ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")[day.weekday()],
+                "is_today": day == today_local(),
+                "totals": day_totals.get(iso, {"bookings": 0, "guests": 0}),
+            }
+        )
     grid = []
     for hall in halls:
         cells = []
@@ -492,16 +585,21 @@ def admin_week_grid(start_day: date) -> dict:
     next_week = start_day + timedelta(days=7)
     week_start_monday = start_day - timedelta(days=start_day.weekday())
     return {
-        "days": days, "grid": grid, "prev": prev_week.isoformat(), "next": next_week.isoformat(),
-        "start": start_day.isoformat(), "title": ru_date(start_day),
+        "days": days,
+        "grid": grid,
+        "prev": prev_week.isoformat(),
+        "next": next_week.isoformat(),
+        "start": start_day.isoformat(),
+        "title": ru_date(start_day),
         "monday": week_start_monday.isoformat(),
         "total_bookings": sum(day["totals"]["bookings"] for day in days),
         "total_guests": sum(day["totals"]["guests"] for day in days),
     }
 
 
-def change_status(booking_id: int, new_status: str, actor, reason: str = "",
-                  allow_public: bool = False) -> tuple[bool, str]:
+def change_status(
+    booking_id: int, new_status: str, actor, reason: str = "", allow_public: bool = False
+) -> tuple[bool, str]:
     db = get_db()
     booking = get_booking_by_id(booking_id)
     if not booking:
@@ -532,12 +630,20 @@ def change_status(booking_id: int, new_status: str, actor, reason: str = "",
     )
     if booking["user_id"]:
         messages = {
-            "confirmed": ("Бронь подтверждена",
-                          f"Ждём вас {ru_date(booking['date'], 'day')} в {booking['time']}. "
-                          f"{booking['hall_name']}, {booking['table_name']}."),
-            "declined": ("Бронь отклонена", reason or "К сожалению, это время недоступно. Выберите другой слот."),
+            "confirmed": (
+                "Бронь подтверждена",
+                f"Ждём вас {ru_date(booking['date'], 'day')} в {booking['time']}. "
+                f"{booking['hall_name']}, {booking['table_name']}.",
+            ),
+            "declined": (
+                "Бронь отклонена",
+                reason or "К сожалению, это время недоступно. Выберите другой слот.",
+            ),
             "cancelled": ("Бронь отменена", reason or "Если это ошибка — создайте новую бронь."),
-            "completed": ("Спасибо, что были у нас", "Будем рады видеть вас снова. Оставьте отзыв — нам важно мнение гостей."),
+            "completed": (
+                "Спасибо, что были у нас",
+                "Будем рады видеть вас снова. Оставьте отзыв — нам важно мнение гостей.",
+            ),
         }
         if new_status in messages:
             title, body = messages[new_status]
@@ -550,9 +656,10 @@ def change_status(booking_id: int, new_status: str, actor, reason: str = "",
         except Exception:
             pass
     log_action(
-        f"booking.{new_status}", "booking", booking["code"],
-        {"from": booking["status"], "to": new_status, "reason": reason or None,
-         "actor_role": role},
+        f"booking.{new_status}",
+        "booking",
+        booking["code"],
+        {"from": booking["status"], "to": new_status, "reason": reason or None, "actor_role": role},
     )
     db.commit()
     return True, ""
@@ -588,13 +695,20 @@ def build_ics(booking) -> str:
     )
     location = "Москва, Ходынский бульвар, 4, ТРЦ «Авиапарк», 3 этаж"
     lines = [
-        "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//ChaiHouse//Booking//RU",
-        "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "BEGIN:VEVENT",
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//ChaiHouse//Booking//RU",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
         f"UID:{booking['code']}@chaihouse.example",
         f"DTSTAMP:{utc_stamp().replace('-', '').replace(':', '')}",
         f"DTSTART;TZID=Europe/Moscow:{day}T{start}",
         f"DTEND;TZID=Europe/Moscow:{end_day}T{end}",
-        f"SUMMARY:{summary}", f"DESCRIPTION:{description}", f"LOCATION:{location}",
-        "END:VEVENT", "END:VCALENDAR",
+        f"SUMMARY:{summary}",
+        f"DESCRIPTION:{description}",
+        f"LOCATION:{location}",
+        "END:VEVENT",
+        "END:VCALENDAR",
     ]
     return "\r\n".join(lines) + "\r\n"

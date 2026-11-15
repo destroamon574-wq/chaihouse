@@ -1,22 +1,39 @@
 """Личный кабинет гостя."""
+
 from __future__ import annotations
 
 import json
 
 from flask import (
-    Blueprint, Response, abort, flash, g, jsonify, redirect, render_template, request, url_for,
+    Blueprint,
+    Response,
+    abort,
+    flash,
+    g,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
-from werkzeug.utils import secure_filename
 
-from core import login_required, request_wants_json, safe_next_url, utc_stamp
+from core import request_wants_json, safe_next_url
 from services.bookings import (
-    build_ics, change_status, get_booking, is_past, list_user_bookings, today_local,
+    build_ics,
+    change_status,
+    get_booking,
+    is_past,
+    list_user_bookings,
     upcoming_for_user,
 )
-from services.menu import favorite_ids, favorites_for_user, toggle_favorite
+from services.menu import favorites_for_user, toggle_favorite
 from services.notifications import list_notifications, mark_all_read, mark_read, unread_count
 from services.users import (
-    change_password, delete_account, export_user_data, get_user, update_profile,
+    change_password,
+    delete_account,
+    export_user_data,
+    get_user,
+    update_profile,
 )
 
 bp = Blueprint("account", __name__, url_prefix="/account")
@@ -188,6 +205,7 @@ def password():
             flash(message, "danger")
         return redirect(url_for("account.settings") + "#password")
     from flask import session
+
     updated = get_user(g.user["id"])
     session["session_version"] = updated["session_version"]
     flash("Пароль изменён. Остальные сессии завершены.", "success")
@@ -213,6 +231,7 @@ def delete():
         errors = delete_account(g.user["id"], request.form.get("password") or "")
         if not errors:
             from core import logout_user
+
             logout_user()
             flash("Аккаунт удалён. Персональные данные обезличены.", "success")
             return redirect(url_for("public.home"))

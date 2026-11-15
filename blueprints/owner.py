@@ -1,16 +1,32 @@
 """Кабинет владельца: аналитика, роли, цены и настройки."""
+
 from __future__ import annotations
 
 from datetime import date
 
 from flask import (
-    Blueprint, Response, abort, flash, g, redirect, render_template, request, url_for,
+    Blueprint,
+    Response,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
 
 from core import get_settings, owner_required, safe_next_url
 from services.analytics import (
-    daily_chart, export_bookings_csv, guest_insights, hall_occupancy_month, hall_stats, overview,
-    recent_audit, status_counts, top_dishes, weekday_stats,
+    daily_chart,
+    export_bookings_csv,
+    guest_insights,
+    hall_occupancy_month,
+    hall_stats,
+    overview,
+    recent_audit,
+    status_counts,
+    top_dishes,
+    weekday_stats,
 )
 from services.content import update_settings
 from services.users import list_users, set_user_role, user_stats
@@ -98,7 +114,9 @@ def settings():
 def export_csv():
     csv_data = export_bookings_csv()
     response = Response(csv_data, mimetype="text/csv")
-    response.headers["Content-Disposition"] = f'attachment; filename="chaihouse-bookings-{date.today().isoformat()}.csv"'
+    response.headers["Content-Disposition"] = (
+        f'attachment; filename="chaihouse-bookings-{date.today().isoformat()}.csv"'
+    )
     response.headers["Cache-Control"] = "private, no-store"
     return response
 

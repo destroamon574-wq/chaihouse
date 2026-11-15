@@ -18,6 +18,7 @@
 - CSP обновлена под CDN: inline-скрипты только с nonce (`g.script_nonce`, `secrets.token_urlsafe(16)`), разрешены `cdn.tailwindcss.com` и `cdn.jsdelivr.net`; `'unsafe-eval'` в `script-src` — требование CDN-сборки Alpine (альтернатива — `@alpinejs/csp`, см. `docs/DESIGN.md`); `'unsafe-inline'` в `style-src` — требование Tailwind Play CDN. Запрет `unsafe-inline` в `script-src` сохранён.
 - Preflight у Tailwind отключён на время миграции (`corePlugins: { preflight: false }`) — legacy CSS (`static/css/app.css`) не пострадал, все 53 шаблона работают.
 - Тесты CSP обновлены под nonce-подход (`tests/test_security.py`, `tests/test_public.py`).
+- Инструменты качества: Ruff (`.py`, конфиг в `pyproject.toml`, `requirements-dev.txt`), Prettier с плагинами `jinja-template` и `tailwindcss` (`package.json`, `.prettierrc`, активируются после `npm install` при наличии Node.js), OpenCode-форматер (`opencode.jsonc`), скилл дизайн-системы `.opencode/skills/design/`. Python-код приведён к единому стилю (ruff), 112 тестов пройдены.
 
 ## 1.1.0 — 2026-11-12
 

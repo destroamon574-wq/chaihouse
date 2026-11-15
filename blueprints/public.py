@@ -1,25 +1,51 @@
 """Публичная часть сайта."""
+
 from __future__ import annotations
 
 import re
 from datetime import date
 
 from flask import (
-    Blueprint, Response, abort, current_app, flash, g, redirect, render_template,
-    request, send_from_directory, url_for,
+    Blueprint,
+    Response,
+    abort,
+    current_app,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    url_for,
 )
-from werkzeug.utils import safe_join
 
 from core import (
-    client_ip, get_settings, login_required, parse_iso_date, rate_limit, ru_date, safe_next_url,
+    client_ip,
+    get_settings,
+    login_required,
+    rate_limit,
     utc_stamp,
 )
 from database import get_db
 from services.content import (
-    GALLERY_CATEGORIES, create_review, get_gallery, get_hall, get_halls, hall_reviews, list_reviews,
-    review_summary, top_reviews,
+    GALLERY_CATEGORIES,
+    create_review,
+    get_gallery,
+    get_hall,
+    get_halls,
+    hall_reviews,
+    list_reviews,
+    review_summary,
+    top_reviews,
 )
-from services.menu import favorite_ids, get_dish, list_categories, list_dishes, related_dishes, signature_dishes
+from services.menu import (
+    favorite_ids,
+    get_dish,
+    list_categories,
+    list_dishes,
+    related_dishes,
+    signature_dishes,
+)
 from services.uploads import image_url
 
 bp = Blueprint("public", __name__)
@@ -303,14 +329,16 @@ def media(filename: str):
 
 @bp.get("/robots.txt")
 def robots():
-    content = ("User-agent: *\n"
-               "Disallow: /admin\n"
-               "Disallow: /owner\n"
-               "Disallow: /account\n"
-               "Disallow: /auth\n"
-               "Disallow: /booking\n"
-               "Disallow: /api\n"
-               "Sitemap: " + current_app.config["SITE_URL"].rstrip("/") + "/sitemap.xml\n")
+    content = (
+        "User-agent: *\n"
+        "Disallow: /admin\n"
+        "Disallow: /owner\n"
+        "Disallow: /account\n"
+        "Disallow: /auth\n"
+        "Disallow: /booking\n"
+        "Disallow: /api\n"
+        "Sitemap: " + current_app.config["SITE_URL"].rstrip("/") + "/sitemap.xml\n"
+    )
     return Response(content, mimetype="text/plain")
 
 
@@ -318,22 +346,29 @@ def robots():
 def sitemap():
     db = get_db()
     urls = [
-        ("/", "1.0"), ("/menu", "0.9"), ("/halls", "0.9"), ("/gallery", "0.7"),
-        ("/about", "0.7"), ("/contacts", "0.8"), ("/reviews", "0.6"),
-        ("/privacy", "0.2"), ("/terms", "0.2"),
+        ("/", "1.0"),
+        ("/menu", "0.9"),
+        ("/halls", "0.9"),
+        ("/gallery", "0.7"),
+        ("/about", "0.7"),
+        ("/contacts", "0.8"),
+        ("/reviews", "0.6"),
+        ("/privacy", "0.2"),
+        ("/terms", "0.2"),
     ]
     for row in db.execute("SELECT slug FROM halls WHERE is_active = 1").fetchall():
         urls.append((f"/halls/{row['slug']}", "0.7"))
     for row in db.execute("SELECT slug FROM dishes WHERE is_active = 1").fetchall():
         urls.append((f"/menu/{row['slug']}", "0.6"))
     today = date.today().isoformat()
-    body = ['<?xml version="1.0" encoding="UTF-8"?>',
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    body = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
     base = current_app.config["SITE_URL"].rstrip("/")
     for path, priority in urls:
         body.append(
-            f"<url><loc>{base}{path}</loc><lastmod>{today}</lastmod>"
-            f"<priority>{priority}</priority></url>"
+            f"<url><loc>{base}{path}</loc><lastmod>{today}</lastmod><priority>{priority}</priority></url>"
         )
     body.append("</urlset>")
     return Response("\n".join(body), mimetype="application/xml")

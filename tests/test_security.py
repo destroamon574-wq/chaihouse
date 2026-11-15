@@ -1,4 +1,5 @@
 """Безопасность: CSRF, XSS, инъекции, заголовки и загрузки."""
+
 from __future__ import annotations
 
 import io
@@ -41,15 +42,18 @@ def test_review_text_is_escaped_on_public_page(client, app):
     login(reviewer)
     token = extract_csrf(reviewer.get("/reviews"))
     payload = '<script>alert("xss")</script> Плов был очень вкусным'
-    reviewer.post("/reviews", data={"csrf_token": token, "rating": "5", "text": payload},
-                  follow_redirects=False)
+    reviewer.post(
+        "/reviews", data={"csrf_token": token, "rating": "5", "text": payload}, follow_redirects=False
+    )
 
     review = _row(app, "SELECT id FROM reviews ORDER BY id DESC LIMIT 1")
     admin = app.test_client()
     login(admin, "admin@chaihouse.ru", "Admin#2026")
     admin_token = csrf_for(admin, "/admin/reviews?status=pending")
-    admin.post(f"/admin/reviews/{review['id']}/moderate",
-               data={"csrf_token": admin_token, "action": "publish", "reply": ""})
+    admin.post(
+        f"/admin/reviews/{review['id']}/moderate",
+        data={"csrf_token": admin_token, "action": "publish", "reply": ""},
+    )
 
     body = client.get("/reviews").get_data(as_text=True)
     assert '<script>alert("xss")</script>' not in body
@@ -62,8 +66,7 @@ def test_booking_status_xss_in_reason_is_escaped(client, app):
     token = extract_csrf(client.get(f"/admin/bookings/{row['id']}"))
     client.post(
         f"/admin/bookings/{row['id']}/status",
-        data={"csrf_token": token, "status": "cancelled",
-              "reason": "<img src=x onerror=alert(1)>"},
+        data={"csrf_token": token, "status": "cancelled", "reason": "<img src=x onerror=alert(1)>"},
         follow_redirects=False,
     )
     page = client.get("/booking/success/CH-DEMO01")

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Форматеры запускаются после каждого edit/write агента.
+  "formatter": {
+    // Prettier: JS/CSS/JSON/MD сразу; .html — через плагин jinja-template
+    // (см. .prettierrc) + сортировка Tailwind-классов (prettier-plugin-tailwindcss).
+    // Требует `npm install` — пока Node не установлен, просто не запускается.
+    "prettier": {
+      "extensions": [".js", ".mjs", ".cjs", ".css", ".scss", ".json", ".jsonc", ".html", ".md"]
+    },
+    // Ruff: форматирование и проверка .py (см. pyproject.toml [tool.ruff]).
+    "ruff": {}
+  }
+}

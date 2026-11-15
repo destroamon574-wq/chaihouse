@@ -97,3 +97,16 @@ CSP-сборка `@alpinejs/csp`, но она не поддерживает inli
 - Фиксированные высоты/ширины без `max-w-*`.
 - Отрицательные отступы «вручную» вместо gap.
 - Использование `!important` — только в `[x-cloak]`.
+
+## 10. Инструменты качества
+
+| Инструмент | Что делает | Как запустить |
+|---|---|---|
+| Ruff | Форматирование и проверка `.py` (конфиг в `pyproject.toml`) | `ruff format .` · `ruff check .` — устанавливается через `requirements-dev.txt` |
+| Prettier + `prettier-plugin-jinja-template` | Форматирование HTML/Jinja, JS, CSS, JSON — не ломает `{% %}` и `{{ }}` | `npm install` (нужен Node.js) → `npm run format` |
+| `prettier-plugin-tailwindcss` | Сортирует Tailwind-классы в едином порядке (должен быть последним в `plugins` в `.prettierrc`) | входит в `npm install` выше |
+| OpenCode formatter | Автоформат после каждого edit/write агента (конфиг `opencode.jsonc`) | работает автоматически |
+
+Порядок сортировки классов у плагина Tailwind учитывает кастомные цвета из
+конфига в `templates/base.html` только при явном конфиге; базовая сортировка
+включается сразу после `npm install`.

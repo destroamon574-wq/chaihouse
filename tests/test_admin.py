@@ -1,4 +1,5 @@
 """Админ-панель: брони, меню, залы, галерея, отзывы и журнал."""
+
 from __future__ import annotations
 
 import io
@@ -36,8 +37,16 @@ def _db_row(app, sql: str, params=()):
 
 def test_admin_pages_open_for_admin(client):
     login(client, "admin@chaihouse.ru", "Admin#2026")
-    for path in ("/admin/", "/admin/bookings", "/admin/menu", "/admin/menu/new",
-                 "/admin/halls", "/admin/gallery", "/admin/reviews", "/admin/audit"):
+    for path in (
+        "/admin/",
+        "/admin/bookings",
+        "/admin/menu",
+        "/admin/menu/new",
+        "/admin/halls",
+        "/admin/gallery",
+        "/admin/reviews",
+        "/admin/audit",
+    ):
         response = client.get(path)
         assert response.status_code == 200, path
 
@@ -78,8 +87,7 @@ def test_admin_menu_crud(client, app):
     login(client, "admin@chaihouse.ru", "Admin#2026")
     token = csrf_for(client, "/admin/menu/new")
 
-    created = client.post("/admin/menu/new", data={"csrf_token": token, **DISH_FORM},
-                          follow_redirects=False)
+    created = client.post("/admin/menu/new", data={"csrf_token": token, **DISH_FORM}, follow_redirects=False)
     assert created.status_code == 302
     dish = _db_row(app, "SELECT * FROM dishes WHERE slug = 'testovyy-chay'")
     assert dish is not None
@@ -89,15 +97,21 @@ def test_admin_menu_crud(client, app):
     page = client.get("/admin/menu?q=тестовый")
     assert "Тестовый чай" in page.get_data(as_text=True)
 
-    toggled = client.post(f"/admin/menu/{dish['id']}/toggle", data={"csrf_token": token},
-                          follow_redirects=False)
+    toggled = client.post(
+        f"/admin/menu/{dish['id']}/toggle", data={"csrf_token": token}, follow_redirects=False
+    )
     assert toggled.status_code == 302
     assert _db_row(app, "SELECT is_active FROM dishes WHERE id = ?", (dish["id"],))["is_active"] == 0
 
     edited = client.post(
         f"/admin/menu/{dish['id']}/edit",
-        data={"csrf_token": token, **DISH_FORM, "name": "Тестовый чай обновлён", "price": "420",
-              "image_preset": ""},
+        data={
+            "csrf_token": token,
+            **DISH_FORM,
+            "name": "Тестовый чай обновлён",
+            "price": "420",
+            "image_preset": "",
+        },
         follow_redirects=False,
     )
     assert edited.status_code == 302
@@ -105,8 +119,9 @@ def test_admin_menu_crud(client, app):
     assert updated["name"] == "Тестовый чай обновлён"
     assert updated["price"] == 420
 
-    removed = client.post(f"/admin/menu/{dish['id']}/delete", data={"csrf_token": token},
-                          follow_redirects=False)
+    removed = client.post(
+        f"/admin/menu/{dish['id']}/delete", data={"csrf_token": token}, follow_redirects=False
+    )
     assert removed.status_code == 302
     assert _db_row(app, "SELECT 1 FROM dishes WHERE id = ?", (dish["id"],)) is None
 
@@ -126,8 +141,11 @@ def test_admin_can_add_and_toggle_table(client, app):
     login(client, "admin@chaihouse.ru", "Admin#2026")
     token = csrf_for(client, "/admin/halls")
 
-    added = client.post("/admin/halls/1/tables", data={"csrf_token": token, "name": "Стол 99", "seats": "6"},
-                        follow_redirects=False)
+    added = client.post(
+        "/admin/halls/1/tables",
+        data={"csrf_token": token, "name": "Стол 99", "seats": "6"},
+        follow_redirects=False,
+    )
     assert added.status_code == 302
     table = _db_row(app, "SELECT * FROM dining_tables WHERE name = 'Стол 99'")
     assert table is not None and table["seats"] == 6
@@ -155,8 +173,13 @@ def test_admin_gallery_preset_and_delete(client, app):
 
     added = client.post(
         "/admin/gallery",
-        data={"csrf_token": token, "title": "Тестовый свет", "alt": "Лампы над тестовым столом",
-              "category": "details", "image_preset": "img/detail-lamp.svg"},
+        data={
+            "csrf_token": token,
+            "title": "Тестовый свет",
+            "alt": "Лампы над тестовым столом",
+            "category": "details",
+            "image_preset": "img/detail-lamp.svg",
+        },
         follow_redirects=False,
     )
     assert added.status_code == 302

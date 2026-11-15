@@ -4,6 +4,7 @@
 Всё настроено необязательно: нет токена/SMTP — функция мягко пропускается,
 ошибки сети не ломают бронирование (пишем запись в журнал действий).
 """
+
 from __future__ import annotations
 
 import json
@@ -34,6 +35,7 @@ STATUS_LABELS = {
 # Telegram
 # ---------------------------------------------------------------------------
 
+
 def telegram_configured(settings: dict | None = None) -> bool:
     values = settings or get_settings()
     return bool(
@@ -52,7 +54,10 @@ def send_telegram(text: str, settings: dict | None = None) -> bool:
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     payload = json.dumps({"chat_id": chat_id, "text": text[:3800]}).encode("utf-8")
     request = urllib.request.Request(
-        url, data=payload, headers={"Content-Type": "application/json"}, method="POST",
+        url,
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
     )
     try:
         with urllib.request.urlopen(request, timeout=TELEGRAM_TIMEOUT) as response:
@@ -68,6 +73,7 @@ def send_telegram(text: str, settings: dict | None = None) -> bool:
 # ---------------------------------------------------------------------------
 # E-mail
 # ---------------------------------------------------------------------------
+
 
 def smtp_configured() -> bool:
     return bool(os.environ.get("SMTP_HOST"))
@@ -109,6 +115,7 @@ def send_email(to_addr: str, subject: str, body: str) -> bool:
 # ---------------------------------------------------------------------------
 # События бронирования
 # ---------------------------------------------------------------------------
+
 
 def notify_admins_new_booking(booking: dict) -> bool:
     """Мгновенное сообщение в Telegram ресторана о новой брони."""
@@ -154,6 +161,7 @@ def notify_guest_status(booking, new_status: str, reason: str = "") -> bool:
 # Напоминания
 # ---------------------------------------------------------------------------
 
+
 def tomorrow_bookings() -> list:
     """Подтверждённые брони на завтра, по которым ещё не отправляли напоминание."""
     from services.bookings import today_local
@@ -188,8 +196,11 @@ def send_upcoming_reminders() -> tuple[int, int]:
     db = get_db()
     sent = skipped = 0
     for booking in tomorrow_bookings():
-        delivered = send_email(booking["guest_email"] or "", f"ЧайHouse: завтра ваша бронь {booking['code']}",
-                               _reminder_text(booking))
+        delivered = send_email(
+            booking["guest_email"] or "",
+            f"ЧайHouse: завтра ваша бронь {booking['code']}",
+            _reminder_text(booking),
+        )
         if delivered:
             sent += 1
         else:
@@ -198,7 +209,8 @@ def send_upcoming_reminders() -> tuple[int, int]:
                 from services.notifications import create_notification
 
                 create_notification(
-                    booking["user_id"], "Завтра ваша бронь",
+                    booking["user_id"],
+                    "Завтра ваша бронь",
                     f"Ждём вас завтра в {booking['time']}, {booking['hall_name']}, "
                     f"{booking['table_name']}. Код брони: {booking['code']}.",
                     f"/account/bookings/{booking['code']}",
@@ -206,7 +218,6 @@ def send_upcoming_reminders() -> tuple[int, int]:
         db.execute("UPDATE bookings SET reminded_at = ? WHERE id = ?", (utc_stamp(), booking["id"]))
     if sent or skipped:
         db.commit()
-        log_action("notify.reminders_sent", "system", "bookings",
-                   {"sent": sent, "skipped": skipped})
+        log_action("notify.reminders_sent", "system", "bookings", {"sent": sent, "skipped": skipped})
         db.commit()
     return sent, skipped

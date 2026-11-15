@@ -1,11 +1,14 @@
 """Залы, галерея, отзывы и настройки заведения."""
+
 from __future__ import annotations
 
 import json
 import sqlite3
 
 from core import (
-    clean_text, get_settings, utc_stamp, valid_email,
+    clean_text,
+    utc_stamp,
+    valid_email,
 )
 from database import get_db
 from services.audit import log_action
@@ -57,9 +60,13 @@ def get_hall(slug: str, include_inactive: bool = False):
         item["features_list"] = json.loads(item.get("features") or "[]")
     except (ValueError, TypeError):
         item["features_list"] = []
-    tables = get_db().execute(
-        "SELECT * FROM dining_tables WHERE hall_id = ? AND is_active = 1 ORDER BY seats, id", (row["id"],)
-    ).fetchall()
+    tables = (
+        get_db()
+        .execute(
+            "SELECT * FROM dining_tables WHERE hall_id = ? AND is_active = 1 ORDER BY seats, id", (row["id"],)
+        )
+        .fetchall()
+    )
     item["tables"] = tables
     item["seats_total"] = sum(table["seats"] for table in tables)
     return item
@@ -87,7 +94,9 @@ def update_hall(hall_id: int, form, image_path: str | None = None) -> dict[str, 
     except (TypeError, ValueError):
         min_spend = -1
     features_raw = (form.get("features") or "").strip()
-    features = [clean_text(line, 80) for line in features_raw.replace(",", "\n").splitlines() if clean_text(line, 80)]
+    features = [
+        clean_text(line, 80) for line in features_raw.replace(",", "\n").splitlines() if clean_text(line, 80)
+    ]
     if len(name) < 2:
         errors["name"] = "Укажите название зала."
     if len(description) < 20:
@@ -101,8 +110,17 @@ def update_hall(hall_id: int, form, image_path: str | None = None) -> dict[str, 
     db.execute(
         "UPDATE halls SET name = ?, tagline = ?, description = ?, capacity = ?, min_spend = ?, "
         "features = ?, image = ?, sort_order = ? WHERE id = ?",
-        (name, tagline, description, capacity, min_spend, json.dumps(features, ensure_ascii=False),
-         image_path or hall["image"], form.get("sort_order", type=int) or 0, hall_id),
+        (
+            name,
+            tagline,
+            description,
+            capacity,
+            min_spend,
+            json.dumps(features, ensure_ascii=False),
+            image_path or hall["image"],
+            form.get("sort_order", type=int) or 0,
+            hall_id,
+        ),
     )
     db.commit()
     log_action("hall.updated", "hall", hall_id, {"name": name})
@@ -140,8 +158,9 @@ def add_table(hall_id: int, form) -> tuple[int | None, dict[str, str]]:
     if errors:
         return None, errors
     try:
-        cursor = db.execute("INSERT INTO dining_tables(hall_id, name, seats) VALUES (?, ?, ?)",
-                            (hall_id, name, seats))
+        cursor = db.execute(
+            "INSERT INTO dining_tables(hall_id, name, seats) VALUES (?, ?, ?)", (hall_id, name, seats)
+        )
         db.commit()
     except sqlite3.IntegrityError:
         return None, {"name": "Стол с таким названием уже есть в зале."}
@@ -164,10 +183,14 @@ def toggle_table(table_id: int) -> bool:
 
 
 def get_tables_admin() -> list:
-    return get_db().execute(
-        "SELECT t.*, h.name AS hall_name, h.slug AS hall_slug FROM dining_tables t "
-        "JOIN halls h ON h.id = t.hall_id ORDER BY h.sort_order, t.seats, t.id"
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT t.*, h.name AS hall_name, h.slug AS hall_slug FROM dining_tables t "
+            "JOIN halls h ON h.id = t.hall_id ORDER BY h.sort_order, t.seats, t.id"
+        )
+        .fetchall()
+    )
 
 
 def get_gallery(category: str | None = None, include_inactive: bool = False) -> list:
@@ -237,35 +260,49 @@ def list_reviews(status: str = "published", page: int | str | None = 1, per_page
 
 
 def review_summary() -> dict:
-    row = get_db().execute(
-        "SELECT COUNT(*) AS n, COALESCE(AVG(rating), 0) AS avg FROM reviews WHERE status = 'published'"
-    ).fetchone()
+    row = (
+        get_db()
+        .execute(
+            "SELECT COUNT(*) AS n, COALESCE(AVG(rating), 0) AS avg FROM reviews WHERE status = 'published'"
+        )
+        .fetchone()
+    )
     distribution = {star: 0 for star in range(1, 6)}
-    for item in get_db().execute(
-        "SELECT rating, COUNT(*) AS n FROM reviews WHERE status = 'published' GROUP BY rating"
-    ).fetchall():
+    for item in (
+        get_db()
+        .execute("SELECT rating, COUNT(*) AS n FROM reviews WHERE status = 'published' GROUP BY rating")
+        .fetchall()
+    ):
         distribution[item["rating"]] = item["n"]
     return {"count": row["n"], "avg": round(row["avg"] or 0, 1), "distribution": distribution}
 
 
 def top_reviews(limit: int = 3, min_rating: int = 5) -> list:
     """Лучшие опубликованные отзывы — для главной страницы."""
-    return get_db().execute(
-        "SELECT * FROM reviews WHERE status = 'published' AND rating >= ? "
-        "ORDER BY rating DESC, created_at DESC LIMIT ?",
-        (min_rating, limit),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT * FROM reviews WHERE status = 'published' AND rating >= ? "
+            "ORDER BY rating DESC, created_at DESC LIMIT ?",
+            (min_rating, limit),
+        )
+        .fetchall()
+    )
 
 
 def hall_reviews(hall_id: int, limit: int = 3) -> list:
     """Отзывы гостей, оставленные к броням в конкретном зале."""
-    return get_db().execute(
-        "SELECT r.*, h.name AS hall_name FROM reviews r "
-        "JOIN bookings b ON b.id = r.booking_id JOIN halls h ON h.id = b.hall_id "
-        "WHERE r.status = 'published' AND b.hall_id = ? "
-        "ORDER BY r.rating DESC, r.created_at DESC LIMIT ?",
-        (hall_id, limit),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT r.*, h.name AS hall_name FROM reviews r "
+            "JOIN bookings b ON b.id = r.booking_id JOIN halls h ON h.id = b.hall_id "
+            "WHERE r.status = 'published' AND b.hall_id = ? "
+            "ORDER BY r.rating DESC, r.created_at DESC LIMIT ?",
+            (hall_id, limit),
+        )
+        .fetchall()
+    )
 
 
 def create_review(user, form) -> tuple[bool, dict[str, str]]:
@@ -310,6 +347,7 @@ def moderate_review(review_id: int, action: str, reply: str = "") -> tuple[bool,
         (new_status, reply or review["admin_reply"], None, utc_stamp(), review_id),
     )
     from flask import g
+
     if g.get("user"):
         db.execute("UPDATE reviews SET moderated_by = ? WHERE id = ?", (g.user["id"], review_id))
     db.commit()
@@ -369,6 +407,7 @@ def update_settings(form) -> dict[str, str]:
         db.execute("INSERT OR REPLACE INTO settings(key, value) VALUES (?, ?)", (key, value))
     db.commit()
     from flask import g
+
     g.pop("settings", None)
     log_action("settings.updated", "settings", "main", {"keys": list(values)})
     db.commit()

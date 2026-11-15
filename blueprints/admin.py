@@ -1,28 +1,59 @@
 """Админ-панель: брони, меню, залы, галерея, отзывы, журнал."""
+
 from __future__ import annotations
 
 import json
-from datetime import date, timedelta
+from datetime import timedelta
 
 from flask import (
-    Blueprint, abort, flash, g, redirect, render_template, request, url_for,
+    Blueprint,
+    abort,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
 
 from core import (
-    admin_required, clean_text, get_settings, parse_iso_date, safe_next_url, utc_stamp,
+    get_settings,
+    parse_iso_date,
+    safe_next_url,
 )
 from services.analytics import overview, recent_audit, status_counts
 from services.audit import log_action
 from services.bookings import (
-    ADMIN_TRANSITIONS, admin_week_grid, change_status, get_booking_by_id, list_all_bookings, today_local,
+    ADMIN_TRANSITIONS,
+    admin_week_grid,
+    change_status,
+    get_booking_by_id,
+    list_all_bookings,
+    today_local,
 )
 from services.content import (
-    GALLERY_CATEGORIES, PRESET_IMAGES, add_gallery, add_table, delete_gallery, get_gallery,
-    get_hall_by_id, get_halls, get_tables_admin, list_reviews, moderate_review, toggle_hall,
-    toggle_table, update_hall,
+    GALLERY_CATEGORIES,
+    PRESET_IMAGES,
+    add_gallery,
+    add_table,
+    delete_gallery,
+    get_gallery,
+    get_hall_by_id,
+    get_halls,
+    get_tables_admin,
+    list_reviews,
+    moderate_review,
+    toggle_hall,
+    toggle_table,
+    update_hall,
 )
 from services.menu import (
-    admin_dishes, create_dish, delete_dish, get_dish_by_id, list_categories, toggle_dish_active,
+    admin_dishes,
+    create_dish,
+    delete_dish,
+    get_dish_by_id,
+    list_categories,
+    toggle_dish_active,
     update_dish,
 )
 from services.uploads import UploadError, save_image
@@ -68,8 +99,9 @@ def bookings():
     status = request.args.get("status") or ""
     date_value = request.args.get("date") or ""
     q = request.args.get("q") or ""
-    items, pages = list_all_bookings(status=status, date_value=date_value, q=q,
-                                     page=request.args.get("page", 1))
+    items, pages = list_all_bookings(
+        status=status, date_value=date_value, q=q, page=request.args.get("page", 1)
+    )
     return render_template(
         "admin/bookings.html",
         bookings=items,
@@ -104,8 +136,13 @@ def booking_detail(booking_id: int):
 def booking_status(booking_id: int):
     new_status = request.form.get("status") or ""
     ok, message = change_status(booking_id, new_status, g.user, request.form.get("reason") or "")
-    labels = {"pending": "ожидает", "confirmed": "подтверждена", "cancelled": "отменена",
-              "declined": "отклонена", "completed": "завершена"}
+    labels = {
+        "pending": "ожидает",
+        "confirmed": "подтверждена",
+        "cancelled": "отменена",
+        "declined": "отклонена",
+        "completed": "завершена",
+    }
     flash(
         f"Статус изменён на «{labels.get(new_status, new_status)}»." if ok else message,
         "success" if ok else "danger",
@@ -185,6 +222,7 @@ def menu_new():
             if dish_id:
                 log_action("dish.created", "dish", dish_id, {"name": request.form.get("name")})
                 from database import get_db
+
                 get_db().commit()
                 flash("Блюдо добавлено в меню.", "success")
                 return redirect(url_for("admin.menu"))
@@ -216,6 +254,7 @@ def menu_edit(dish_id: int):
             if not errors:
                 log_action("dish.updated", "dish", dish_id, {"name": request.form.get("name")})
                 from database import get_db
+
                 get_db().commit()
                 flash("Блюдо обновлено.", "success")
                 return redirect(url_for("admin.menu"))
@@ -242,6 +281,7 @@ def menu_toggle(dish_id: int):
         flash("Блюдо снова в меню." if active else "Блюдо скрыто из меню.", "success")
         log_action("dish.toggled", "dish", dish_id, {"is_active": active})
         from database import get_db
+
         get_db().commit()
     return redirect(url_for("admin.menu"))
 
@@ -254,6 +294,7 @@ def menu_delete(dish_id: int):
     delete_dish(dish_id)
     log_action("dish.deleted", "dish", dish_id, {"name": dish["name"]})
     from database import get_db
+
     get_db().commit()
     flash("Блюдо удалено из меню.", "success")
     return redirect(url_for("admin.menu"))
@@ -395,10 +436,15 @@ def review_moderate(review_id: int):
 @bp.get("/audit")
 def audit():
     from database import get_db
-    rows = get_db().execute(
-        "SELECT a.*, u.name AS actor_name FROM audit_log a LEFT JOIN users u ON u.id = a.actor_id "
-        "ORDER BY a.created_at DESC LIMIT 200"
-    ).fetchall()
+
+    rows = (
+        get_db()
+        .execute(
+            "SELECT a.*, u.name AS actor_name FROM audit_log a LEFT JOIN users u ON u.id = a.actor_id "
+            "ORDER BY a.created_at DESC LIMIT 200"
+        )
+        .fetchall()
+    )
     return render_template(
         "admin/audit.html",
         entries=rows,

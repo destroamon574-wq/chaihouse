@@ -1,4 +1,5 @@
 """Общие настройки, безопасность и помощники приложения."""
+
 from __future__ import annotations
 
 import hashlib
@@ -95,12 +96,32 @@ BOOKING_STATUSES = {
 }
 ROLE_LABELS = {"guest": "Гость", "admin": "Администратор", "owner": "Владелец"}
 MONTHS_GENITIVE = (
-    "января", "февраля", "марта", "апреля", "мая", "июня",
-    "июля", "августа", "сентября", "октября", "ноября", "декабря",
+    "января",
+    "февраля",
+    "марта",
+    "апреля",
+    "мая",
+    "июня",
+    "июля",
+    "августа",
+    "сентября",
+    "октября",
+    "ноября",
+    "декабря",
 )
 MONTHS_NOMINATIVE = (
-    "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-    "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
+    "Январь",
+    "Февраль",
+    "Март",
+    "Апрель",
+    "Май",
+    "Июнь",
+    "Июль",
+    "Август",
+    "Сентябрь",
+    "Октябрь",
+    "Ноябрь",
+    "Декабрь",
 )
 WEEKDAYS_SHORT = ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
 
@@ -108,14 +129,23 @@ PHONE_RE = re.compile(r"^\+?\d{10,15}$")
 EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s.]+(\.[^@\s.]+)+$")
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,80}$")
 COMMON_PASSWORDS = {
-    "12345678", "123456789", "password", "qwerty123", "11111111",
-    "password1", "admin123", "letmein1", "chaihouse", "qwertyui",
+    "12345678",
+    "123456789",
+    "password",
+    "qwerty123",
+    "11111111",
+    "password1",
+    "admin123",
+    "letmein1",
+    "chaihouse",
+    "qwertyui",
 }
 
 
 # ---------------------------------------------------------------------------
 # Время и форматирование
 # ---------------------------------------------------------------------------
+
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -210,6 +240,7 @@ def role_label(role: str) -> str:
 # Валидация
 # ---------------------------------------------------------------------------
 
+
 def normalize_phone(raw: str | None) -> str | None:
     if not raw:
         return None
@@ -266,6 +297,7 @@ def clean_text(value: str | None, limit: int = 500) -> str:
 # Токены и CSRF
 # ---------------------------------------------------------------------------
 
+
 def new_token(nbytes: int = 32) -> str:
     return secrets.token_urlsafe(nbytes)
 
@@ -294,7 +326,10 @@ def request_wants_json() -> bool:
     return (
         request.path.startswith("/api/")
         or request.headers.get("X-Requested-With") == "XMLHttpRequest"
-        or (best == "application/json" and request.accept_mimetypes[best] > request.accept_mimetypes["text/html"])
+        or (
+            best == "application/json"
+            and request.accept_mimetypes[best] > request.accept_mimetypes["text/html"]
+        )
     )
 
 
@@ -327,6 +362,7 @@ def wants_json_response() -> bool:
 # Аутентификация и роли
 # ---------------------------------------------------------------------------
 
+
 def login_user(user) -> None:
     session.clear()
     session.permanent = True
@@ -346,16 +382,16 @@ def load_logged_in_user() -> None:
     user_id = session.get("user_id")
     if not user_id:
         return
-    user = get_db().execute(
-        "SELECT id, name, email, phone, role, session_version, is_active, created_at "
-        "FROM users WHERE id = ?",
-        (user_id,),
-    ).fetchone()
-    if (
-        user is None
-        or not user["is_active"]
-        or session.get("session_version") != user["session_version"]
-    ):
+    user = (
+        get_db()
+        .execute(
+            "SELECT id, name, email, phone, role, session_version, is_active, created_at "
+            "FROM users WHERE id = ?",
+            (user_id,),
+        )
+        .fetchone()
+    )
+    if user is None or not user["is_active"] or session.get("session_version") != user["session_version"]:
         session.clear()
         return
     g.user = user
@@ -410,6 +446,7 @@ def verify_owner_or_admin(owner_id: int | None) -> None:
 # Настройки, IP, rate limit
 # ---------------------------------------------------------------------------
 
+
 def get_settings() -> dict[str, str]:
     if "settings" not in g:
         from database import get_db
@@ -460,7 +497,12 @@ def reset_rate_limits() -> None:
 # Загрузка изображений
 # ---------------------------------------------------------------------------
 
-ALLOWED_IMAGE_EXTENSIONS = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "webp": "image/webp"}
+ALLOWED_IMAGE_EXTENSIONS = {
+    "png": "image/png",
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    "webp": "image/webp",
+}
 IMAGE_SIGNATURES = {
     "png": (b"\x89PNG\r\n\x1a\n",),
     "jpg": (b"\xff\xd8\xff",),
@@ -490,6 +532,7 @@ def detect_image_type(data: bytes, filename: str) -> str | None:
 # ---------------------------------------------------------------------------
 # Контекст шаблонов
 # ---------------------------------------------------------------------------
+
 
 def inject_globals() -> dict:
     return {

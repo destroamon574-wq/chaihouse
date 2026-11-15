@@ -1,8 +1,8 @@
 """Меню, категории и избранное."""
+
 from __future__ import annotations
 
 import re
-import sqlite3
 
 from core import SLUG_RE, utc_stamp
 from database import get_db
@@ -24,10 +24,14 @@ def _like(term: str) -> str:
 
 
 def list_categories() -> list:
-    return get_db().execute(
-        "SELECT c.*, (SELECT COUNT(*) FROM dishes d WHERE d.category_id = c.id AND d.is_active = 1) "
-        "AS dish_count FROM menu_categories c ORDER BY c.sort_order, c.name"
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT c.*, (SELECT COUNT(*) FROM dishes d WHERE d.category_id = c.id AND d.is_active = 1) "
+            "AS dish_count FROM menu_categories c ORDER BY c.sort_order, c.name"
+        )
+        .fetchall()
+    )
 
 
 def get_category(slug: str):
@@ -51,9 +55,11 @@ def list_dishes(
     if q:
         term = q.strip()[:80]
         if term:
-            where.append("(py_lower(d.name) LIKE py_lower(?) ESCAPE '\\' "
-                         "OR py_lower(d.short_description) LIKE py_lower(?) ESCAPE '\\' "
-                         "OR py_lower(d.description) LIKE py_lower(?) ESCAPE '\\')")
+            where.append(
+                "(py_lower(d.name) LIKE py_lower(?) ESCAPE '\\' "
+                "OR py_lower(d.short_description) LIKE py_lower(?) ESCAPE '\\' "
+                "OR py_lower(d.description) LIKE py_lower(?) ESCAPE '\\')"
+            )
             params.extend([_like(term)] * 3)
     if category:
         where.append("c.slug = ?")
@@ -78,7 +84,12 @@ def list_dishes(
         + f" ORDER BY {sort_sql} LIMIT ? OFFSET ?",
         params + [pagination["per_page"], pagination["offset"]],
     ).fetchall()
-    filters = {"q": (q or "")[:80], "category": category or "", "tag": tag or "", "sort": sort if sort in SORTS else "popular"}
+    filters = {
+        "q": (q or "")[:80],
+        "category": category or "",
+        "tag": tag or "",
+        "sort": sort if sort in SORTS else "popular",
+    }
     return rows, pagination, filters
 
 
@@ -94,31 +105,43 @@ def get_dish(slug: str, include_inactive: bool = False):
 
 
 def get_dish_by_id(dish_id: int):
-    return get_db().execute(
-        "SELECT d.*, c.name AS category_name FROM dishes d "
-        "JOIN menu_categories c ON c.id = d.category_id WHERE d.id = ?",
-        (dish_id,),
-    ).fetchone()
+    return (
+        get_db()
+        .execute(
+            "SELECT d.*, c.name AS category_name FROM dishes d "
+            "JOIN menu_categories c ON c.id = d.category_id WHERE d.id = ?",
+            (dish_id,),
+        )
+        .fetchone()
+    )
 
 
 def related_dishes(dish, limit: int = 3) -> list:
-    return get_db().execute(
-        "SELECT d.*, c.name AS category_name FROM dishes d "
-        "JOIN menu_categories c ON c.id = d.category_id "
-        "WHERE d.is_active = 1 AND d.id != ? AND d.category_id = ? "
-        "ORDER BY d.is_signature DESC, d.sort_order LIMIT ?",
-        (dish["id"], dish["category_id"], limit),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT d.*, c.name AS category_name FROM dishes d "
+            "JOIN menu_categories c ON c.id = d.category_id "
+            "WHERE d.is_active = 1 AND d.id != ? AND d.category_id = ? "
+            "ORDER BY d.is_signature DESC, d.sort_order LIMIT ?",
+            (dish["id"], dish["category_id"], limit),
+        )
+        .fetchall()
+    )
 
 
 def signature_dishes(limit: int = 4) -> list:
-    return get_db().execute(
-        "SELECT d.*, c.name AS category_name FROM dishes d "
-        "JOIN menu_categories c ON c.id = d.category_id "
-        "WHERE d.is_active = 1 AND d.is_signature = 1 "
-        "ORDER BY d.sort_order, d.name LIMIT ?",
-        (limit,),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT d.*, c.name AS category_name FROM dishes d "
+            "JOIN menu_categories c ON c.id = d.category_id "
+            "WHERE d.is_active = 1 AND d.is_signature = 1 "
+            "ORDER BY d.sort_order, d.name LIMIT ?",
+            (limit,),
+        )
+        .fetchall()
+    )
 
 
 def favorite_ids(user_id: int | None) -> set[int]:
@@ -151,12 +174,16 @@ def toggle_favorite(user_id: int, dish_id: int) -> tuple[bool, int]:
 
 
 def favorites_for_user(user_id: int) -> list:
-    return get_db().execute(
-        "SELECT d.*, c.name AS category_name FROM favorites f "
-        "JOIN dishes d ON d.id = f.dish_id JOIN menu_categories c ON c.id = d.category_id "
-        "WHERE f.user_id = ? ORDER BY f.created_at DESC",
-        (user_id,),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT d.*, c.name AS category_name FROM favorites f "
+            "JOIN dishes d ON d.id = f.dish_id JOIN menu_categories c ON c.id = d.category_id "
+            "WHERE f.user_id = ? ORDER BY f.created_at DESC",
+            (user_id,),
+        )
+        .fetchall()
+    )
 
 
 def _clean_dish_payload(form) -> tuple[dict, dict[str, str]]:
@@ -166,10 +193,38 @@ def _clean_dish_payload(form) -> tuple[dict, dict[str, str]]:
     slug = (form.get("slug") or "").strip().lower()
     if not slug and name:
         translit = {
-            "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh",
-            "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o",
-            "п": "p", "р": "r", "с": "s", "т": "t", "у": "u", "ф": "f", "х": "h", "ц": "c",
-            "ч": "ch", "ш": "sh", "щ": "sch", "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu",
+            "а": "a",
+            "б": "b",
+            "в": "v",
+            "г": "g",
+            "д": "d",
+            "е": "e",
+            "ё": "e",
+            "ж": "zh",
+            "з": "z",
+            "и": "i",
+            "й": "y",
+            "к": "k",
+            "л": "l",
+            "м": "m",
+            "н": "n",
+            "о": "o",
+            "п": "p",
+            "р": "r",
+            "с": "s",
+            "т": "t",
+            "у": "u",
+            "ф": "f",
+            "х": "h",
+            "ц": "c",
+            "ч": "ch",
+            "ш": "sh",
+            "щ": "sch",
+            "ъ": "",
+            "ы": "y",
+            "ь": "",
+            "э": "e",
+            "ю": "yu",
             "я": "ya",
         }
         slug = "".join(translit.get(ch, ch) for ch in name.lower())
@@ -179,7 +234,10 @@ def _clean_dish_payload(form) -> tuple[dict, dict[str, str]]:
     if not SLUG_RE.match(slug):
         errors["slug"] = "Короткий адрес: латиница, цифры и дефис, от 2 до 80 символов."
     category_id = form.get("category_id", type=int)
-    if not category_id or not db.execute("SELECT 1 FROM menu_categories WHERE id = ?", (category_id,)).fetchone():
+    if (
+        not category_id
+        or not db.execute("SELECT 1 FROM menu_categories WHERE id = ?", (category_id,)).fetchone()
+    ):
         errors["category_id"] = "Выберите категорию."
     try:
         price = int(form.get("price", "0"))
@@ -236,10 +294,25 @@ def create_dish(form, image_path: str) -> tuple[int | None, dict[str, str]]:
         "INSERT INTO dishes(category_id, slug, name, short_description, description, price, weight, "
         "calories, allergens, image, is_vegetarian, is_spicy, is_signature, is_active, sort_order, "
         "created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (payload["category_id"], payload["slug"], payload["name"], payload["short_description"],
-         payload["description"], payload["price"], payload["weight"], payload["calories"],
-         payload["allergens"], image_path, payload["is_vegetarian"], payload["is_spicy"],
-         payload["is_signature"], payload["is_active"], payload["sort_order"], now, now),
+        (
+            payload["category_id"],
+            payload["slug"],
+            payload["name"],
+            payload["short_description"],
+            payload["description"],
+            payload["price"],
+            payload["weight"],
+            payload["calories"],
+            payload["allergens"],
+            image_path,
+            payload["is_vegetarian"],
+            payload["is_spicy"],
+            payload["is_signature"],
+            payload["is_active"],
+            payload["sort_order"],
+            now,
+            now,
+        ),
     )
     db.commit()
     return cursor.lastrowid, {}
@@ -259,11 +332,25 @@ def update_dish(dish_id: int, form, image_path: str | None = None) -> dict[str, 
         "UPDATE dishes SET category_id = ?, slug = ?, name = ?, short_description = ?, description = ?, "
         "price = ?, weight = ?, calories = ?, allergens = ?, image = ?, is_vegetarian = ?, is_spicy = ?, "
         "is_signature = ?, is_active = ?, sort_order = ?, updated_at = ? WHERE id = ?",
-        (payload["category_id"], payload["slug"], payload["name"], payload["short_description"],
-         payload["description"], payload["price"], payload["weight"], payload["calories"],
-         payload["allergens"], image_path or existing["image"], payload["is_vegetarian"],
-         payload["is_spicy"], payload["is_signature"], payload["is_active"],
-         payload["sort_order"], utc_stamp(), dish_id),
+        (
+            payload["category_id"],
+            payload["slug"],
+            payload["name"],
+            payload["short_description"],
+            payload["description"],
+            payload["price"],
+            payload["weight"],
+            payload["calories"],
+            payload["allergens"],
+            image_path or existing["image"],
+            payload["is_vegetarian"],
+            payload["is_spicy"],
+            payload["is_signature"],
+            payload["is_active"],
+            payload["sort_order"],
+            utc_stamp(),
+            dish_id,
+        ),
     )
     db.commit()
     return {}
@@ -275,16 +362,22 @@ def toggle_dish_active(dish_id: int) -> bool:
     if not row:
         raise ValueError("Блюдо не найдено.")
     new_value = 0 if row["is_active"] else 1
-    db.execute("UPDATE dishes SET is_active = ?, updated_at = ? WHERE id = ?", (new_value, utc_stamp(), dish_id))
+    db.execute(
+        "UPDATE dishes SET is_active = ?, updated_at = ? WHERE id = ?", (new_value, utc_stamp(), dish_id)
+    )
     db.commit()
     return bool(new_value)
 
 
 def admin_dishes() -> list:
-    return get_db().execute(
-        "SELECT d.*, c.name AS category_name FROM dishes d "
-        "JOIN menu_categories c ON c.id = d.category_id ORDER BY c.sort_order, d.sort_order, d.name"
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT d.*, c.name AS category_name FROM dishes d "
+            "JOIN menu_categories c ON c.id = d.category_id ORDER BY c.sort_order, d.sort_order, d.name"
+        )
+        .fetchall()
+    )
 
 
 def delete_dish(dish_id: int) -> None:

@@ -1,10 +1,17 @@
 """Бронирование: доступ, слоты, конфликты, поиск и отмена."""
+
 from __future__ import annotations
 
 from datetime import date, timedelta
 
 from conftest import (
-    csrf_for, extract_csrf, first_table_id, future_date, hall_id, login, past_date,
+    csrf_for,
+    extract_csrf,
+    first_table_id,
+    future_date,
+    hall_id,
+    login,
+    past_date,
 )
 
 
@@ -29,8 +36,9 @@ def _booking_payload(app, overrides=None) -> dict:
 
 def _create_booking(client, app, overrides=None):
     token = csrf_for(client, "/booking")
-    return client.post("/booking", data={"csrf_token": token, **_booking_payload(app, overrides)},
-                       follow_redirects=False)
+    return client.post(
+        "/booking", data={"csrf_token": token, **_booking_payload(app, overrides)}, follow_redirects=False
+    )
 
 
 def _booking_code(location: str) -> str:
@@ -44,15 +52,22 @@ def test_booking_requires_login(client):
     assert "next=" in response.headers["Location"]
 
     token = csrf_for(client, "/auth/login")
-    posted = client.post("/booking", data={"csrf_token": token, **_booking_payload_or_none()},
-                         follow_redirects=False)
+    posted = client.post(
+        "/booking", data={"csrf_token": token, **_booking_payload_or_none()}, follow_redirects=False
+    )
     assert posted.status_code == 302
     assert posted.headers["Location"].startswith("/auth/login")
 
 
 def _booking_payload_or_none() -> dict:
-    return {"date": future_date(7), "time": "12:00", "guests": "2",
-            "name": "Гость", "phone": "+79991234567", "consent": "1"}
+    return {
+        "date": future_date(7),
+        "time": "12:00",
+        "guests": "2",
+        "name": "Гость",
+        "phone": "+79991234567",
+        "consent": "1",
+    }
 
 
 def test_logged_in_guest_sees_booking_page(client):
@@ -170,7 +185,9 @@ def test_guest_can_cancel_own_booking(client, app):
     with app.app_context():
         from database import get_db
 
-        row = get_db().execute("SELECT status, cancel_reason FROM bookings WHERE code = ?", (code,)).fetchone()
+        row = (
+            get_db().execute("SELECT status, cancel_reason FROM bookings WHERE code = ?", (code,)).fetchone()
+        )
         assert row["status"] == "cancelled"
         assert row["cancel_reason"] == "Изменились планы"
 

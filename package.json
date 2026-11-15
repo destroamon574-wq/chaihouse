@@ -1,0 +1,15 @@
+{
+  "name": "chaihouse-frontend-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Инструменты качества фронтенда ЧайHouse (форматирование). npm install после установки Node.js.",
+  "devDependencies": {
+    "prettier": "^3.4.0",
+    "prettier-plugin-jinja-template": "^2.2.0",
+    "prettier-plugin-tailwindcss": "^0.6.0"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "check": "prettier --check ."
+  }
+}

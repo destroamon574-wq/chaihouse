@@ -1,7 +1,7 @@
 """Публичный JSON API занятости."""
+
 from __future__ import annotations
 
-from datetime import date
 
 from flask import Blueprint, jsonify, request
 
@@ -28,26 +28,33 @@ def availability_api():
     if day < today or (day - today).days > 90:
         return jsonify({"ok": False, "error": "Дата вне периода бронирования."}), 400
     data = availability(hall_id, day)
-    return jsonify({
-        "ok": True,
-        "hall": {"id": hall["id"], "name": hall["name"], "slug": hall["slug"]},
-        "date": day.isoformat(),
-        "slots": data["slots"],
-        "bookings_count": data["bookings_count"],
-        "tables": [
-            {
-                "id": row["table"]["id"],
-                "name": row["table"]["name"],
-                "seats": row["table"]["seats"],
-                "cells": [
-                    {"time": cell["time"], "end": cell["end"], "free": cell["free"],
-                     "past": cell["past"], "status": cell["booking"]["status"] if cell["booking"] else None}
-                    for cell in row["cells"]
-                ],
-            }
-            for row in data["grid"]
-        ],
-    })
+    return jsonify(
+        {
+            "ok": True,
+            "hall": {"id": hall["id"], "name": hall["name"], "slug": hall["slug"]},
+            "date": day.isoformat(),
+            "slots": data["slots"],
+            "bookings_count": data["bookings_count"],
+            "tables": [
+                {
+                    "id": row["table"]["id"],
+                    "name": row["table"]["name"],
+                    "seats": row["table"]["seats"],
+                    "cells": [
+                        {
+                            "time": cell["time"],
+                            "end": cell["end"],
+                            "free": cell["free"],
+                            "past": cell["past"],
+                            "status": cell["booking"]["status"] if cell["booking"] else None,
+                        }
+                        for cell in row["cells"]
+                    ],
+                }
+                for row in data["grid"]
+            ],
+        }
+    )
 
 
 @bp.get("/calendar")
@@ -67,25 +74,29 @@ def calendar_api():
     except (TypeError, ValueError):
         return jsonify({"ok": False, "error": "Укажите год и месяц."}), 400
     data = month_calendar(hall_id, year, month)
-    return jsonify({
-        "ok": True,
-        "year": year,
-        "month": month,
-        "prev": data["prev"],
-        "next": data["next"],
-        "weeks": [
-            [
-                None if day is None else {
-                    "date": day["date"].isoformat(),
-                    "day": day["day"],
-                    "count": day["count"],
-                    "level": day["level"],
-                    "past": day["past"],
-                    "today": day["today"],
-                    "bookable": day["bookable"],
-                }
-                for day in week
-            ]
-            for week in data["weeks"]
-        ],
-    })
+    return jsonify(
+        {
+            "ok": True,
+            "year": year,
+            "month": month,
+            "prev": data["prev"],
+            "next": data["next"],
+            "weeks": [
+                [
+                    None
+                    if day is None
+                    else {
+                        "date": day["date"].isoformat(),
+                        "day": day["day"],
+                        "count": day["count"],
+                        "level": day["level"],
+                        "past": day["past"],
+                        "today": day["today"],
+                        "bookable": day["bookable"],
+                    }
+                    for day in week
+                ]
+                for week in data["weeks"]
+            ],
+        }
+    )
