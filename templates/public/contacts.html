@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="page-topbar">
+      <nav aria-label="Хлебные крошки">
+        <ol class="breadcrumbs">
+          <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+          <li><span aria-current="page">Контакты</span></li>
+        </ol>
+      </nav>
+      {{ back_link(url_for('public.home')) }}
+    </div>
+    <div class="page-hero__inner">
+      <div>
+        <p class="eyebrow">Как нас найти</p>
+        <h1>Контакты и как добраться</h1>
+        <p>{{ settings['address'] }}. Мы на третьем этаже ТРЦ «Авиапарк», рядом с кинотеатром. Удобно приехать на метро, на машине или пешком с Ходынского бульвара.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container contact-grid">
+    <div>
+      <h2>ЧайHouse на Ходынке</h2>
+      <p class="lead mt-2">Приходим к открытию, чтобы заварить чай, и работаем до полуночи. На большие компании и банкеты лучше бронировать стол заранее.</p>
+
+      <ul class="contact-list">
+        <li class="contact-list__item">
+          <span class="contact-list__icon">{{ icon("pin") }}</span>
+          <div>
+            <p class="contact-list__label">Адрес</p>
+            <p class="contact-list__value">{{ settings['address'] }}</p>
+          </div>
+        </li>
+        <li class="contact-list__item">
+          <span class="contact-list__icon">{{ icon("phone") }}</span>
+          <div>
+            <p class="contact-list__label">Телефон</p>
+            <p class="contact-list__value"><a href="tel:{{ settings['phone']|replace(' ', '')|replace('(', '')|replace(')', '')|replace('-', '') }}">{{ settings['phone'] }}</a></p>
+          </div>
+        </li>
+        <li class="contact-list__item">
+          <span class="contact-list__icon">{{ icon("mail") }}</span>
+          <div>
+            <p class="contact-list__label">Email</p>
+            <p class="contact-list__value"><a href="mailto:{{ settings['email'] }}">{{ settings['email'] }}</a></p>
+          </div>
+        </li>
+        <li class="contact-list__item">
+          <span class="contact-list__icon">{{ icon("clock") }}</span>
+          <div>
+            <p class="contact-list__label">Часы работы</p>
+            <p class="contact-list__value">{{ settings['hours'] }}</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="cluster mt-3">
+        <a class="btn btn--primary" href="{{ url_for('booking.new') }}">{{ icon("calendar") }} Забронировать стол</a>
+        <a class="btn btn--ghost" href="https://yandex.ru/maps/?text={{ settings['address']|urlencode }}" target="_blank" rel="noopener noreferrer">Построить маршрут {{ icon("external") }}</a>
+      </div>
+
+      <div class="geo-panel mt-3" data-geo data-lat="{{ settings['lat'] }}" data-lng="{{ settings['lng'] }}" data-name="{{ settings['restaurant_name'] }}">
+        <div class="geo-panel__output" data-geo-output>
+          <strong>Сколько до нас?</strong> Разрешите геолокацию — посчитаем расстояние по прямой от вас до ЧайHouse.
+        </div>
+        <button class="btn btn--ghost btn--small" type="button" data-geo-button>{{ icon("compass") }} Определить расстояние</button>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="map-card">
+        <img src="{{ image_url('img/map.svg') }}" alt="Схема расположения ЧайHouse: Ходынский бульвар, 4, ТРЦ «Авиапарк»" width="1000" height="700">
+        <div class="map-card__bar">
+          <span>{{ settings['address_short'] }}</span>
+          <a class="link-arrow" href="https://yandex.ru/maps/?text={{ settings['address']|urlencode }}" target="_blank" rel="noopener noreferrer">Яндекс Карты {{ icon("external", "icon--sm") }}</a>
+        </div>
+      </div>
+
+      <div class="hours-card">
+        <h3>Как добраться</h3>
+        <dl>
+          <div><dt>На метро</dt><dd>м. «ЦСКА», выход к ТРЦ «Авиапарк»</dd></div>
+          <div><dt>На машине</dt><dd>Паркинг ТРЦ, 3 этаж — чайхана</dd></div>
+          <div><dt>Пешком</dt><dd>5 минут от Ходынского бульвара</dd></div>
+          <div><dt>Ориентир</dt><dd>3 этаж, рядом с кинотеатром</dd></div>
+        </dl>
+      </div>
+
+      <div class="notice notice--warning">
+        {{ icon("info") }}
+        <div>Если вы опаздываете — позвоните нам. Держим бронь 20 минут, дальше стол может уйти другим гостям.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container cta-band__inner">
+    <div>
+      <h2>Есть вопрос?</h2>
+      <p>Позвоните — поможем выбрать зал, расскажем о блюдах и подготовим стол к вашему приходу.</p>
+    </div>
+    <div class="cta-band__actions">
+      <a class="btn btn--primary" href="tel:{{ settings['phone']|replace(' ', '')|replace('(', '')|replace(')', '')|replace('-', '') }}">{{ icon("phone") }} Позвонить</a>
+      <a class="btn btn--ghost" href="mailto:{{ settings['email'] }}">{{ icon("mail") }} Написать</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

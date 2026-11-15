@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Люля-кебаб с печёными овощами">
+  <title>Люля-кебаб с печёными овощами</title>
+  
+  
+  <defs>
+    <linearGradient id="table" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a281b"/>
+      <stop offset=".55" stop-color="#2a1b12"/>
+      <stop offset="1" stop-color="#160e0a"/>
+    </linearGradient>
+    <radialGradient id="light" cx=".38" cy=".26" r=".75">
+      <stop offset="0" stop-color="#ffd79a" stop-opacity=".32"/>
+      <stop offset=".55" stop-color="#c9833e" stop-opacity=".10"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".08"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#table)"/>
+  <g opacity=".5">
+    <path d="M0 40 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 92 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 144 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 196 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 248 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 300 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 352 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 404 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 456 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 508 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 560 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/>
+    <path d="M0 56 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 108 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 160 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 212 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 264 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 316 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 368 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 420 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 472 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 524 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 576 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/>
+  </g>
+  <rect width="800" height="600" fill="url(#light)"/>
+  <circle cx="564" cy="232" r="13" fill="#e6b35f" opacity="0.126"/>
+<circle cx="326" cy="109" r="26" fill="#e6b35f" opacity="0.1"/>
+<circle cx="707" cy="162" r="7" fill="#e6b35f" opacity="0.122"/>
+<circle cx="284" cy="216" r="17" fill="#e6b35f" opacity="0.055"/>
+<circle cx="543" cy="182" r="24" fill="#e6b35f" opacity="0.115"/>
+<circle cx="441" cy="90" r="21" fill="#e6b35f" opacity="0.036"/>
+<circle cx="231" cy="97" r="26" fill="#e6b35f" opacity="0.083"/>
+<circle cx="732" cy="127" r="14" fill="#e6b35f" opacity="0.084"/>
+<circle cx="762" cy="55" r="13" fill="#e6b35f" opacity="0.071"/>
+<circle cx="549" cy="262" r="24" fill="#e6b35f" opacity="0.13"/>
+<circle cx="175" cy="229" r="20" fill="#e6b35f" opacity="0.122"/>
+<circle cx="48" cy="241" r="15" fill="#e6b35f" opacity="0.087"/>
+<circle cx="393" cy="45" r="19" fill="#e6b35f" opacity="0.067"/>
+<circle cx="35" cy="227" r="11" fill="#e6b35f" opacity="0.042"/>
+<circle cx="248" cy="147" r="20" fill="#e6b35f" opacity="0.126"/>
+<circle cx="89" cy="156" r="6" fill="#e6b35f" opacity="0.109"/>
+  <rect width="800" height="600" filter="url(#grain)" opacity=".55"/>
+
+  
+  <ellipse cx="400" cy="376" rx="324" ry="182" fill="#000" opacity=".42" filter="url(#shadow)"/>
+  <rect x="92" y="190" width="616" height="300" rx="58" fill="#7b4a29"/>
+  <rect x="108" y="204" width="584" height="272" rx="46" fill="#9a6236"/>
+  <g opacity=".22" stroke="#3c2111" stroke-width="2">
+    <path d="M130 240 H670"/><path d="M130 266 H670"/><path d="M130 292 H670"/><path d="M130 318 H670"/><path d="M130 344 H670"/><path d="M130 370 H670"/><path d="M130 396 H670"/><path d="M130 422 H670"/><path d="M130 448 H670"/>
+  </g>
+
+  <g>
+    <rect x="190" y="300" width="420" height="46" rx="23" fill="#7a3d22" transform="rotate(-4 400 323)"/>
+    <rect x="200" y="386" width="400" height="42" rx="21" fill="#834326" transform="rotate(3 400 407)"/>
+    <g stroke="#4a2111" stroke-width="5" opacity=".55">
+      <path d="M240 302 l18 30"/><path d="M300 302 l18 30"/><path d="M360 302 l18 30"/>
+      <path d="M420 302 l18 30"/><path d="M480 302 l18 30"/><path d="M540 302 l18 30"/>
+      <path d="M250 390 l18 28"/><path d="M320 390 l18 28"/><path d="M390 390 l18 28"/>
+      <path d="M460 390 l18 28"/><path d="M530 390 l18 28"/>
+    </g>
+    <path d="M180 320 L160 320" stroke="#c9a97a" stroke-width="6"/>
+  </g>
+  <g transform="translate(610 260)">
+    <circle cx="0" cy="0" r="44" fill="#c04a2a"/>
+    <path d="M0 -44 q18 22 0 44 q-18 -22 0 -44" fill="#e07a3b"/>
+    <circle cx="0" cy="0" r="44" fill="none" stroke="#f0c58c" stroke-width="4" opacity=".5"/>
+  </g>
+  <g transform="translate(620 390)">
+    <ellipse cx="0" cy="0" rx="58" ry="30" fill="#f3e8d5"/>
+    <g fill="#a8588a" opacity=".85">
+      <circle cx="-28" cy="-8" r="7"/><circle cx="-6" cy="2" r="6"/><circle cx="20" cy="-10" r="7"/>
+      <circle cx="38" cy="4" r="5"/><circle cx="-16" cy="14" r="5"/>
+    </g>
+    <path d="M-38 12 q38 14 76 0" stroke="#d9c3a0" stroke-width="3" fill="none"/>
+  </g>
+  <g transform="translate(160 250)">
+    <path d="M0 0 q30 -20 60 0 q-30 26 -60 0" fill="#e7d3ab"/>
+    <path d="M10 8 q20 8 40 0" stroke="#c0a678" stroke-width="3" fill="none"/>
+  </g>
+  
+  <g transform="translate(320 460) scale(0.9 0.9)" fill="none" stroke="#608e48" stroke-width="3" stroke-linecap="round">
+    <path d="M0 26 C0 10 2 -4 6 -18"/>
+    <path d="M2 8 C-7 2 -12 -6 -14 -14" />
+    <path d="M4 14 C13 8 18 0 20 -10" />
+    <path d="M0 22 C-9 16 -14 8 -16 0" />
+    <g fill="#608e48" stroke="none" opacity=".9">
+      <ellipse cx="-11" cy="-10" rx="6" ry="3" transform="rotate(-35 -11 -10)"/>
+      <ellipse cx="14" cy="-6" rx="7" ry="3.4" transform="rotate(30 14 -6)"/>
+      <ellipse cx="-12" cy="4" rx="6" ry="3" transform="rotate(-50 -12 4)"/>
+      <ellipse cx="12" cy="3" rx="6" ry="3" transform="rotate(20 12 3)"/>
+      <ellipse cx="5" cy="-14" rx="5" ry="2.8" transform="rotate(70 5 -14)"/>
+    </g>
+  </g>
+
+</svg>

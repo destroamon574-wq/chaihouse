@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ЧайHouse">
+  <title>ЧайHouse</title>
+  <defs>
+    <radialGradient id="bg" cx=".5" cy=".4" r=".7">
+      <stop offset="0" stop-color="#2a1b13"/><stop offset="1" stop-color="#120c09"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#bg)" stroke="#d9a441" stroke-width="1.4"/>
+  <circle cx="32" cy="32" r="24" fill="none" stroke="#a34b2c" stroke-width="1" stroke-dasharray="2 4"/>
+  <g fill="none" stroke="#d9a441" stroke-width="1.2">
+    <path d="M32 10 L38 26 L54 32 L38 38 L32 54 L26 38 L10 32 L26 26 Z"/>
+    <path d="M32 18 L44 32 L32 46 L20 32 Z" opacity=".7"/>
+  </g>
+  <g fill="#f4e8d4">
+    <path d="M24 27 h12 v7 a6 6 0 0 1 -12 0Z"/>
+    <path d="M36 29 c5 0 5 7 0 7" fill="none" stroke="#f4e8d4" stroke-width="1.6"/>
+    <path d="M22 42 h20" stroke="#f4e8d4" stroke-width="1.6"/>
+    <path d="M28 23 q2 -3 4 0 q2 -3 4 0" fill="none" stroke="#f4e8d4" stroke-width="1.2" opacity=".8"/>
+  </g>
+</svg>

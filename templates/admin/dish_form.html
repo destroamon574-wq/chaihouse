@@ -1,0 +1,166 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon %}
+
+{% set v_name = request.form.get('name', '') if request.method == 'POST' else (dish['name'] if dish else '') %}
+{% set v_slug = request.form.get('slug', '') if request.method == 'POST' else (dish['slug'] if dish else '') %}
+{% set v_category = request.form.get('category_id', '') if request.method == 'POST' else (dish['category_id'] if dish else '') %}
+{% set v_price = request.form.get('price', '') if request.method == 'POST' else (dish['price'] if dish else '') %}
+{% set v_short = request.form.get('short_description', '') if request.method == 'POST' else (dish['short_description'] if dish else '') %}
+{% set v_description = request.form.get('description', '') if request.method == 'POST' else (dish['description'] if dish else '') %}
+{% set v_weight = request.form.get('weight', '') if request.method == 'POST' else (dish['weight'] if dish else '') %}
+{% set v_calories = request.form.get('calories', '') if request.method == 'POST' else (dish['calories'] if dish and dish['calories'] is not none else '') %}
+{% set v_allergens = request.form.get('allergens', '') if request.method == 'POST' else (dish['allergens'] if dish else '') %}
+{% set v_sort = request.form.get('sort_order', '') if request.method == 'POST' else (dish['sort_order'] if dish else 0) %}
+{% set v_vegetarian = request.form.get('is_vegetarian') if request.method == 'POST' else (dish['is_vegetarian'] if dish else 0) %}
+{% set v_spicy = request.form.get('is_spicy') if request.method == 'POST' else (dish['is_spicy'] if dish else 0) %}
+{% set v_signature = request.form.get('is_signature') if request.method == 'POST' else (dish['is_signature'] if dish else 0) %}
+{% set v_active = request.form.get('is_active') if request.method == 'POST' else (dish['is_active'] if dish else 1) %}
+{% set v_preset = request.form.get('image_preset', '') if request.method == 'POST' else (dish['image'] if dish else '') %}
+
+{% block admin_content %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumbs">
+    <li><a href="{{ url_for('admin.dashboard') }}">Админ-панель</a></li>
+    <li><a href="{{ url_for('admin.menu') }}">Меню</a></li>
+    <li><span aria-current="page">{{ 'Редактирование' if dish else 'Новое блюдо' }}</span></li>
+  </ol>
+</nav>
+
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Меню</p>
+    <h1>{{ 'Изменить блюдо' if dish else 'Новое блюдо' }}</h1>
+    <p>{{ dish['name'] if dish else 'Заполните карточку блюда. Поля с подсказками влияют на карточку и страницу блюда.' }}</p>
+  </div>
+  <a class="btn btn--quiet" href="{{ url_for('admin.menu') }}">{{ icon("arrow-left") }} К меню</a>
+</div>
+
+{% if errors %}
+  <div class="form-error-summary mb-3" role="alert">
+    {% for message in errors.values() %}<p>{{ message }}</p>{% endfor %}
+  </div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="split-2">
+    <div class="panel">
+      <div class="panel__head"><h2>Основное</h2></div>
+      <div class="panel__body">
+        <div class="form-grid">
+          <div class="field field--full {{ 'field--error' if errors.get('name') }}">
+            <label for="dish-name">Название</label>
+            <input class="input" type="text" id="dish-name" name="name" value="{{ v_name }}" minlength="2" maxlength="120" required>
+            {% if errors.get('name') %}<span class="field__error" role="alert">{{ errors['name'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('slug') }}">
+            <label for="dish-slug">Короткий адрес</label>
+            <input class="input" type="text" id="dish-slug" name="slug" value="{{ v_slug }}" maxlength="80" placeholder="plov-chaihouse">
+            <span class="field__hint">Латиница, цифры и дефис. Можно оставить пустым — сгенерируем из названия.</span>
+            {% if errors.get('slug') %}<span class="field__error" role="alert">{{ errors['slug'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('category_id') }}">
+            <label for="dish-category">Категория</label>
+            <select class="select" id="dish-category" name="category_id" required>
+              <option value="">Выберите категорию</option>
+              {% for category in categories %}
+                <option value="{{ category['id'] }}" {{ 'selected' if v_category|string == category['id']|string }}>{{ category['name'] }}</option>
+              {% endfor %}
+            </select>
+            {% if errors.get('category_id') %}<span class="field__error" role="alert">{{ errors['category_id'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('price') }}">
+            <label for="dish-price">Цена, ₽</label>
+            <input class="input" type="number" id="dish-price" name="price" value="{{ v_price }}" min="0" max="100000" step="1" required>
+            {% if errors.get('price') %}<span class="field__error" role="alert">{{ errors['price'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('weight') }}">
+            <label for="dish-weight">Вес / объём</label>
+            <input class="input" type="text" id="dish-weight" name="weight" value="{{ v_weight }}" maxlength="40" placeholder="450 г">
+            {% if errors.get('weight') %}<span class="field__error" role="alert">{{ errors['weight'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('calories') }}">
+            <label for="dish-calories">Калорийность</label>
+            <input class="input" type="number" id="dish-calories" name="calories" value="{{ v_calories }}" min="0" max="5000" step="1" placeholder="780">
+            {% if errors.get('calories') %}<span class="field__error" role="alert">{{ errors['calories'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('allergens') }}">
+            <label for="dish-allergens">Аллергены</label>
+            <input class="input" type="text" id="dish-allergens" name="allergens" value="{{ v_allergens }}" maxlength="120" placeholder="Глютен, молочные продукты">
+            {% if errors.get('allergens') %}<span class="field__error" role="alert">{{ errors['allergens'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('short_description') }}">
+            <label for="dish-short">Короткое описание</label>
+            <input class="input" type="text" id="dish-short" name="short_description" value="{{ v_short }}" minlength="5" maxlength="180" required>
+            <span class="field__hint">Показывается в карточке блюда. До 180 символов.</span>
+            {% if errors.get('short_description') %}<span class="field__error" role="alert">{{ errors['short_description'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('description') }}">
+            <label for="dish-description">Полное описание</label>
+            <textarea class="textarea" id="dish-description" name="description" rows="7" minlength="10" maxlength="3000" required>{{ v_description }}</textarea>
+            <span class="field__hint">Состав, способ приготовления и подача. До 3000 символов.</span>
+            {% if errors.get('description') %}<span class="field__error" role="alert">{{ errors['description'] }}</span>{% endif %}
+          </div>
+        </div>
+
+        <fieldset class="mt-3">
+          <legend class="field__label">Особенности</legend>
+          <div class="stack mt-1">
+            <label class="checkbox"><input type="checkbox" name="is_signature" value="1" {{ 'checked' if v_signature }}><span>Фирменное блюдо</span></label>
+            <label class="checkbox"><input type="checkbox" name="is_vegetarian" value="1" {{ 'checked' if v_vegetarian }}><span>Вегетарианское</span></label>
+            <label class="checkbox"><input type="checkbox" name="is_spicy" value="1" {{ 'checked' if v_spicy }}><span>Острое</span></label>
+            <label class="checkbox"><input type="checkbox" name="is_active" value="1" {{ 'checked' if v_active }}><span>Показывать в меню</span></label>
+          </div>
+        </fieldset>
+
+        <div class="field mt-3">
+          <label for="dish-sort">Порядок сортировки</label>
+          <input class="input" type="number" id="dish-sort" name="sort_order" value="{{ v_sort }}" min="-999" max="999" step="1">
+          <span class="field__hint">Чем меньше число, тем выше блюдо в категории.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Изображение</h2></div>
+      <div class="panel__body">
+        {% if dish and dish['image'] %}
+          <img src="{{ image_url(dish['image']) }}" alt="Текущее изображение блюда" width="640" height="480" class="form-image">
+        {% endif %}
+
+        <div class="field mt-3">
+          <label for="dish-image">Загрузить фотографию</label>
+          <input class="input" type="file" id="dish-image" name="image_file" accept="image/png,image/jpeg,image/webp">
+          <span class="field__hint">PNG, JPEG или WebP, до 3 МБ. Файл проверяется по сигнатуре и получает случайное имя.</span>
+          {% if errors.get('image') %}<span class="field__error" role="alert">{{ errors['image'] }}</span>{% endif %}
+        </div>
+
+        <fieldset class="mt-3">
+          <legend class="field__label">Или выберите локальную иллюстрацию</legend>
+          <div class="image-presets">
+            {% for path, label in presets %}
+              <label class="image-preset">
+                <input type="radio" name="image_preset" value="{{ path }}" {{ 'checked' if v_preset == path }}>
+                <img src="{{ image_url(path) }}" alt="" width="120" height="90" loading="lazy">
+                <span>{{ label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          {% if dish %}
+            <label class="checkbox mt-2">
+              <input type="radio" name="image_preset" value="" {{ 'checked' if v_preset == dish['image'] }}>
+              <span>Оставить текущее изображение</span>
+            </label>
+          {% endif %}
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions mt-3">
+    <button class="btn btn--primary" type="submit">{{ icon("check") }} {{ 'Сохранить изменения' if dish else 'Добавить блюдо' }}</button>
+    <a class="btn btn--quiet" href="{{ url_for('admin.menu') }}">Отмена</a>
+  </div>
+</form>
+{% endblock %}

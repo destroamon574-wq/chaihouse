@@ -1,0 +1,75 @@
+{% extends "account/layout.html" %}
+{% from "components/ui.html" import icon %}
+
+{% block account_content %}
+<div class="dashboard-head">
+  <div>
+    <p class="eyebrow">Аккаунт</p>
+    <h1>Настройки</h1>
+    <p class="muted mt-1">Имя, контакты и пароль. Email используется для входа.</p>
+  </div>
+</div>
+
+<div class="grid grid--2">
+  <section class="form-panel" aria-labelledby="profile-title">
+    <h2 id="profile-title">Профиль</h2>
+    {% if errors %}
+      <div class="form-error-summary mb-3" role="alert">Проверьте отмеченные поля.</div>
+    {% endif %}
+    <form method="post" action="{{ url_for('account.settings') }}" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field {{ 'field--error' if errors.get('name') }}">
+        <label for="profile-name">Имя</label>
+        <input class="input" type="text" id="profile-name" name="name" value="{{ user['name'] }}" autocomplete="name" minlength="2" maxlength="80" required>
+        {% if errors.get('name') %}<span class="field__error" role="alert">{{ errors['name'] }}</span>{% endif %}
+      </div>
+      <div class="field {{ 'field--error' if errors.get('email') }}">
+        <label for="profile-email">Email</label>
+        <input class="input" type="email" id="profile-email" name="email" value="{{ user['email'] }}" autocomplete="email" maxlength="254" required>
+        {% if errors.get('email') %}<span class="field__error" role="alert">{{ errors['email'] }}</span>{% endif %}
+      </div>
+      <div class="field {{ 'field--error' if errors.get('phone') }}">
+        <label for="profile-phone">Телефон</label>
+        <input class="input" type="tel" id="profile-phone" name="phone" value="{{ user['phone'] or '' }}" autocomplete="tel" placeholder="+7 999 123-45-67">
+        {% if errors.get('phone') %}<span class="field__error" role="alert">{{ errors['phone'] }}</span>{% endif %}
+      </div>
+      <div class="form-actions">
+        <button class="btn btn--primary" type="submit">{{ icon("check") }} Сохранить</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="form-panel" id="password" aria-labelledby="password-title">
+    <h2 id="password-title">Сменить пароль</h2>
+    <p class="muted mb-3">После смены пароля остальные сессии завершатся — это защищает аккаунт.</p>
+    <form method="post" action="{{ url_for('account.password') }}" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field">
+        <label for="current-password">Текущий пароль</label>
+        <input class="input" type="password" id="current-password" name="current" autocomplete="current-password" required>
+      </div>
+      <div class="field">
+        <label for="new-password">Новый пароль</label>
+        <input class="input" type="password" id="new-password" name="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+        <span class="field__hint">Минимум 8 символов, хотя бы одна буква и одна цифра.</span>
+      </div>
+      <div class="field">
+        <label for="new-password2">Повторите новый пароль</label>
+        <input class="input" type="password" id="new-password2" name="password2" autocomplete="new-password" minlength="8" maxlength="128" required>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn--ghost" type="submit">{{ icon("lock") }} Изменить пароль</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<section class="form-panel mt-3" aria-labelledby="data-title">
+  <h2 id="data-title">Ваши данные</h2>
+  <p class="muted">Скачайте копию профиля, броней, отзывов и избранного в формате JSON. Удаление аккаунта обезличивает брони и отзывы.</p>
+  <div class="cluster mt-3">
+    <a class="btn btn--ghost" href="{{ url_for('account.export_data') }}">{{ icon("download") }} Скачать мои данные</a>
+    <a class="btn btn--danger" href="{{ url_for('account.delete') }}">{{ icon("trash") }} Удалить аккаунт</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link, dish_card %}
+
+{% block content %}
+<section class="section section--tight">
+  <div class="container">
+    <div class="page-topbar">
+      <nav aria-label="Хлебные крошки">
+        <ol class="breadcrumbs">
+          <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+          <li><a href="{{ url_for('public.menu') }}">Меню</a></li>
+          <li><a href="{{ url_for('public.menu', category=dish['category_slug']) }}">{{ dish['category_name'] }}</a></li>
+          <li><span aria-current="page">{{ dish['name'] }}</span></li>
+        </ol>
+      </nav>
+      {{ back_link(url_for('public.menu', category=dish['category_slug'])) }}
+    </div>
+
+    <article class="dish-detail">
+      <div class="dish-detail__media">
+        <img src="{{ image_url(dish['image']) }}" alt="{{ dish['name'] }}" width="800" height="600">
+        <div class="dish-card__badges">
+          {% if dish['is_signature'] %}<span class="tag tag--gold">{{ icon("star", "icon--sm") }} Наше фирменное</span>{% endif %}
+          {% if dish['is_vegetarian'] %}<span class="tag tag--veg">{{ icon("leaf", "icon--sm") }} Вегетарианское</span>{% endif %}
+          {% if dish['is_spicy'] %}<span class="tag tag--spicy">{{ icon("flame", "icon--sm") }} Острое</span>{% endif %}
+        </div>
+      </div>
+
+      <div class="dish-detail__body">
+        <p class="eyebrow">{{ dish['category_name'] }}</p>
+        <h1>{{ dish['name'] }}</h1>
+        <p class="lead">{{ dish['short_description'] }}</p>
+
+        <p class="dish-detail__price">
+          {{ dish['price']|money }}
+          <small>за порцию{% if dish['weight'] %} · {{ dish['weight'] }}{% endif %}</small>
+        </p>
+
+        <div class="prose">
+          <p>{{ dish['description'] }}</p>
+        </div>
+
+        <dl class="dish-detail__facts">
+          <div>
+            <dt>Вес / объём</dt>
+            <dd>{{ dish['weight'] or '—' }}</dd>
+          </div>
+          <div>
+            <dt>Калорийность</dt>
+            <dd>{% if dish['calories'] %}{{ dish['calories'] }} ккал{% else %}—{% endif %}</dd>
+          </div>
+          <div>
+            <dt>Аллергены</dt>
+            <dd>{{ dish['allergens'] or 'не указаны' }}</dd>
+          </div>
+        </dl>
+
+        <div class="cluster">
+          {% if current_user %}
+            <form class="js-favorite" method="post" action="{{ url_for('account.favorite_toggle', dish_id=dish['id']) }}" data-dish-id="{{ dish['id'] }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button class="btn btn--ghost {{ 'is-favorite' if dish['id'] in favorites }}" type="submit" aria-pressed="{{ 'true' if dish['id'] in favorites else 'false' }}" data-favorite-label>
+                {{ icon("heart") }}
+                <span>{{ 'В избранном' if dish['id'] in favorites else 'В избранное' }}</span>
+              </button>
+            </form>
+          {% else %}
+            <a class="btn btn--ghost" href="{{ url_for('auth.login', next=request.path) }}">{{ icon("heart") }} В избранное</a>
+          {% endif %}
+          <a class="btn btn--primary" href="{{ url_for('booking.new') }}">{{ icon("calendar") }} Забронировать стол</a>
+        </div>
+
+        <div class="notice mt-3">
+          {{ icon("info") }}
+          <div>
+            Блюдо готовим после заказа. Если вы бронируете стол на большую компанию и хотите
+            заказать плов или манты заранее — напишите об этом в комментарии к брони.
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+{% if related %}
+<section class="section section--sand section--tight">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Ещё из этой категории</p>
+        <h2>Попробуйте рядом</h2>
+      </div>
+      <a class="section__link" href="{{ url_for('public.menu', category=dish['category_slug']) }}">Вся категория {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="grid grid--3">
+      {% for item in related %}{{ dish_card(item, favorites) }}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

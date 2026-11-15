@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link %}
+
+{% block body_class %}page-booking{% endblock %}
+
+{% block content %}
+<section class="booking-hero">
+  <div class="container">
+    <div class="page-topbar">
+      <nav aria-label="Хлебные крошки">
+        <ol class="breadcrumbs">
+          <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+          <li><span aria-current="page">Бронирование</span></li>
+        </ol>
+      </nav>
+      {{ back_link(url_for('public.home')) }}
+    </div>
+    <div class="page-hero__inner">
+      <div>
+        <p class="eyebrow">Онлайн-бронь</p>
+        <h1>Забронировать стол</h1>
+        <p>Выберите зал, дату и свободное время. Заявку подтвердим по телефону в течение 15 минут в рабочее время. Бронь — на 2 часа.</p>
+      </div>
+      <div class="notice notice--warning">
+        {{ icon("clock") }}
+        <div>Сегодня {{ today|ru_date }}. Бронируем на 90 дней вперёд, слоты — с 12:00 до 22:00.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="booking-layout">
+      <div class="booking-main">
+        <section class="booking-step" aria-labelledby="step-hall">
+          <div class="booking-step__head">
+            <span class="step-num" aria-hidden="true">1</span>
+            <div>
+              <h2 id="step-hall">Выберите зал</h2>
+              <p>От зала зависят столы, атмосфера и вместимость.</p>
+            </div>
+          </div>
+          <div class="hall-picker">
+            {% for item in halls %}
+              {% set hall_url = url_for('booking.new', hall=item['slug'], date=selected_date.isoformat()) %}
+              <a class="hall-option {{ 'is-active' if hall and item['id'] == hall['id'] }}" href="{{ hall_url }}" {% if hall and item['id'] == hall['id'] %}aria-current="true"{% endif %}>
+                <img src="{{ image_url(item['image']) }}" alt="" width="74" height="66" loading="lazy">
+                <span>
+                  <strong>{{ item['name'] }}</strong>
+                  <span>до {{ item['capacity'] }} гостей · {{ item['table_count'] }} столов</span>
+                </span>
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+
+        {% if hall and calendar %}
+          <section class="booking-step" aria-labelledby="step-date">
+            <div class="booking-step__head">
+              <span class="step-num" aria-hidden="true">2</span>
+              <div>
+                <h2 id="step-date">Дата</h2>
+                <p>Свободные дни отмечены точкой. Красным — почти всё занято.</p>
+              </div>
+            </div>
+
+            <div class="calendar">
+              <div class="calendar__top">
+                <span class="calendar__month">{{ month_title(calendar['year'], calendar['month']) }}</span>
+                {% set prev_date = '%04d-%02d-01'|format(calendar['prev']['year'], calendar['prev']['month']) %}
+                {% set next_date = '%04d-%02d-01'|format(calendar['next']['year'], calendar['next']['month']) %}
+                <div class="calendar__nav">
+                  <a href="{{ url_for('booking.new', hall=hall['slug'], date=prev_date) }}" aria-label="Предыдущий месяц">{{ icon("arrow-left", "icon--sm") }}</a>
+                  <a href="{{ url_for('booking.new', hall=hall['slug'], date=next_date) }}" aria-label="Следующий месяц">{{ icon("arrow-right", "icon--sm") }}</a>
+                </div>
+              </div>
+              <div class="calendar__weekdays" aria-hidden="true">
+                {% for weekday in calendar['weekdays'] %}<span>{{ weekday }}</span>{% endfor %}
+              </div>
+              {% for week in calendar['weeks'] %}
+                <div class="calendar__week">
+                  {% for day in week %}
+                    {% if day %}
+                      {% if day['bookable'] %}
+                        <a class="calendar__day {{ 'is-selected' if day['date'] == selected_date }} {{ 'is-today' if day['today'] }} {{ 'is-busy' if day['level'] == 'busy' else ('is-some' if day['level'] == 'some') }}"
+                           href="{{ url_for('booking.new', hall=hall['slug'], date=day['date'].isoformat()) }}"
+                           aria-label="{{ day['date']|ru_date }}{% if day['count'] %}, броней: {{ day['count'] }}{% endif %}{% if day['date'] == selected_date %}, выбрано{% endif %}"
+                           {% if day['date'] == selected_date %}aria-current="date"{% endif %}>
+                          <span>{{ day['day'] }}</span>
+                          {% if day['count'] %}<span class="calendar__dot" aria-hidden="true"></span>{% endif %}
+                        </a>
+                      {% else %}
+                        <span class="calendar__day is-disabled" aria-disabled="true">{{ day['day'] }}</span>
+                      {% endif %}
+                    {% else %}
+                      <span></span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            </div>
+            <div class="calendar__legend">
+              <span><span class="legend-dot legend-dot--free"></span> свободно</span>
+              <span><span class="legend-dot legend-dot--some"></span> есть брони</span>
+              <span><span class="legend-dot legend-dot--busy"></span> почти всё занято</span>
+            </div>
+          </section>
+
+          <form method="post" action="{{ url_for('booking.create') }}" id="booking-form" data-booking-form>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="hall_id" value="{{ hall['id'] }}">
+            <input type="hidden" name="date" value="{{ selected_date.isoformat() }}">
+
+            {% if errors %}
+              <div class="form-error-summary mb-3" role="alert">
+                {% for message in errors.values() %}<p>{{ message }}</p>{% endfor %}
+              </div>
+            {% endif %}
+
+            <section class="booking-step" aria-labelledby="step-time">
+              <div class="booking-step__head">
+                <span class="step-num" aria-hidden="true">3</span>
+                <div>
+                  <h2 id="step-time">Стол и время</h2>
+                  <p>Выберите свободный слот. Бронь длится 2 часа.</p>
+                </div>
+              </div>
+
+              {% if availability and availability['grid'] %}
+                <div class="availability">
+                  {% for row in availability['grid'] %}
+                    <div class="table-slots">
+                      <div class="table-slots__head">
+                        <strong>{{ row['table']['name'] }}</strong>
+                        <span>до {{ row['table']['seats'] }} гостей</span>
+                      </div>
+                      <div class="slot-row">
+                        {% for cell in row['cells'] %}
+                          <label class="slot {{ 'is-busy' if not cell['free'] }}">
+                            <input type="radio" name="slot" value="{{ row['table']['id'] }}|{{ cell['time'] }}"
+                                   {% if not cell['free'] %}disabled{% endif %}
+                                   {% if selected_table_id == row['table']['id'] and selected_time == cell['time'] %}checked{% endif %}
+                                   data-slot-time="{{ cell['time'] }}" data-slot-end="{{ cell['end'] }}" data-slot-table="{{ row['table']['name'] }}">
+                            <span>{{ cell['time'] }}<small>до {{ cell['end'] }}</small></span>
+                          </label>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="empty-state">
+                  {{ icon("calendar") }}
+                  <h3>На эту дату столов нет</h3>
+                  <p>Выберите другой день или другой зал — свободные слоты появятся автоматически.</p>
+                </div>
+              {% endif %}
+            </section>
+
+            <section class="booking-step" aria-labelledby="step-contacts">
+              <div class="booking-step__head">
+                <span class="step-num" aria-hidden="true">4</span>
+                <div>
+                  <h2 id="step-contacts">Контакты и детали</h2>
+                  <p>По телефону подтвердим бронь. Email нужен для уведомлений.</p>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="field {{ 'field--error' if errors.get('name') }}">
+                  <label for="booking-name">Имя</label>
+                  <input class="input" type="text" id="booking-name" name="name" value="{{ form_data.get('name', '') }}" autocomplete="name" minlength="2" maxlength="80" required>
+                  {% if errors.get('name') %}<span class="field__error" role="alert">{{ errors['name'] }}</span>{% endif %}
+                </div>
+                <div class="field {{ 'field--error' if errors.get('phone') }}">
+                  <label for="booking-phone">Телефон</label>
+                  <input class="input" type="tel" id="booking-phone" name="phone" value="{{ form_data.get('phone', '') }}" autocomplete="tel" inputmode="tel" placeholder="+7 999 123-45-67" required>
+                  {% if errors.get('phone') %}<span class="field__error" role="alert">{{ errors['phone'] }}</span>{% endif %}
+                </div>
+                <div class="field {{ 'field--error' if errors.get('email') }}">
+                  <label for="booking-email">Email <span class="muted">(необязательно)</span></label>
+                  <input class="input" type="email" id="booking-email" name="email" value="{{ form_data.get('email', '') }}" autocomplete="email" inputmode="email" maxlength="254">
+                  {% if errors.get('email') %}<span class="field__error" role="alert">{{ errors['email'] }}</span>{% endif %}
+                </div>
+                <div class="field {{ 'field--error' if errors.get('guests') }}">
+                  <label for="booking-guests">Гостей</label>
+                  <select class="select" id="booking-guests" name="guests" required data-guests>
+                    {% for number in range(1, settings['max_guests']|int + 1) %}
+                      <option value="{{ number }}" {{ 'selected' if form_data.get('guests')|string == number|string }}>{{ number }}</option>
+                    {% endfor %}
+                  </select>
+                  {% if errors.get('guests') %}<span class="field__error" role="alert">{{ errors['guests'] }}</span>{% endif %}
+                </div>
+                <div class="field {{ 'field--error' if errors.get('occasion') }}">
+                  <label for="booking-occasion">Повод <span class="muted">(необязательно)</span></label>
+                  <select class="select" id="booking-occasion" name="occasion">
+                    <option value="">Без повода</option>
+                    {% for occasion in occasions %}
+                      <option value="{{ occasion }}" {{ 'selected' if form_data.get('occasion') == occasion }}>{{ occasion }}</option>
+                    {% endfor %}
+                  </select>
+                  {% if errors.get('occasion') %}<span class="field__error" role="alert">{{ errors['occasion'] }}</span>{% endif %}
+                </div>
+                <div class="field field--full {{ 'field--error' if errors.get('comment') }}">
+                  <label for="booking-comment">Комментарий <span class="muted">(необязательно)</span></label>
+                  <textarea class="textarea" id="booking-comment" name="comment" maxlength="500" placeholder="Например: нужен детский стул, стол у окна или торт к вечеру.">{{ form_data.get('comment', '') }}</textarea>
+                  <span class="field__hint">До 500 символов. Не указывайте паспортные данные и другие лишние сведения.</span>
+                  {% if errors.get('comment') %}<span class="field__error" role="alert">{{ errors['comment'] }}</span>{% endif %}
+                </div>
+              </div>
+
+              <label class="checkbox {{ 'field--error' if errors.get('consent') }}">
+                <input type="checkbox" name="consent" value="1" required>
+                <span>Согласен с <a href="{{ url_for('public.terms') }}">правилами бронирования</a> и <a href="{{ url_for('public.privacy') }}">политикой конфиденциальности</a>.</span>
+              </label>
+              {% if errors.get('consent') %}<span class="field__error" role="alert">{{ errors['consent'] }}</span>{% endif %}
+
+              <div class="form-actions mt-3">
+                <button class="btn btn--primary" type="submit">{{ icon("calendar") }} Отправить заявку</button>
+                <a class="btn btn--quiet" href="tel:{{ settings['phone']|replace(' ', '')|replace('(', '')|replace(')', '')|replace('-', '') }}">{{ icon("phone") }} Позвонить</a>
+              </div>
+            </section>
+          </form>
+        {% else %}
+          <div class="empty-state">
+            {{ icon("calendar") }}
+            <h3>Бронирование временно недоступно</h3>
+            <p>Позвоните нам — поможем выбрать стол и время.</p>
+            <a class="btn btn--primary mt-3" href="tel:{{ settings['phone']|replace(' ', '')|replace('(', '')|replace(')', '')|replace('-', '') }}">{{ settings['phone'] }}</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <aside class="summary-card" aria-labelledby="summary-title" data-booking-summary>
+        <h2 id="summary-title">Ваша бронь</h2>
+        <dl class="summary-list">
+          <div><dt>Зал</dt><dd data-summary-hall>{{ hall['name'] if hall else '—' }}</dd></div>
+          <div><dt>Дата</dt><dd data-summary-date>{{ selected_date|ru_date }}</dd></div>
+          <div><dt>Время</dt><dd data-summary-time>{{ selected_time or 'выберите слот' }}</dd></div>
+          <div><dt>Стол</dt><dd data-summary-table>любой свободный</dd></div>
+          <div><dt>Гостей</dt><dd data-summary-guests>{{ form_data.get('guests', '2') }}</dd></div>
+        </dl>
+        <div class="notice notice--warning">
+          {{ icon("info") }}
+          <div>{{ settings['booking_note'] }}</div>
+        </div>
+        <p class="summary-card__note">Отменить бронь можно в личном кабинете или по ссылке после оформления. Стол держим 20 минут.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

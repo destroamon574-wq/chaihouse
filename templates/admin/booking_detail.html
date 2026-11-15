@@ -1,0 +1,104 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon, back_link, status_badge %}
+
+{% block admin_content %}
+<div class="page-topbar">
+  <nav aria-label="Хлебные крошки">
+    <ol class="breadcrumbs">
+      <li><a href="{{ url_for('admin.dashboard') }}">Админ-панель</a></li>
+      <li><a href="{{ url_for('admin.bookings') }}">Брони</a></li>
+      <li><span aria-current="page">{{ booking['code'] }}</span></li>
+    </ol>
+  </nav>
+  {{ back_link(url_for('admin.bookings')) }}
+</div>
+
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Бронь {{ booking['code'] }}</p>
+    <h1>{{ booking['guest_name'] }}</h1>
+    <p>Создана {{ booking['created_at']|ru_datetime }} · обновлена {{ booking['updated_at']|ru_datetime }}</p>
+  </div>
+  <div class="cluster">
+    {{ status_badge(booking['status']) }}
+    <a class="btn btn--ghost" href="{{ url_for('booking.success', code=booking['code']) }}">{{ icon("eye") }} Открыть талон</a>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <div class="panel">
+    <div class="panel__head"><h2>Детали визита</h2></div>
+    <div class="panel__body">
+      <dl class="detail-list">
+        <div><dt>Дата</dt><dd>{{ booking['date']|ru_date }}</dd></div>
+        <div><dt>Время</dt><dd>{{ booking['time'] }} · до {{ booking['end_min'] // 60 }}:{{ '%02d'|format(booking['end_min'] % 60) }}</dd></div>
+        <div><dt>Зал</dt><dd>{{ booking['hall_name'] }}</dd></div>
+        <div><dt>Стол</dt><dd>{{ booking['table_name'] }} · {{ booking['table_seats'] }} мест</dd></div>
+        <div><dt>Гостей</dt><dd>{{ booking['guests_count']|guests }}</dd></div>
+        <div><dt>Повод</dt><dd>{{ booking['occasion'] or '—' }}</dd></div>
+        <div><dt>Комментарий</dt><dd>{{ booking['comment'] or '—' }}</dd></div>
+        <div><dt>Причина отмены</dt><dd>{{ booking['cancel_reason'] or '—' }}</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel__head"><h2>Гость</h2></div>
+    <div class="panel__body">
+      <dl class="detail-list">
+        <div><dt>Имя</dt><dd>{{ booking['guest_name'] }}</dd></div>
+        <div><dt>Телефон</dt><dd><a href="tel:{{ booking['guest_phone'] }}">{{ booking['guest_phone']|pretty_phone }}</a></dd></div>
+        <div><dt>Email</dt><dd>{{ booking['guest_email'] or '—' }}</dd></div>
+        <div><dt>Аккаунт</dt><dd>{{ 'зарегистрирован' if booking['user_id'] else 'без аккаунта' }}</dd></div>
+        <div><dt>Код</dt><dd>{{ booking['code'] }}</dd></div>
+      </dl>
+      <div class="cluster mt-3">
+        <a class="btn btn--ghost btn--small" href="tel:{{ booking['guest_phone'] }}">{{ icon("phone") }} Позвонить</a>
+        {% if booking['guest_email'] %}
+          <a class="btn btn--ghost btn--small" href="mailto:{{ booking['guest_email'] }}">{{ icon("mail") }} Написать</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel mt-3">
+  <div class="panel__head"><h2>Изменить статус</h2></div>
+  <div class="panel__body">
+    {% if allowed_statuses %}
+      <form method="post" action="{{ url_for('admin.booking_status', booking_id=booking['id']) }}" data-confirm="Изменить статус брони? Гость получит уведомление.">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="next" value="{{ request.full_path }}">
+        <div class="form-grid">
+          <div class="field">
+            <label for="booking-status">Новый статус</label>
+            <select class="select" id="booking-status" name="status" required>
+              {% for key in allowed_statuses %}
+                <option value="{{ key }}">{{ status_meta(key)[0] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label for="booking-status-reason">Комментарий <span class="muted">(необязательно)</span></label>
+            <input class="input" type="text" id="booking-status-reason" name="reason" maxlength="300" placeholder="Причина или уточнение для гостя">
+          </div>
+        </div>
+        <div class="form-actions mt-2">
+          <button class="btn btn--primary" type="submit">{{ icon("check") }} Применить</button>
+          <a class="btn btn--quiet" href="{{ url_for('admin.bookings') }}">К списку</a>
+        </div>
+      </form>
+    {% else %}
+      <div class="notice">
+        {{ icon("lock") }}
+        <div>Для статуса «{{ status_meta(booking['status'])[0] }}» дальнейшие переходы недоступны. История сохранена в журнале.</div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="cluster mt-3">
+  <a class="btn btn--ghost" href="{{ url_for('booking.calendar', code=booking['code']) }}">{{ icon("download") }} Скачать ICS</a>
+  <a class="btn btn--quiet" href="{{ url_for('admin.audit') }}">{{ icon("shield") }} Журнал действий</a>
+</div>
+{% endblock %}

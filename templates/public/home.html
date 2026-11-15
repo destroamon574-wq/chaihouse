@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, dish_card, hall_card, review_card, rating_bars %}
+
+{% block body_class %}page-home{% endblock %}
+
+{% block head %}
+  <script type="application/ld+json">{{ schema|tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <img class="hero__bg" src="{{ image_url('img/hero-interior.svg') }}" alt="Интерьер чайханы ЧайHouse: тёплый свет, латунные лампы и бирюзовые диваны" width="1600" height="900" fetchpriority="high">
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <p class="eyebrow">Чайхана на Ходынском бульваре</p>
+      <h1>Восточная кухня,<br><em>чай и неспешные вечера</em></h1>
+      <p class="hero__lead">
+        Готовим плов в казане, тянем лапшу для лагмана, печём самсу в тандыре
+        и завариваем чай с горным чабрецом. Приходите вдвоём, семьёй или большой компанией —
+        найдётся стол и повод остаться подольше.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="{{ url_for('booking.new') }}">{{ icon("calendar") }} Забронировать стол</a>
+        <a class="btn btn--ghost" href="{{ url_for('public.menu') }}">{{ icon("utensils") }} Смотреть меню</a>
+      </div>
+      <ul class="hero__facts">
+        <li>{{ icon("clock", "icon--sm") }} Ежедневно 12:00–00:00</li>
+        <li>{{ icon("pin", "icon--sm") }} Ходынский бульвар, 4</li>
+        <li>{{ icon("star", "icon--sm") }} 4,9 из 5 по отзывам гостей</li>
+        <li>{{ icon("card", "icon--sm") }} Средний чек — {{ settings['avg_check']|money }}</li>
+      </ul>
+    </div>
+
+    <aside class="hero__card" aria-label="Быстрая бронь">
+      <p class="hero__card-title">Стол на сегодня</p>
+      <p>Выберите зал и удобное время — подтвердим бронь в течение 15 минут.</p>
+      <dl>
+        <div><dt>Залы</dt><dd>4 зала · 18 столов</dd></div>
+        <div><dt>Слоты</dt><dd>с 12:00 до 22:00</dd></div>
+        <div><dt>Длительность</dt><dd>2 часа</dd></div>
+        <div><dt>Банкеты</dt><dd>до 40 гостей</dd></div>
+      </dl>
+      <a class="btn btn--gold btn--block" href="{{ url_for('booking.new') }}">Выбрать дату и время</a>
+    </aside>
+  </div>
+</section>
+
+<section class="feature-strip" aria-label="Почему у нас">
+  <div class="container feature-strip__inner">
+    <div class="feature">
+      <span class="feature__icon">{{ icon("flame") }}</span>
+      <div><strong>Живой огонь</strong><span>Плов в казане и шашлык на углях — без компромиссов.</span></div>
+    </div>
+    <div class="feature">
+      <span class="feature__icon">{{ icon("leaf") }}</span>
+      <div><strong>Свежие продукты</strong><span>Овощи, зелень и специи привозим каждое утро.</span></div>
+    </div>
+    <div class="feature">
+      <span class="feature__icon">{{ icon("users") }}</span>
+      <div><strong>Залы под повод</strong><span>От столика на свидании до банкета на 40 гостей.</span></div>
+    </div>
+    <div class="feature">
+      <span class="feature__icon">{{ icon("calendar") }}</span>
+      <div><strong>Бронь онлайн</strong><span>Свободные столы видно сразу, подтверждение — быстро.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--sand">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Наше фирменное</p>
+        <h2>Блюда, за которыми возвращаются</h2>
+        <p>Плов «ЧайHouse», лагман ручной работы, манты на пару и салат из жареных баклажанов. Меню небольшое — зато каждое блюдо готовим так, как готовили бы для себя.</p>
+      </div>
+      <a class="section__link" href="{{ url_for('public.menu') }}">Всё меню {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="grid grid--4">
+      {% for dish in dishes %}{{ dish_card(dish, favorites) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Залы</p>
+        <h2>Выберите место под настроение</h2>
+        <p>Тёплый основной зал, светлая веранда, закрытый VIP-зал и просторный банкетный зал. В каждом — свои столы, свой свет и свой повод остаться.</p>
+      </div>
+      <a class="section__link" href="{{ url_for('public.halls') }}">Все залы {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="grid grid--3">
+      {% for hall in halls %}{{ hall_card(hall) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--sand">
+  <div class="container about-teaser">
+    <div class="about-teaser__media">
+      <img class="media-main" src="{{ image_url('img/hall-main.svg') }}" alt="Основной зал ЧайHouse с латунными светильниками" width="800" height="1000" loading="lazy">
+      <img class="media-small" src="{{ image_url('img/detail-ornament.svg') }}" alt="Бирюзовый восточный узор на стене" width="400" height="300" loading="lazy">
+      <img class="media-small" src="{{ image_url('img/detail-table.svg') }}" alt="Сервировка стола с пиалами и чайником" width="400" height="300" loading="lazy">
+      <span class="about-teaser__stamp">С 2016 года<br>на Ходынке</span>
+    </div>
+    <div class="about-teaser__body">
+      <p class="eyebrow">О чайхане</p>
+      <h2>Место, где восточная кухня встречается с московским вечером</h2>
+      <p>Мы открылись на Ходынском бульваре, чтобы в большом городе появилось место для неспешного разговора. Здесь пахнет зирой и свежей лепёшкой, на столах стоят пиалы, а чайник можно просить сколько угодно раз.</p>
+      <p>Готовим на живом огне, маринуем мясо сами и не используем полуфабрикаты. А ещё любим большие компании: для них у нас длинные столы, банкетный зал и отдельное меню.</p>
+      <ul class="about-teaser__points">
+        <li>{{ icon("check", "icon--sm") }} Плов и шашлык на живом огне</li>
+        <li>{{ icon("check", "icon--sm") }} Четыре зала и 18 столов</li>
+        <li>{{ icon("check", "icon--sm") }} Банкеты, дни рождения и корпоративы</li>
+        <li>{{ icon("check", "icon--sm") }} Детские стулья и блюда без острого</li>
+      </ul>
+      <div class="stats">
+        <div><span class="stat__value">4</span><span class="stat__label">зала под любой повод</span></div>
+        <div><span class="stat__value">18</span><span class="stat__label">столов на 2–18 гостей</span></div>
+        <div><span class="stat__value">{{ review_summary['avg']|replace('.', ',') }}</span><span class="stat__label">средняя оценка гостей</span></div>
+        <div><span class="stat__value">до 40</span><span class="stat__label">гостей на банкете</span></div>
+      </div>
+      <a class="btn btn--primary mt-3" href="{{ url_for('public.about') }}">Подробнее о нас</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Атмосфера</p>
+        <h2>Тёплый свет и восточные детали</h2>
+        <p>Латунные лампы с бахромой, резные узоры, бирюзовые диваны и посуда, которую хочется рассматривать. Загляните в галерею — там весь наш дом.</p>
+      </div>
+      <a class="section__link" href="{{ url_for('public.gallery') }}">Вся галерея {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="gallery-grid gallery-grid--compact">
+      {% for item in gallery %}
+        <button class="gallery-item" type="button" data-lightbox data-src="{{ image_url(item['image']) }}" data-caption="{{ item['title'] }}">
+          <img src="{{ image_url(item['image']) }}" alt="{{ item['alt'] }}" width="640" height="480" loading="lazy">
+          <span class="gallery-item__caption">{{ item['title'] }}</span>
+        </button>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--sand">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Отзывы</p>
+        <h2>Что говорят гости</h2>
+        {% set review_count = review_summary['count'] %}
+        <p>Мы читаем каждый отзыв и отвечаем на него. Средняя оценка — {{ review_summary['avg']|replace('.', ',') }} из 5 по {{ review_count }} {{ 'отзыву' if review_count % 10 == 1 and review_count % 100 != 11 else ('отзывам' if 2 <= review_count % 10 <= 4 and not 12 <= review_count % 100 <= 14 else 'отзывам') }}.</p>
+      </div>
+      <a class="section__link" href="{{ url_for('public.reviews_page') }}">Все отзывы {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="rating-summary mb-3">
+      <div class="rating-summary__score">
+        {{ review_summary['avg']|replace('.', ',') }}
+        <small>{{ review_count }} {{ 'отзыв' if review_count % 10 == 1 and review_count % 100 != 11 else ('отзыва' if 2 <= review_count % 10 <= 4 and not 12 <= review_count % 100 <= 14 else 'отзывов') }}</small>
+      </div>
+      {{ rating_bars(review_summary) }}
+    </div>
+    <div class="grid grid--3">
+      {% for review in reviews %}{{ review_card(review) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container cta-band__inner">
+    <div>
+      <p class="eyebrow">Ждём вас</p>
+      <h2>Забронируйте стол — остальное сделаем мы</h2>
+      <p>Выберите зал, дату и время. Подтвердим бронь по телефону в течение 15 минут в рабочее время. Для банкетов и больших компаний позвоните нам — поможем собрать меню.</p>
+    </div>
+    <div class="cta-band__actions">
+      <a class="btn btn--primary" href="{{ url_for('booking.new') }}">{{ icon("calendar") }} Забронировать</a>
+      <a class="btn btn--ghost" href="tel:{{ settings['phone']|replace(' ', '')|replace('(', '')|replace(')', '')|replace('-', '') }}">{{ icon("phone") }} {{ settings['phone'] }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

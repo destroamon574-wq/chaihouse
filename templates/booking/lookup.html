@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link %}
+
+{% block body_class %}page-booking page-booking-lookup{% endblock %}
+{% block title %}Найти бронь — ЧайHouse{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="page-topbar">
+      <nav aria-label="Хлебные крошки">
+        <ol class="breadcrumbs">
+          <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+          <li><a href="{{ url_for('booking.new') }}">Бронирование</a></li>
+          <li><span aria-current="page">Найти бронь</span></li>
+        </ol>
+      </nav>
+      {{ back_link(url_for('booking.new')) }}
+    </div>
+    <div class="page-hero__inner">
+      <div>
+        <p class="eyebrow">Ваша бронь</p>
+        <h1>Найти бронь по коду</h1>
+        <p>Введите код из подтверждения и телефон, на который оформляли бронь. Мы покажем детали и дадим отменить заявку, если планы изменились.</p>
+      </div>
+      <div class="notice">
+        {{ icon("shield") }}
+        <div>Код и телефон нужны вместе — так мы не покажем чужие данные. Это защита персональной информации.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container container--narrow">
+    {% if error %}
+      <div class="form-error-summary mb-3" role="alert">
+        <p>{{ error }}</p>
+      </div>
+    {% endif %}
+
+    <div class="form-panel">
+      <h2>Данные брони</h2>
+      <p class="muted mt-1">Код выглядит как CH-ABC123. Его мы показываем после оформления и отправляем в уведомлении.</p>
+
+      <form method="post" action="{{ url_for('booking.lookup') }}" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-grid mt-3">
+          <div class="field field--full">
+            <label for="lookup-code">Код брони</label>
+            <input class="input" type="text" id="lookup-code" name="code" value="{{ code }}" placeholder="CH-ABC123" autocomplete="off" maxlength="20" required autofocus>
+          </div>
+          <div class="field field--full">
+            <label for="lookup-phone">Телефон</label>
+            <input class="input" type="tel" id="lookup-phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="+7 999 123-45-67" required>
+            <span class="field__hint">Тот же номер, который указывали при бронировании.</span>
+          </div>
+        </div>
+        <div class="form-actions mt-3">
+          <button class="btn btn--primary" type="submit">{{ icon("search") }} Найти бронь</button>
+          <a class="btn btn--quiet" href="{{ url_for('public.contacts') }}">{{ icon("phone") }} Позвонить</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="split-2 mt-3">
+      <div class="panel">
+        <div class="panel__head"><h2>Не помните код?</h2></div>
+        <div class="panel__body">
+          <p class="muted">Позвоните нам — найдём бронь по имени, дате и телефону. Администратор на месте ежедневно с 12:00 до 00:00.</p>
+          <a class="btn btn--ghost mt-2" href="tel:{{ settings['phone']|replace(' ', '')|replace('(', '')|replace(')', '')|replace('-', '') }}">{{ icon("phone") }} {{ settings['phone'] }}</a>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel__head"><h2>Хотите новую бронь?</h2></div>
+        <div class="panel__body">
+          <p class="muted">Выберите зал, дату и свободное время. Бронирование доступно после входа в аккаунт — так вы сможете управлять заявкой.</p>
+          <a class="btn btn--primary mt-2" href="{{ url_for('booking.new') }}">{{ icon("calendar") }} Забронировать стол</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

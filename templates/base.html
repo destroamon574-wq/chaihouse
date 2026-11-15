@@ -1,0 +1,213 @@
+{% from "components/ui.html" import icon %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ page_title or 'ЧайHouse — чайхана с восточной кухней в Москве' }}{% endblock %}</title>
+  <meta name="description" content="{{ meta_description or 'Чайхана ЧайHouse на Ходынском бульваре: плов, лагман, манты, шашлыки, кебабы, салаты из жареных баклажанов и восточный чай. Бронирование столов и залов онлайн.' }}">
+  <meta name="theme-color" content="#100b08">
+  <meta name="robots" content="{{ 'noindex, nofollow' if request.path.startswith('/account') or request.path.startswith('/admin') or request.path.startswith('/owner') else 'index, follow' }}">
+  {% if canonical %}<link rel="canonical" href="{{ canonical }}">{% endif %}
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="{{ settings['restaurant_name'] }}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ self.title() }}">
+  <meta property="og:description" content="{{ meta_description or 'Восточная кухня, чай и неспешные вечера в ЧайHouse.' }}">
+  {% if canonical %}<meta property="og:url" content="{{ canonical }}">{% endif %}
+  <meta property="og:image" content="{{ og_image or url_for('static', filename='img/og-cover.jpg', _external=True) }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/logo-mark.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#main">Перейти к содержанию</a>
+
+  <header class="site-header" id="site-header">
+    <div class="container header__inner">
+      <a class="brand" href="{{ url_for('public.home') }}" aria-label="ЧайHouse — на главную">
+        <img class="brand__mark" src="{{ url_for('static', filename='img/logo-mark.svg') }}" alt="" width="44" height="44">
+        <span class="brand__text">
+          <span class="brand__name">ЧайHouse</span>
+          <span class="brand__sub">Чайхана · Москва</span>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="Основная навигация">
+        <ul>
+          <li><a href="{{ url_for('public.menu') }}" {% if request.endpoint in ('public.menu', 'public.dish') %}aria-current="page"{% endif %}>Меню</a></li>
+          <li><a href="{{ url_for('public.halls') }}" {% if request.endpoint in ('public.halls', 'public.hall') %}aria-current="page"{% endif %}>Залы</a></li>
+          <li><a href="{{ url_for('public.gallery') }}" {% if request.endpoint == 'public.gallery' %}aria-current="page"{% endif %}>Галерея</a></li>
+          <li><a href="{{ url_for('public.about') }}" {% if request.endpoint == 'public.about' %}aria-current="page"{% endif %}>О нас</a></li>
+          <li><a href="{{ url_for('public.contacts') }}" {% if request.endpoint == 'public.contacts' %}aria-current="page"{% endif %}>Контакты</a></li>
+        </ul>
+      </nav>
+
+      <div class="header__actions">
+        <a class="btn btn--primary btn--small header__book" href="{{ url_for('booking.new') }}">Забронировать</a>
+
+        {% if current_user %}
+          <a class="bell" href="{{ url_for('account.notifications') }}" aria-label="Уведомления{% if unread_notifications %}: непрочитанных {{ unread_notifications }}{% endif %}">
+            {{ icon("bell") }}
+            {% if unread_notifications %}<span class="badge-dot">{{ unread_notifications }}</span>{% endif %}
+          </a>
+          <details class="account-menu">
+            <summary>
+              <span class="avatar avatar--sm" aria-hidden="true">{{ current_user['name'][:1]|upper }}</span>
+              <span class="account-menu__short">{{ current_user['name'].split()[0] }}</span>
+              <span class="sr-only">— меню аккаунта</span>
+            </summary>
+            <div class="account-menu__panel">
+              <div class="account-menu__head">
+                <span class="account-menu__name">{{ current_user['name'] }}</span>
+                <span class="account-menu__role">{{ role_labels.get(current_user['role'], current_user['role']) }}</span>
+              </div>
+              <a href="{{ url_for('account.dashboard') }}">{{ icon("user", "icon--sm") }} Личный кабинет</a>
+              <a href="{{ url_for('account.bookings') }}">{{ icon("calendar", "icon--sm") }} Мои брони</a>
+              <a href="{{ url_for('account.favorites') }}">{{ icon("heart", "icon--sm") }} Избранное</a>
+              {% if current_user['role'] in ('admin', 'owner') %}
+                <a href="{{ url_for('admin.dashboard') }}">{{ icon("shield", "icon--sm") }} Админ-панель</a>
+              {% endif %}
+              {% if current_user['role'] == 'owner' %}
+                <a href="{{ url_for('owner.dashboard') }}">{{ icon("sparkles", "icon--sm") }} Кабинет владельца</a>
+              {% endif %}
+              <a href="{{ url_for('account.settings') }}">{{ icon("settings", "icon--sm") }} Настройки</a>
+              <form method="post" action="{{ url_for('auth.logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit">{{ icon("logout", "icon--sm") }} Выйти</button>
+              </form>
+            </div>
+          </details>
+        {% else %}
+          <div class="header__auth header__auth--desktop">
+            <a class="btn btn--quiet btn--small" href="{{ url_for('auth.login', next=request.path) }}">Войти</a>
+            <a class="btn btn--ghost btn--small" href="{{ url_for('auth.register') }}">Регистрация</a>
+          </div>
+        {% endif %}
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Открыть меню">
+          {{ icon("menu") }}
+        </button>
+      </div>
+    </div>
+
+    <nav class="mobile-nav" id="mobile-nav" aria-label="Мобильная навигация">
+      <ul>
+        <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+        <li><a href="{{ url_for('public.menu') }}">Меню</a></li>
+        <li><a href="{{ url_for('public.halls') }}">Залы и банкеты</a></li>
+        <li><a href="{{ url_for('public.gallery') }}">Галерея</a></li>
+        <li><a href="{{ url_for('public.about') }}">О чайхане</a></li>
+        <li><a href="{{ url_for('public.reviews_page') }}">Отзывы</a></li>
+        <li><a href="{{ url_for('public.contacts') }}">Контакты</a></li>
+      </ul>
+      <div class="mobile-nav__actions">
+        <a class="btn btn--primary btn--block" href="{{ url_for('booking.new') }}">Забронировать стол</a>
+        {% if current_user %}
+          <a class="btn btn--ghost btn--block" href="{{ url_for('account.dashboard') }}">Личный кабинет</a>
+        {% else %}
+          <a class="btn btn--ghost btn--block" href="{{ url_for('auth.login', next=request.path) }}">Войти</a>
+          <a class="btn btn--ghost btn--block" href="{{ url_for('auth.register') }}">Зарегистрироваться</a>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="container flash-stack" role="status" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="flash flash--{{ category if category in ('success', 'danger', 'warning', 'info') else 'info' }}">
+              {{ icon("alert" if category == 'danger' else ("check" if category == 'success' else "info")) }}
+              <div class="flash__text">{{ message }}</div>
+              <button class="flash__close" type="button" aria-label="Закрыть сообщение" data-dismiss-flash>
+                {{ icon("x", "icon--sm") }}
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer" itemscope itemtype="https://schema.org/Restaurant">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="{{ url_for('public.home') }}" aria-label="ЧайHouse — на главную">
+            <img class="brand__mark" src="{{ url_for('static', filename='img/logo-mark.svg') }}" alt="" width="44" height="44">
+            <span class="brand__text">
+              <span class="brand__name" itemprop="name">{{ settings['restaurant_name'] }}</span>
+              <span class="brand__sub">Чайхана · Москва</span>
+            </span>
+          </a>
+          <p itemprop="description">Восточная кухня, чай и неспешные вечера на Ходынском бульваре. Готовим плов в казане, тянем лапшу и печём самсу.</p>
+          <div class="cluster mt-3">
+            <span class="tag tag--gold">{{ icon("star", "icon--sm") }} 4,9 из 5</span>
+            <span class="tag tag--plain">Демо-проект</span>
+          </div>
+        </div>
+        <div>
+          <h2 class="footer-title">Разделы</h2>
+          <ul class="footer-list">
+            <li><a href="{{ url_for('public.menu') }}">Меню</a></li>
+            <li><a href="{{ url_for('public.halls') }}">Залы и банкеты</a></li>
+            <li><a href="{{ url_for('public.gallery') }}">Галерея</a></li>
+            <li><a href="{{ url_for('public.about') }}">О чайхане</a></li>
+            <li><a href="{{ url_for('public.reviews_page') }}">Отзывы</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="footer-title">Бронирование</h2>
+          <ul class="footer-list">
+            <li><a href="{{ url_for('booking.new') }}">Забронировать стол</a></li>
+            <li><a href="{{ url_for('booking.lookup') }}">Найти бронь</a></li>
+            <li><a href="{{ url_for('public.terms') }}">Правила брони</a></li>
+            <li><a href="{{ url_for('public.contacts') }}">Как добраться</a></li>
+            {% if current_user %}
+              <li><a href="{{ url_for('account.bookings') }}">Мои брони</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        <div>
+          <h2 class="footer-title">Контакты</h2>
+          <ul class="footer-list">
+            <li><a href="tel:{{ settings['phone']|replace(' ', '')|replace('(', '')|replace(')', '')|replace('-', '') }}" itemprop="telephone">{{ icon("phone", "icon--sm") }} {{ settings['phone'] }}</a></li>
+            <li><a href="mailto:{{ settings['email'] }}" itemprop="email">{{ icon("mail", "icon--sm") }} {{ settings['email'] }}</a></li>
+            <li><span>{{ icon("pin", "icon--sm") }} <span itemprop="address">{{ settings['address'] }}</span></span></li>
+            <li><span>{{ icon("clock", "icon--sm") }} {{ settings['hours'] }}</span></li>
+          </ul>
+          <div class="cluster mt-2">
+            <a class="btn btn--ghost btn--small" href="https://yandex.ru/maps/?text={{ settings['address']|urlencode }}" target="_blank" rel="noopener noreferrer">Маршрут {{ icon("external", "icon--sm") }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© {{ now_year }} {{ settings['legal_name'] }}. Все права защищены.</span>
+        <div class="footer-bottom__links">
+          <a href="{{ url_for('public.privacy') }}">Политика конфиденциальности</a>
+          <a href="{{ url_for('public.terms') }}">Правила бронирования</a>
+          {% if demo_mode %}<span class="demo-flag">Демо · данные вымышлены</span>{% endif %}
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Просмотр фотографии">
+    <img src="{{ url_for('static', filename='img/placeholder.svg') }}" alt="" width="1200" height="800">
+    <div class="lightbox__bar">
+      <span class="lightbox__caption"></span>
+      <button class="lightbox__close" type="button" data-lightbox-close aria-label="Закрыть просмотр">{{ icon("x") }}</button>
+    </div>
+  </dialog>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

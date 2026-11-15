@@ -1,0 +1,65 @@
+{% extends "auth/layout.html" %}
+{% block title %}Регистрация — ЧайHouse{% endblock %}
+
+{% block auth_content %}
+<p class="eyebrow">Новый гость</p>
+<h1>Создать аккаунт</h1>
+<p class="auth-card__sub">Регистрация занимает минуту. Брони, избранные блюда и история визитов будут в одном месте.</p>
+
+{% if errors %}
+  <div class="form-error-summary mb-3" role="alert">
+    Проверьте отмеченные поля — некоторые данные нужно исправить.
+  </div>
+{% endif %}
+
+<form method="post" action="{{ url_for('auth.register') }}" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
+
+  <div class="field {{ 'field--error' if errors.get('name') }}">
+    <label for="register-name">Имя</label>
+    <input class="input" type="text" id="register-name" name="name" value="{{ form_data.get('name', '') }}" autocomplete="name" minlength="2" maxlength="80" required autofocus>
+    {% if errors.get('name') %}<span class="field__error" role="alert">{{ errors['name'] }}</span>{% endif %}
+  </div>
+
+  <div class="field {{ 'field--error' if errors.get('email') }}">
+    <label for="register-email">Email</label>
+    <input class="input" type="email" id="register-email" name="email" value="{{ form_data.get('email', '') }}" autocomplete="email" inputmode="email" maxlength="254" required>
+    {% if errors.get('email') %}<span class="field__error" role="alert">{{ errors['email'] }}</span>{% endif %}
+  </div>
+
+  <div class="field {{ 'field--error' if errors.get('phone') }}">
+    <label for="register-phone">Телефон <span class="muted">(необязательно)</span></label>
+    <input class="input" type="tel" id="register-phone" name="phone" value="{{ form_data.get('phone', '') }}" autocomplete="tel" inputmode="tel" placeholder="+7 999 123-45-67">
+    <span class="field__hint">Нужен, чтобы быстрее заполнять брони.</span>
+    {% if errors.get('phone') %}<span class="field__error" role="alert">{{ errors['phone'] }}</span>{% endif %}
+  </div>
+
+  <div class="field {{ 'field--error' if errors.get('password') }}">
+    <label for="register-password">Пароль</label>
+    <input class="input" type="password" id="register-password" name="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+    <span class="field__hint">Минимум 8 символов, хотя бы одна буква и одна цифра.</span>
+    {% if errors.get('password') %}<span class="field__error" role="alert">{{ errors['password'] }}</span>{% endif %}
+  </div>
+
+  <div class="field {{ 'field--error' if errors.get('confirm') }}">
+    <label for="register-password2">Повторите пароль</label>
+    <input class="input" type="password" id="register-password2" name="password2" autocomplete="new-password" minlength="8" maxlength="128" required>
+    {% if errors.get('confirm') %}<span class="field__error" role="alert">{{ errors['confirm'] }}</span>{% endif %}
+  </div>
+
+  <label class="checkbox mb-3">
+    <input type="checkbox" name="consent" value="1" required>
+    <span>Согласен с <a href="{{ url_for('public.privacy') }}">политикой конфиденциальности</a> и обработкой персональных данных.</span>
+  </label>
+
+  <div class="form-actions">
+    <button class="btn btn--primary btn--block" type="submit">{{ icon("user") }} Зарегистрироваться</button>
+  </div>
+</form>
+
+<div class="auth-card__links">
+  <span class="muted">Уже есть аккаунт?</span>
+  <a href="{{ url_for('auth.login', next=next_url) if next_url else url_for('auth.login') }}">Войти</a>
+</div>
+{% endblock %}

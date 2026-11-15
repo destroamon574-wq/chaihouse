@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Сервировка стола: льняная салфетка, приборы и хрустальный бокал">
+  <title>Сервировка стола</title>
+  <defs>
+    <linearGradient id="table" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4a3020"/><stop offset=".55" stop-color="#2a1a11"/><stop offset="1" stop-color="#150d09"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0eee8"/><stop offset=".45" stop-color="#8d9498"/><stop offset=".7" stop-color="#e2e4e2"/><stop offset="1" stop-color="#666f75"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d9e0dd" stop-opacity=".55"/><stop offset=".5" stop-color="#f6f2e7" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#b8c7c4" stop-opacity=".35"/>
+    </linearGradient>
+    <radialGradient id="light" cx=".4" cy=".25" r=".7">
+      <stop offset="0" stop-color="#ffd79a" stop-opacity=".4"/><stop offset="1" stop-color="#ffd79a" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow"><feGaussianBlur stdDeviation="7"/></filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".05"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#table)"/>
+  <rect width="800" height="600" fill="url(#light)"/>
+  <g opacity=".25" stroke="#0b0604" stroke-width="2">
+    <path d="M0 120 H800 M0 320 H800 M0 520 H800"/>
+  </g>
+
+  <!-- placemat -->
+  <path d="M90 170 L560 130 L650 470 L170 520Z" fill="#3a2b22" opacity=".8"/>
+  <path d="M108 186 L546 148 L636 454 L184 506Z" fill="#5b4534" opacity=".5"/>
+
+  <!-- napkin -->
+  <path d="M230 250 L430 220 L470 390 L268 424Z" fill="#d9c8ad"/>
+  <path d="M248 262 L410 238 L444 374 L280 402Z" fill="#e9dbc4"/>
+  <path d="M248 262 L410 238 L430 300 L270 326Z" fill="#dbcbb2" opacity=".6"/>
+
+  <!-- cutlery -->
+  <g>
+    <rect x="490" y="230" width="10" height="180" rx="5" fill="url(#metal)" transform="rotate(8 495 320)"/>
+    <path d="M480 215 q-16 -22 0 -44 q8 -8 16 0 l6 44Z" fill="url(#metal)" transform="rotate(8 495 190)"/>
+    <path d="M470 225 q-10 -18 0 -38" stroke="#c7cccb" stroke-width="5" fill="none"/>
+    <path d="M500 228 q-8 -18 0 -34" stroke="#c7cccb" stroke-width="4" fill="none"/>
+  </g>
+  <g transform="rotate(-4 330 330)">
+    <rect x="300" y="430" width="12" height="120" rx="6" fill="url(#metal)"/>
+    <path d="M286 430 q14 -34 40 0 l-8 8 h-24Z" fill="url(#metal)"/>
+  </g>
+
+  <!-- glass -->
+  <g transform="translate(620 330)">
+    <ellipse cx="0" cy="120" rx="80" ry="22" fill="#000" opacity=".3" filter="url(#shadow)"/>
+    <path d="M-58 -120 q0 150 58 150 q58 0 58 -150 q-58 20 -116 0" fill="url(#glass)" stroke="#f3efe3" stroke-width="2" opacity=".85"/>
+    <ellipse cx="0" cy="-120" rx="58" ry="18" fill="#f6f1e4" opacity=".45"/>
+    <ellipse cx="0" cy="30" rx="54" ry="14" fill="#b7662f" opacity=".45"/>
+    <path d="M-44 -94 q-8 100 10 140" stroke="#fff" stroke-width="6" fill="none" opacity=".35"/>
+    <path d="M34 -100 q10 90 -4 132" stroke="#fff" stroke-width="3" fill="none" opacity=".25"/>
+  </g>
+
+  <!-- plate edge -->
+  <circle cx="210" cy="430" r="160" fill="#e9dcc7" opacity=".9"/>
+  <circle cx="210" cy="430" r="130" fill="#f7efe2"/>
+  <circle cx="210" cy="430" r="92" fill="#efe2ce"/>
+  <path d="M80 370 q130 -70 260 0" fill="none" stroke="#fff" stroke-width="6" opacity=".4"/>
+
+  <!-- herb sprig -->
+  <g transform="translate(380 400) rotate(-20)" fill="none" stroke="#628b47" stroke-width="4">
+    <path d="M0 40 q6 -50 22 -80"/>
+    <path d="M8 18 q-30 -8 -38 -30"/><path d="M14 4 q28 -10 34 -32"/>
+    <g fill="#6f9a51" stroke="none">
+      <ellipse cx="-26" cy="-26" rx="12" ry="6" transform="rotate(-40 -26 -26)"/>
+      <ellipse cx="34" cy="-34" rx="12" ry="6" transform="rotate(30 34 -34)"/>
+      <ellipse cx="10" cy="-10" rx="10" ry="5" transform="rotate(80 10 -10)"/>
+    </g>
+  </g>
+
+  <rect width="800" height="600" fill="#000" opacity=".08"/>
+  <rect width="800" height="600" filter="url(#grain)" opacity=".6"/>
+</svg>

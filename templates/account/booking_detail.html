@@ -1,0 +1,82 @@
+{% extends "account/layout.html" %}
+{% from "components/ui.html" import icon, back_link, status_badge %}
+
+{% block account_content %}
+<div class="page-topbar">
+  <nav aria-label="Хлебные крошки">
+    <ol class="breadcrumbs">
+      <li><a href="{{ url_for('account.dashboard') }}">Кабинет</a></li>
+      <li><a href="{{ url_for('account.bookings') }}">Мои брони</a></li>
+      <li><span aria-current="page">{{ booking['code'] }}</span></li>
+    </ol>
+  </nav>
+  {{ back_link(url_for('account.bookings')) }}
+</div>
+
+<div class="dashboard-head">
+  <div>
+    <p class="eyebrow">Бронь</p>
+    <h1>{{ booking['hall_name'] }}</h1>
+    <p class="muted mt-1">{{ booking['code'] }} · создана {{ booking['created_at']|ru_datetime }}</p>
+  </div>
+  {{ status_badge(booking['status']) }}
+</div>
+
+<div class="ticket">
+  <div class="ticket__top">
+    <div>
+      <p class="muted">Код брони</p>
+      <p class="ticket__code">{{ booking['code'] }}</p>
+    </div>
+    <div class="text-right">
+      {{ status_badge(booking['status']) }}
+      <p class="muted mt-1">{{ booking['date']|ru_date }}</p>
+    </div>
+  </div>
+
+  <dl class="ticket__meta">
+    <div><dt>Зал</dt><dd>{{ booking['hall_name'] }}</dd></div>
+    <div><dt>Стол</dt><dd>{{ booking['table_name'] }} · {{ booking['table_seats'] }} мест</dd></div>
+    <div><dt>Дата</dt><dd>{{ booking['date']|ru_date }}</dd></div>
+    <div><dt>Время</dt><dd>{{ booking['time'] }} · 2 часа</dd></div>
+    <div><dt>Гостей</dt><dd>{{ booking['guests_count'] }}</dd></div>
+    <div><dt>Повод</dt><dd>{{ booking['occasion'] or '—' }}</dd></div>
+    <div><dt>Имя</dt><dd>{{ booking['guest_name'] }}</dd></div>
+    <div><dt>Телефон</dt><dd>{{ booking['guest_phone']|pretty_phone }}</dd></div>
+  </dl>
+
+  {% if booking['comment'] %}
+    <div class="notice mb-3">
+      {{ icon("chat") }}
+      <div><strong>Комментарий:</strong> {{ booking['comment'] }}</div>
+    </div>
+  {% endif %}
+
+  {% if booking['cancel_reason'] %}
+    <div class="notice notice--danger mb-3">
+      {{ icon("info") }}
+      <div><strong>Причина отмены:</strong> {{ booking['cancel_reason'] }}</div>
+    </div>
+  {% endif %}
+
+  <div class="ticket__actions">
+    <a class="btn btn--ghost" href="{{ url_for('account.booking_ics', code=booking['code']) }}">{{ icon("download") }} В календарь</a>
+    {% if can_cancel %}
+      <form method="post" action="{{ url_for('account.cancel_booking', code=booking['code']) }}" data-confirm="Отменить эту бронь? Стол освободится для других гостей.">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field mb-0">
+          <label class="sr-only" for="cancel-reason">Причина отмены</label>
+          <input class="input" type="text" id="cancel-reason" name="reason" maxlength="300" placeholder="Причина отмены (необязательно)">
+        </div>
+        <button class="btn btn--danger" type="submit">{{ icon("x") }} Отменить бронь</button>
+      </form>
+    {% endif %}
+    <a class="btn btn--quiet" href="{{ url_for('account.bookings') }}">{{ icon("arrow-left") }} К списку</a>
+  </div>
+</div>
+
+<div class="notice mt-3">
+  {{ icon("info") }}
+  <div>Если планы изменились, отмените бронь заранее или позвоните по телефону {{ settings['phone'] }}. Держим стол 20 минут после назначенного времени.</div>
+</div>
+{% endblock %}

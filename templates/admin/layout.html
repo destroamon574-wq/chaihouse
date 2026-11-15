@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon %}
+
+{% block body_class %}page-admin{% endblock %}
+{% block title %}{{ page_title or 'Админ-панель — ЧайHouse' }}{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <p class="admin-sidebar__label">Управление рестораном</p>
+    <nav class="admin-nav" aria-label="Админ-панель">
+      <a href="{{ url_for('admin.dashboard') }}" {% if request.endpoint == 'admin.dashboard' %}aria-current="page"{% endif %}>{{ icon("sparkles") }} Обзор</a>
+      <a href="{{ url_for('admin.bookings') }}" {% if request.endpoint in ('admin.bookings', 'admin.booking_detail') %}aria-current="page"{% endif %}>{{ icon("calendar") }} Брони</a>
+      <a href="{{ url_for('admin.calendar') }}" {% if request.endpoint == 'admin.calendar' %}aria-current="page"{% endif %}>{{ icon("clock") }} Календарь недели</a>
+      <a href="{{ url_for('admin.menu') }}" {% if request.endpoint in ('admin.menu', 'admin.menu_new', 'admin.menu_edit') %}aria-current="page"{% endif %}>{{ icon("utensils") }} Меню</a>
+      <a href="{{ url_for('admin.halls') }}" {% if request.endpoint in ('admin.halls', 'admin.hall_edit') %}aria-current="page"{% endif %}>{{ icon("users") }} Залы и столы</a>
+      <a href="{{ url_for('admin.gallery') }}" {% if request.endpoint == 'admin.gallery' %}aria-current="page"{% endif %}>{{ icon("eye") }} Галерея</a>
+      <a href="{{ url_for('admin.reviews') }}" {% if request.endpoint == 'admin.reviews' %}aria-current="page"{% endif %}>{{ icon("star") }} Отзывы</a>
+      <a href="{{ url_for('admin.audit') }}" {% if request.endpoint == 'admin.audit' %}aria-current="page"{% endif %}>{{ icon("shield") }} Журнал</a>
+      {% if current_user['role'] == 'owner' %}
+        <a href="{{ url_for('owner.dashboard') }}">{{ icon("card") }} Аналитика владельца</a>
+        <a href="{{ url_for('owner.settings') }}">{{ icon("settings") }} Настройки заведения</a>
+      {% endif %}
+    </nav>
+    <div class="admin-sidebar__foot">
+      <strong>{{ current_user['name'] }}</strong><br>
+      {{ role_labels.get(current_user['role'], current_user['role']) }} · {{ current_user['email'] }}<br>
+      <a class="link-arrow mt-2" href="{{ url_for('public.home') }}">На сайт {{ icon("external", "icon--sm") }}</a>
+    </div>
+  </aside>
+
+  <section class="admin-main">
+    {% block admin_content %}{% endblock %}
+  </section>
+</div>
+{% endblock %}

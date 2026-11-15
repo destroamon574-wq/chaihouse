@@ -1,0 +1,49 @@
+{% extends "account/layout.html" %}
+{% from "components/ui.html" import icon %}
+
+{% block account_content %}
+<div class="dashboard-head">
+  <div>
+    <p class="eyebrow">События</p>
+    <h1>Уведомления</h1>
+    <p class="muted mt-1">Подтверждения броней, напоминания и ответы администратора.</p>
+  </div>
+  {% if notifications %}
+    <form method="post" action="{{ url_for('account.notifications_read_all') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn--ghost" type="submit">{{ icon("check") }} Прочитать все</button>
+    </form>
+  {% endif %}
+</div>
+
+{% if notifications %}
+  <div class="stack">
+    {% for item in notifications %}
+      <article class="notification-item {{ 'is-unread' if not item['is_read'] }}">
+        <span class="notification-item__icon">{{ icon("bell" if not item['is_read'] else "check") }}</span>
+        <div>
+          <h3>{{ item['title'] }}</h3>
+          <p>{{ item['body'] }}</p>
+          <time datetime="{{ item['created_at'] }}">{{ item['created_at']|ru_datetime }}</time>
+          {% if item['link'] %}
+            <p class="mt-2"><a class="link-arrow" href="{{ item['link'] }}">Перейти {{ icon("arrow-right", "icon--sm") }}</a></p>
+          {% endif %}
+        </div>
+        {% if not item['is_read'] %}
+          <form class="notification-item__action" method="post" action="{{ url_for('account.notification_read', notification_id=item['id']) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn--quiet btn--small" type="submit" aria-label="Отметить уведомление прочитанным">{{ icon("check") }}</button>
+          </form>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    {{ icon("bell") }}
+    <h3>Уведомлений пока нет</h3>
+    <p>Когда вы создадите бронь, здесь появятся подтверждения и напоминания.</p>
+    <a class="btn btn--primary mt-3" href="{{ url_for('booking.new') }}">Забронировать стол</a>
+  </div>
+{% endif %}
+{% endblock %}

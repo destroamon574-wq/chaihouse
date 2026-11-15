@@ -1,0 +1,48 @@
+{% extends "auth/layout.html" %}
+{% block title %}Вход в аккаунт — ЧайHouse{% endblock %}
+
+{% block auth_content %}
+<p class="eyebrow">Аккаунт</p>
+<h1>Вход</h1>
+<p class="auth-card__sub">Войдите, чтобы управлять бронями, сохранять блюда в избранное и получать уведомления.</p>
+
+{% if next_url and next_url.startswith('/booking') %}
+  <div class="notice notice--warning mb-3">
+    {{ icon("calendar") }}
+    <div><strong>Бронирование доступно после входа.</strong> Просматривать меню, залы и галерею можно без регистрации. Войдите или создайте аккаунт — и мы вернём вас к выбору стола.</div>
+  </div>
+{% endif %}
+
+<form method="post" action="{{ url_for('auth.login') }}" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
+
+  <div class="field">
+    <label for="login-email">Email</label>
+    <input class="input" type="email" id="login-email" name="email" value="{{ email or '' }}" autocomplete="email" inputmode="email" required autofocus>
+  </div>
+  <div class="field">
+    <label for="login-password">Пароль</label>
+    <input class="input" type="password" id="login-password" name="password" autocomplete="current-password" minlength="8" required>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn--primary btn--block" type="submit">{{ icon("logout") }} Войти</button>
+  </div>
+</form>
+
+<div class="auth-card__links">
+  <a href="{{ url_for('auth.forgot_password') }}">Забыли пароль?</a>
+  <a href="{{ url_for('auth.register', next=next_url) if next_url else url_for('auth.register') }}">Создать аккаунт</a>
+</div>
+
+<div class="auth-divider">Демо-доступ</div>
+<div class="demo-note">
+  <strong>Для проверки проекта</strong> можно войти под готовыми аккаунтами:
+  <ul class="mt-2">
+    <li>гость — <code>guest@chaihouse.ru</code> / <code>Guest#2026</code></li>
+    <li>администратор — <code>admin@chaihouse.ru</code> / <code>Admin#2026</code></li>
+    <li>владелец — <code>owner@chaihouse.ru</code> / <code>Owner#2026</code></li>
+  </ul>
+</div>
+{% endblock %}

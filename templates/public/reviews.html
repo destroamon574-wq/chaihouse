@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link, review_card, pagination_nav, rating_bars %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="page-topbar">
+      <nav aria-label="Хлебные крошки">
+        <ol class="breadcrumbs">
+          <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+          <li><span aria-current="page">Отзывы</span></li>
+        </ol>
+      </nav>
+      {{ back_link(url_for('public.home')) }}
+    </div>
+    <div class="page-hero__inner">
+      <div>
+        <p class="eyebrow">Мнение гостей</p>
+        <h1>Отзывы о ЧайHouse</h1>
+        <p>Здесь мы публикуем отзывы после проверки. Если что-то пошло не так — напишите нам, разберёмся и поблагодарим за честность.</p>
+      </div>
+      <div class="rating-summary">
+        <div class="rating-summary__score">
+          {{ summary['avg']|replace('.', ',') }}
+          <small>{{ summary['count'] }} отзывов</small>
+        </div>
+        {{ rating_bars(summary) }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="grid grid--2">
+      <div>
+        {% if reviews %}
+          <div class="stack">
+            {% for review in reviews %}{{ review_card(review) }}{% endfor %}
+          </div>
+          {{ pagination_nav(pages) }}
+        {% else %}
+          <div class="empty-state">
+            {{ icon("chat") }}
+            <h3>Пока нет опубликованных отзывов</h3>
+            <p>Станьте первым, кто расскажет о ЧайHouse. Отзыв появится на сайте после модерации.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <aside id="review-form">
+        <div class="form-panel">
+          <h2>Оставить отзыв</h2>
+          {% if current_user %}
+            <p class="muted mb-3">Вы пишете как {{ current_user['name'] }}. Отзыв появится после проверки администратором.</p>
+            <form method="post" action="{{ url_for('public.create_review_route') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <div class="field">
+                <label for="review-rating">Оценка</label>
+                <select class="select" id="review-rating" name="rating" required>
+                  <option value="5">5 — отлично</option>
+                  <option value="4">4 — хорошо</option>
+                  <option value="3">3 — нормально</option>
+                  <option value="2">2 — не понравилось</option>
+                  <option value="1">1 — плохо</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="review-text">Ваш отзыв</label>
+                <textarea class="textarea" id="review-text" name="text" minlength="10" maxlength="1200" required placeholder="Что запомнилось: блюда, зал, сервис? Расскажите подробнее — минимум 10 символов."></textarea>
+                <span class="field__hint">До 1200 символов. Не указывайте телефон и другие личные данные.</span>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn--primary" type="submit">{{ icon("chat") }} Отправить отзыв</button>
+              </div>
+            </form>
+          {% else %}
+            <div class="empty-state">
+              {{ icon("user") }}
+              <h3>Войдите, чтобы оставить отзыв</h3>
+              <p>Так мы знаем, что отзыв оставил реальный гость, и можем ответить лично.</p>
+              <div class="cluster mt-3">
+                <a class="btn btn--primary" href="{{ url_for('auth.login', next=request.path) }}">Войти</a>
+                <a class="btn btn--ghost" href="{{ url_for('auth.register') }}">Регистрация</a>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="notice mt-3">
+          {{ icon("info") }}
+          <div>Мы не удаляем негативные отзывы. Скрываем только спам, оскорбления и сообщения с персональными данными.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

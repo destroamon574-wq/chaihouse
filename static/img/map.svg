@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" role="img" aria-label="Схема расположения ЧайHouse на Ходынском бульваре рядом с ТРЦ Авиапарк">
+  <title>ЧайHouse на карте</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16201f"/><stop offset="1" stop-color="#0c1212"/>
+    </linearGradient>
+    <linearGradient id="river" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1e4d58"/><stop offset="1" stop-color="#173b45"/>
+    </linearGradient>
+    <radialGradient id="pulse" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#e9a752" stop-opacity=".55"/><stop offset="1" stop-color="#e9a752" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="blocks" width="90" height="90" patternUnits="userSpaceOnUse">
+      <rect width="90" height="90" fill="none"/>
+      <rect x="12" y="12" width="66" height="66" rx="8" fill="#1b2826" stroke="#283a36" stroke-width="2"/>
+    </pattern>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".04"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="1000" height="700" fill="url(#bg)"/>
+
+  <!-- blocks -->
+  <g opacity=".9">
+    <rect x="0" y="0" width="1000" height="700" fill="url(#blocks)"/>
+  </g>
+
+  <!-- park -->
+  <g fill="#1c332c" opacity=".9">
+    <path d="M0 480 q160 -40 280 10 q140 60 260 20 q120 -40 200 10 L740 700 L0 700Z"/>
+    <circle cx="160" cy="560" r="60"/><circle cx="260" cy="600" r="44"/><circle cx="90" cy="620" r="40"/>
+  </g>
+
+  <!-- river -->
+  <path d="M-20 180 q180 60 340 40 q180 -22 300 40 q140 60 400 10 L1020 80 L1020 -20 L-20 -20Z" fill="url(#river)"/>
+  <path d="M-20 150 q180 60 340 40 q180 -22 300 40 q140 60 400 10" fill="none" stroke="#2c6570" stroke-width="4" opacity=".5"/>
+
+  <!-- roads -->
+  <g fill="none" stroke-linecap="round">
+    <path d="M-20 350 H1020" stroke="#2a3733" stroke-width="54"/>
+    <path d="M-20 350 H1020" stroke="#394743" stroke-width="40"/>
+    <path d="M-20 350 H1020" stroke="#8e7648" stroke-width="2" stroke-dasharray="14 18" opacity=".7"/>
+    <path d="M420 -20 V720" stroke="#2a3733" stroke-width="46"/>
+    <path d="M420 -20 V720" stroke="#394743" stroke-width="34"/>
+    <path d="M420 -20 V720" stroke="#8e7648" stroke-width="2" stroke-dasharray="14 18" opacity=".7"/>
+    <path d="M120 60 L740 700" stroke="#2a3733" stroke-width="30"/>
+    <path d="M120 60 L740 700" stroke="#394743" stroke-width="20"/>
+    <path d="M880 -20 L620 700" stroke="#2a3733" stroke-width="26"/>
+    <path d="M880 -20 L620 700" stroke="#394743" stroke-width="18"/>
+    <path d="M-20 540 L520 260" stroke="#2a3733" stroke-width="22"/>
+    <path d="M-20 540 L520 260" stroke="#394743" stroke-width="14"/>
+  </g>
+
+  <!-- mall shape -->
+  <g transform="translate(560 400)">
+    <path d="M-110 -60 L100 -90 L150 70 L-60 100Z" fill="#24312e" stroke="#4a5c54" stroke-width="3"/>
+    <path d="M-78 -44 L72 -66 L106 42 L-44 64Z" fill="#2d3c37"/>
+    <text x="10" y="-8" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#c7b490" letter-spacing="2">АВИАПАРК</text>
+    <text x="10" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#8d9b91" letter-spacing="3">ТРЦ · 3 ЭТАЖ</text>
+  </g>
+
+  <!-- metro -->
+  <g transform="translate(230 210)">
+    <circle cx="0" cy="0" r="18" fill="#b74434"/>
+    <text x="0" y="6" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#fff">М</text>
+    <text x="30" y="6" font-family="Arial, sans-serif" font-size="13" fill="#cdbba0">ЦСКА</text>
+  </g>
+
+  <!-- marker -->
+  <g transform="translate(660 300)">
+    <circle cx="0" cy="0" r="130" fill="url(#pulse)"/>
+    <circle cx="0" cy="0" r="74" fill="none" stroke="#e9a752" stroke-width="2" opacity=".6"/>
+    <path d="M0 28 C-38 -18 -52 -40 -52 -60 A52 52 0 1 1 52 -60 C52 -40 38 -18 0 28Z" fill="#c2542f" stroke="#f0c37a" stroke-width="4"/>
+    <circle cx="0" cy="-60" r="20" fill="#f6ead6"/>
+    <path d="M-11 -55 q0 -10 11 -14 q11 4 11 14 q0 10 -11 12 q-11 -2 -11 -12Z" fill="#c2542f"/>
+    <path d="M-8 -72 h16" stroke="#c2542f" stroke-width="3"/>
+    <text x="0" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#f4e6d0" letter-spacing="1">ЧАЙHOUSE</text>
+    <text x="0" y="92" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#c9a86c" letter-spacing="2">ХОДЫНСКИЙ БУЛЬВАР, 4</text>
+  </g>
+
+  <rect width="1000" height="700" filter="url(#grain)" opacity=".7"/>
+</svg>

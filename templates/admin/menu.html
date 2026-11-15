@@ -1,0 +1,91 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon %}
+
+{% block admin_content %}
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Меню</p>
+    <h1>Блюда и цены</h1>
+    <p>Демо-меню можно заменить реальными блюдами, ценами и фотографиями. Скрытые блюда не показываются на сайте.</p>
+  </div>
+  <a class="btn btn--primary" href="{{ url_for('admin.menu_new') }}">{{ icon("plus") }} Добавить блюдо</a>
+</div>
+
+<form class="admin-filters" method="get" action="{{ url_for('admin.menu') }}" role="search">
+  <div class="field">
+    <label for="menu-search">Поиск по названию</label>
+    <input class="input" type="search" id="menu-search" name="q" value="{{ q }}" placeholder="Плов, лагман, чай…" maxlength="80">
+  </div>
+  <button class="btn btn--primary" type="submit">{{ icon("search") }} Найти</button>
+  {% if q %}<a class="btn btn--quiet" href="{{ url_for('admin.menu') }}">Сбросить</a>{% endif %}
+</form>
+
+<div class="panel">
+  <div class="panel__head">
+    {% set total_dishes = dishes|length %}
+    <h2>{{ total_dishes }} {{ 'блюдо' if total_dishes % 10 == 1 and total_dishes % 100 != 11 else ('блюда' if 2 <= total_dishes % 10 <= 4 and not 12 <= total_dishes % 100 <= 14 else 'блюд') }}</h2>
+    <span class="muted">Категорий: {{ categories|length }}</span>
+  </div>
+  <div class="panel__body panel__body--flush">
+    {% if dishes %}
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption class="sr-only">Блюда в меню</caption>
+          <thead>
+            <tr>
+              <th scope="col">Фото</th>
+              <th scope="col">Блюдо</th>
+              <th scope="col">Категория</th>
+              <th scope="col">Цена</th>
+              <th scope="col">Статус</th>
+              <th scope="col"><span class="sr-only">Действия</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dish in dishes %}
+              <tr>
+                <td><img src="{{ image_url(dish['image']) }}" alt="" width="56" height="42" class="thumb" loading="lazy"></td>
+                <td>
+                  <strong>{{ dish['name'] }}</strong><br>
+                  <span class="muted">{{ dish['short_description'][:70] }}{% if dish['short_description']|length > 70 %}…{% endif %}</span>
+                </td>
+                <td>{{ dish['category_name'] }}</td>
+                <td class="cell-num">{{ dish['price']|money }}</td>
+                <td>
+                  <span class="status-badge status-badge--{{ 'success' if dish['is_active'] else 'muted' }}">{{ 'В меню' if dish['is_active'] else 'Скрыто' }}</span>
+                </td>
+                <td>
+                  <div class="cell-actions">
+                    <a class="btn btn--ghost btn--small" href="{{ url_for('public.dish', slug=dish['slug']) }}">{{ icon("eye", "icon--sm") }}</a>
+                    <a class="btn btn--ghost btn--small" href="{{ url_for('admin.menu_edit', dish_id=dish['id']) }}">{{ icon("edit", "icon--sm") }} Изменить</a>
+                    <form method="post" action="{{ url_for('admin.menu_toggle', dish_id=dish['id']) }}">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button class="btn btn--quiet btn--small" type="submit">{{ 'Скрыть' if dish['is_active'] else 'Показать' }}</button>
+                    </form>
+                    <form method="post" action="{{ url_for('admin.menu_delete', dish_id=dish['id']) }}" data-confirm="Удалить блюдо «{{ dish['name'] }}»? Действие необратимо.">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button class="btn btn--danger btn--small" type="submit">{{ icon("trash", "icon--sm") }}</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        {{ icon("utensils") }}
+        <h3>Ничего не найдено</h3>
+        <p>Измените поисковый запрос или добавьте новое блюдо.</p>
+        <a class="btn btn--primary mt-3" href="{{ url_for('admin.menu_new') }}">Добавить блюдо</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="notice mt-3">
+  {{ icon("info") }}
+  <div>Чтобы заменить демо-блюдо, откройте «Изменить», загрузите фотографию и укажите реальную цену. Для массовой замены используйте <code>python -m flask seed</code> после очистки демо-данных.</div>
+</div>
+{% endblock %}

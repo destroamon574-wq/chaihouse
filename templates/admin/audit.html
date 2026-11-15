@@ -1,0 +1,53 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon %}
+
+{% block admin_content %}
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Безопасность</p>
+    <h1>Журнал действий</h1>
+    <p>Критичные операции: изменение броней, меню, залов, отзывов, ролей и настроек. Последние 200 записей.</p>
+  </div>
+  <span class="tag tag--plain">{{ entries|length }} записей</span>
+</div>
+
+<div class="panel">
+  <div class="panel__head">
+    <h2>Последние события</h2>
+    <span class="muted">Время указано по Москве</span>
+  </div>
+  <div class="panel__body">
+    {% if entries %}
+      <div class="audit-list">
+        {% for entry in entries %}
+          <div class="audit-row">
+            <time datetime="{{ entry['created_at'] }}">{{ entry['created_at']|ru_datetime }}</time>
+            <div>
+              <strong>{{ entry['actor_name'] or 'Система' }}</strong>
+              · <code>{{ entry['action'] }}</code>
+              {% if entry['entity_type'] %}
+                <span class="muted"> · {{ entry['entity_type'] }} {{ entry['entity_id'] or '' }}</span>
+              {% endif %}
+              {% if entry['meta'] %}
+                <br><span class="muted">{{ entry['meta'][:220] }}{% if entry['meta']|length > 220 %}…{% endif %}</span>
+              {% endif %}
+            </div>
+            <span class="muted">{{ entry['ip'] or '—' }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        {{ icon("shield") }}
+        <h3>Журнал пуст</h3>
+        <p>События появятся после первого действия администратора.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="notice mt-3">
+  {{ icon("info") }}
+  <div>Журнал хранится в базе и не редактируется через интерфейс. Для аудита безопасности выгрузите базу или настройте резервное копирование.</div>
+</div>
+{% endblock %}

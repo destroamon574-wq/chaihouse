@@ -1,0 +1,97 @@
+{% extends "account/layout.html" %}
+{% from "components/ui.html" import icon, booking_row %}
+
+{% block account_content %}
+<div class="dashboard-head">
+  <div>
+    <p class="eyebrow">Личный кабинет</p>
+    <h1>Здравствуйте, {{ current_user['name'].split()[0] }}</h1>
+    <p class="muted mt-1">Здесь ваши брони, избранные блюда и уведомления ЧайHouse.</p>
+  </div>
+  <a class="btn btn--primary" href="{{ url_for('booking.new') }}">{{ icon("calendar") }} Новая бронь</a>
+</div>
+
+<div class="dashboard-grid">
+  <div class="metric">
+    <div class="metric__value">{{ upcoming|length }}</div>
+    <div class="metric__label">ближайших броней</div>
+  </div>
+  <div class="metric">
+    <div class="metric__value">{{ favorites_count }}</div>
+    <div class="metric__label">блюд в избранном</div>
+  </div>
+  <div class="metric">
+    <div class="metric__value">{{ unread }}</div>
+    <div class="metric__label">непрочитанных уведомлений</div>
+  </div>
+  <div class="metric">
+    <div class="metric__value">{{ history|length }}</div>
+    <div class="metric__label">завершённых визитов</div>
+  </div>
+</div>
+
+<div class="split-2">
+  <div class="panel">
+    <div class="panel__head">
+      <h2>Ближайшие брони</h2>
+      <a class="link-arrow" href="{{ url_for('account.bookings') }}">Все брони {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="panel__body">
+      {% if upcoming %}
+        <div class="booking-list">
+          {% for booking in upcoming %}
+            {{ booking_row(booking, url_for('account.booking_detail', code=booking['code'])) }}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          {{ icon("calendar") }}
+          <h3>Пока нет активных броней</h3>
+          <p>Выберите зал, дату и время — подтвердим бронь в течение 15 минут.</p>
+          <a class="btn btn--primary mt-3" href="{{ url_for('booking.new') }}">Забронировать стол</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel__head">
+      <h2>Уведомления</h2>
+      <a class="link-arrow" href="{{ url_for('account.notifications') }}">Все {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="panel__body">
+      {% if notifications %}
+        <div class="stack">
+          {% for item in notifications %}
+            <div class="notification-item {{ 'is-unread' if not item['is_read'] }}">
+              <span class="notification-item__icon">{{ icon("bell") }}</span>
+              <div>
+                <h3>{{ item['title'] }}</h3>
+                <p>{{ item['body'] }}</p>
+                <time datetime="{{ item['created_at'] }}">{{ item['created_at']|ru_datetime }}</time>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">Уведомлений пока нет. Здесь появятся подтверждения броней и ответы администратора.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if history %}
+  <div class="panel mt-3">
+    <div class="panel__head">
+      <h2>Недавние визиты</h2>
+    </div>
+    <div class="panel__body">
+      <div class="booking-list">
+        {% for booking in history %}
+          {{ booking_row(booking, url_for('account.booking_detail', code=booking['code'])) }}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

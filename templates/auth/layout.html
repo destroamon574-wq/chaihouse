@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link %}
+
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+<div class="auth-shell">
+  <aside class="auth-visual" aria-label="ЧайHouse">
+    <img src="{{ image_url('img/hero-interior.svg') }}" alt="Тёплый интерьер чайханы ЧайHouse" width="1200" height="1400">
+    <div class="auth-visual__content">
+      <h2>Чай, плов и разговор без спешки</h2>
+      <p>Личный кабинет нужен, чтобы хранить брони, избранные блюда и уведомления. Никаких рассылок без вашего согласия.</p>
+      <div class="cluster mt-3">
+        <span class="tag tag--gold">{{ icon("star", "icon--sm") }} 4,9 из 5</span>
+        <span class="tag tag--plain">Ходынский бульвар, 4</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="auth-panel">
+    <div class="auth-card">
+      {{ back_link(url_for('public.home'), 'На главную') }}
+      {% block auth_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

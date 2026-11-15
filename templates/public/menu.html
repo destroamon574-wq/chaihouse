@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link, dish_card, pagination_nav %}
+
+{% block body_class %}page-menu{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="page-topbar">
+      <nav aria-label="Хлебные крошки">
+        <ol class="breadcrumbs">
+          <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+          <li><span aria-current="page">Меню</span></li>
+        </ol>
+      </nav>
+      {{ back_link(url_for('public.home')) }}
+    </div>
+    <div class="page-hero__inner">
+      <div>
+        <p class="eyebrow">Кухня</p>
+        <h1>Меню ЧайHouse</h1>
+        <p>Плов из казана, лагман ручной работы, манты на пару, шашлыки на углях и чай, который заваривают в чайнике. Выберите категорию или найдите блюдо по названию.</p>
+      </div>
+      <div class="notice notice--warning">
+        {{ icon("info") }}
+        <div>
+          <strong>Демо-меню.</strong> Цены и фотографии в проекте демонстрационные. Заменить блюда,
+          цены и изображения можно в админ-панели.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="filter-bar">
+      <div class="chip-row" role="group" aria-label="Категории меню">
+        <a class="chip {{ 'is-active' if not filters['category'] }}" href="{{ query_url(category=None, page=None) }}">
+          Всё меню
+        </a>
+        {% for category in categories %}
+          <a class="chip {{ 'is-active' if filters['category'] == category['slug'] }}" href="{{ query_url(category=category['slug'], page=None) }}">
+            {{ category['name'] }} <span class="chip__count">{{ category['dish_count'] }}</span>
+          </a>
+        {% endfor %}
+      </div>
+
+      <div class="chip-row" role="group" aria-label="Особенности блюд">
+        <a class="chip {{ 'is-active' if filters['tag'] == 'signature' }}" href="{{ query_url(tag='signature', page=None) }}">{{ icon("star", "icon--sm") }} Фирменные</a>
+        <a class="chip {{ 'is-active' if filters['tag'] == 'vegetarian' }}" href="{{ query_url(tag='vegetarian', page=None) }}">{{ icon("leaf", "icon--sm") }} Вегетарианские</a>
+        <a class="chip {{ 'is-active' if filters['tag'] == 'spicy' }}" href="{{ query_url(tag='spicy', page=None) }}">{{ icon("flame", "icon--sm") }} Острые</a>
+        {% if filters['tag'] %}
+          <a class="chip" href="{{ query_url(tag=None, page=None) }}">{{ icon("x", "icon--sm") }} Сбросить</a>
+        {% endif %}
+      </div>
+
+      <form class="filter-row" method="get" action="{{ url_for('public.menu') }}" role="search">
+        {% if filters['category'] %}<input type="hidden" name="category" value="{{ filters['category'] }}">{% endif %}
+        {% if filters['tag'] %}<input type="hidden" name="tag" value="{{ filters['tag'] }}">{% endif %}
+        <div class="field">
+          <label class="sr-only" for="menu-q">Поиск по меню</label>
+          <div class="search-field">
+            {{ icon("search") }}
+            <input class="input" type="search" id="menu-q" name="q" value="{{ filters['q'] }}" placeholder="Найти блюдо: плов, лагман, чай…" maxlength="80">
+          </div>
+        </div>
+        <div class="field">
+          <label class="sr-only" for="menu-sort">Сортировка</label>
+          <select class="select" id="menu-sort" name="sort">
+            <option value="popular" {{ 'selected' if filters['sort'] == 'popular' }}>Сначала популярные</option>
+            <option value="price_asc" {{ 'selected' if filters['sort'] == 'price_asc' }}>Сначала дешевле</option>
+            <option value="price_desc" {{ 'selected' if filters['sort'] == 'price_desc' }}>Сначала дороже</option>
+            <option value="name" {{ 'selected' if filters['sort'] == 'name' }}>По названию</option>
+            <option value="new" {{ 'selected' if filters['sort'] == 'new' }}>Новинки</option>
+          </select>
+        </div>
+        <button class="btn btn--primary" type="submit">{{ icon("search") }} Найти</button>
+      </form>
+    </div>
+
+    <div class="between mb-3">
+      <p class="muted">
+        {% if pages['total'] %}
+          Найдено {{ pages['total'] }} {{ 'блюдо' if pages['total'] % 10 == 1 and pages['total'] % 100 != 11 else ('блюда' if 2 <= pages['total'] % 10 <= 4 and not 12 <= pages['total'] % 100 <= 14 else 'блюд') }}
+        {% else %}
+          Ничего не найдено
+        {% endif %}
+      </p>
+      {% if filters['q'] or filters['tag'] or filters['category'] %}
+        <a class="link-arrow" href="{{ url_for('public.menu') }}">{{ icon("x", "icon--sm") }} Сбросить фильтры</a>
+      {% endif %}
+    </div>
+
+    {% if dishes %}
+      <h2 class="sr-only">Блюда меню</h2>
+      <div class="grid grid--3">
+        {% for dish in dishes %}{{ dish_card(dish, favorites) }}{% endfor %}
+      </div>
+      {{ pagination_nav(pages) }}
+    {% else %}
+      <div class="empty-state">
+        {{ icon("search") }}
+        <h3>По вашему запросу ничего не нашлось</h3>
+        <p>Попробуйте другое название, выберите другую категорию или сбросьте фильтры — в меню точно есть что-то вкусное.</p>
+        <a class="btn btn--ghost mt-3" href="{{ url_for('public.menu') }}">Показать всё меню</a>
+      </div>
+    {% endif %}
+
+    <div class="menu-note mt-4">
+      {{ icon("info") }}
+      <div>
+        Если у вас есть аллергия или ограничения в питании, сообщите об этом при бронировании
+        или официанту. Подскажем состав и поможем выбрать блюдо. Цены указаны в рублях.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container cta-band__inner">
+    <div>
+      <h2>Понравилось меню? Забронируйте стол</h2>
+      <p>Свободные столы и залы видно на странице бронирования. Подтвердим бронь в течение 15 минут.</p>
+    </div>
+    <div class="cta-band__actions">
+      <a class="btn btn--primary" href="{{ url_for('booking.new') }}">{{ icon("calendar") }} Забронировать</a>
+      <a class="btn btn--ghost" href="{{ url_for('public.reviews_page') }}">{{ icon("star") }} Отзывы гостей</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

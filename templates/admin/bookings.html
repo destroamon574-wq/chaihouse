@@ -1,0 +1,96 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon, status_badge, pagination_nav %}
+
+{% block admin_content %}
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Брони</p>
+    <h1>Все заявки</h1>
+    <p>Фильтруйте по статусу, дате или найдите гостя по имени, телефону и коду брони.</p>
+  </div>
+  <div class="cluster">
+    <a class="btn btn--ghost" href="{{ url_for('owner.export_csv') if current_user['role'] == 'owner' else url_for('admin.dashboard') }}">{{ icon("download") if current_user['role'] == 'owner' else icon("arrow-left") }} {{ 'Экспорт CSV' if current_user['role'] == 'owner' else 'Назад' }}</a>
+  </div>
+</div>
+
+<form class="admin-filters" method="get" action="{{ url_for('admin.bookings') }}" role="search">
+  <div class="field">
+    <label for="filter-status">Статус</label>
+    <select class="select" id="filter-status" name="status">
+      <option value="">Все статусы</option>
+      {% for key, meta in booking_statuses.items() %}
+        <option value="{{ key }}" {{ 'selected' if status == key }}>{{ meta[0] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="filter-date">Дата</label>
+    <input class="input" type="date" id="filter-date" name="date" value="{{ date_value }}">
+  </div>
+  <div class="field">
+    <label for="filter-q">Поиск</label>
+    <input class="input" type="search" id="filter-q" name="q" value="{{ q }}" placeholder="Имя, телефон, код" maxlength="80">
+  </div>
+  <button class="btn btn--primary" type="submit">{{ icon("search") }} Показать</button>
+  {% if status or date_value or q %}
+    <a class="btn btn--quiet" href="{{ url_for('admin.bookings') }}">Сбросить</a>
+  {% endif %}
+</form>
+
+<div class="panel">
+  <div class="panel__head">
+    <h2>Найдено: {{ pages['total'] }}</h2>
+    <span class="muted">Страница {{ pages['page'] }} из {{ pages['pages'] }}</span>
+  </div>
+  <div class="panel__body panel__body--flush">
+    {% if bookings %}
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption class="sr-only">Список броней</caption>
+          <thead>
+            <tr>
+              <th scope="col">Код</th>
+              <th scope="col">Гость</th>
+              <th scope="col">Дата и время</th>
+              <th scope="col">Зал / стол</th>
+              <th scope="col">Гостей</th>
+              <th scope="col">Статус</th>
+              <th scope="col"><span class="sr-only">Действие</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for booking in bookings %}
+              <tr>
+                <td class="cell-num"><strong>{{ booking['code'] }}</strong><br><span class="muted">{{ booking['created_at']|ru_datetime }}</span></td>
+                <td>
+                  {{ booking['guest_name'] }}<br>
+                  <span class="muted">{{ booking['guest_phone']|pretty_phone }}</span>
+                  {% if booking['guest_email'] %}<br><span class="muted">{{ booking['guest_email'] }}</span>{% endif %}
+                </td>
+                <td class="cell-num">{{ booking['date']|ru_date('short') }}<br>{{ booking['time'] }}</td>
+                <td>{{ booking['hall_name'] }}<br><span class="muted">{{ booking['table_name'] }}</span></td>
+                <td class="cell-num">{{ booking['guests_count'] }}</td>
+                <td>{{ status_badge(booking['status']) }}</td>
+                <td>
+                  <div class="cell-actions">
+                    <a class="btn btn--ghost btn--small" href="{{ url_for('admin.booking_detail', booking_id=booking['id']) }}">Открыть</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        {{ icon("search") }}
+        <h3>Броней не найдено</h3>
+        <p>Измените фильтры или сбросьте поиск — возможно, заявка оформлена на другой номер.</p>
+        <a class="btn btn--ghost mt-3" href="{{ url_for('admin.bookings') }}">Показать все</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{{ pagination_nav(pages) }}
+{% endblock %}

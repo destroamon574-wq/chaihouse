@@ -1,0 +1,284 @@
+{#
+  Общие UI-макросы: иконки, карточки, пагинация.
+#}
+{% macro icon(name, class_name="") -%}
+<svg class="icon {{ class_name }}" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+  {%- if name == "arrow-right" -%}
+    <path d="M5 12h14M13 6l6 6-6 6"/>
+  {%- elif name == "arrow-left" -%}
+    <path d="M19 12H5M11 6l-6 6 6 6"/>
+  {%- elif name == "calendar" -%}
+    <rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/>
+    <path d="M8 14h2M14 14h2M8 18h2M14 18h2"/>
+  {%- elif name == "clock" -%}
+    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+  {%- elif name == "pin" -%}
+    <path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/>
+  {%- elif name == "phone" -%}
+    <path d="M6 3h3l1.5 5-2 1.5a12 12 0 0 0 6 6l1.5-2 5 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 5.2 2 2 0 0 1 6 3Z"/>
+  {%- elif name == "mail" -%}
+    <rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/>
+  {%- elif name == "users" -%}
+    <circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5"/>
+    <path d="M16 5.2a3 3 0 0 1 0 5.6M17.5 20c0-2.6-.8-4.2-2.3-5"/>
+  {%- elif name == "star" -%}
+    <path d="m12 3 2.7 5.8 6.3.8-4.6 4.4 1.2 6.2L12 17.3 6.4 20.2l1.2-6.2L3 9.6l6.3-.8Z"/>
+  {%- elif name == "heart" -%}
+    <path d="M12 20s-7-4.3-7-9.2A4 4 0 0 1 12 8a4 4 0 0 1 7 2.8c0 4.9-7 9.2-7 9.2Z"/>
+  {%- elif name == "check" -%}
+    <path d="m4 12.5 5 5L20 6.5"/>
+  {%- elif name == "x" -%}
+    <path d="m6 6 12 12M18 6 6 18"/>
+  {%- elif name == "menu" -%}
+    <path d="M4 7h16M4 12h16M4 17h16"/>
+  {%- elif name == "search" -%}
+    <circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/>
+  {%- elif name == "leaf" -%}
+    <path d="M5 19c0-8 5-13 14-14 1 9-4 14-12 14"/><path d="M5 19c2-5 5-8 9-10"/>
+  {%- elif name == "flame" -%}
+    <path d="M12 21c-4 0-6-2.5-6-6 0-3 2-5 3-8 1 2 2 3 3 3 0-3 2-5 3-7 1 4 3 6 3 10 0 5-2 8-6 8Z"/>
+  {%- elif name == "chef" -%}
+    <path d="M6 12a3 3 0 0 1-1-5.8A4 4 0 0 1 12 4a4 4 0 0 1 7 2.2A3 3 0 0 1 18 12"/>
+    <path d="M6 12h12v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2Z"/><path d="M9 16h6"/>
+  {%- elif name == "sparkles" -%}
+    <path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z"/>
+    <path d="m18.5 15 .8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8Z"/>
+  {%- elif name == "card" -%}
+    <rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6 15h4"/>
+  {%- elif name == "shield" -%}
+    <path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6Z"/><path d="m9 12 2 2 4-4"/>
+  {%- elif name == "chat" -%}
+    <path d="M20 15a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2Z"/><path d="M8 9h8M8 13h5"/>
+  {%- elif name == "bell" -%}
+    <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/>
+  {%- elif name == "user" -%}
+    <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/>
+  {%- elif name == "logout" -%}
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 16 4-4-4-4M20 12H9"/>
+  {%- elif name == "settings" -%}
+    <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>
+  {%- elif name == "edit" -%}
+    <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+  {%- elif name == "trash" -%}
+    <path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 11v6M14 11v6"/>
+  {%- elif name == "plus" -%}
+    <path d="M12 5v14M5 12h14"/>
+  {%- elif name == "eye" -%}
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>
+  {%- elif name == "download" -%}
+    <path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>
+  {%- elif name == "external" -%}
+    <path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>
+  {%- elif name == "route" -%}
+    <circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19H14a4 4 0 0 0 0-8H9a4 4 0 0 1 0-8h6.5"/>
+  {%- elif name == "globe" -%}
+    <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/>
+  {%- elif name == "compass" -%}
+    <circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/>
+  {%- elif name == "quote" -%}
+    <path d="M9 7H5a2 2 0 0 0-2 2v4h5v4H4M20 7h-4a2 2 0 0 0-2 2v4h5v4h-4"/>
+  {%- elif name == "info" -%}
+    <circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>
+  {%- elif name == "alert" -%}
+    <path d="M12 3 2.5 20h19Z"/><path d="M12 9v5M12 17.5h.01"/>
+  {%- elif name == "lock" -%}
+    <rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+  {%- elif name == "print" -%}
+    <path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 17h12v4H6Z"/>
+  {%- elif name == "utensils" -%}
+    <path d="M7 3v8M4 3v5a3 3 0 0 0 6 0V3M7 11v10M17 3c-2 2-2 6-2 8h4c0-2 0-6-2-8ZM17 11v10"/>
+  {%- elif name == "info-circle" -%}
+    <circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/>
+  {%- else -%}
+    <circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>
+  {%- endif -%}
+</svg>
+{%- endmacro %}
+
+
+{% macro back_link(href, label='Назад') -%}
+<a class="back-link" href="{{ href }}" data-back>
+  {{ icon("arrow-left", "icon--sm") }}
+  <span>{{ label }}</span>
+</a>
+{%- endmacro %}
+
+
+{% macro dish_card(dish, favorites=(), show_favorite=true) -%}
+<article class="dish-card" itemscope itemtype="https://schema.org/MenuItem">
+  <div class="dish-card__media">
+    <img src="{{ image_url(dish['image']) }}" alt="{{ dish['name'] }}" loading="lazy" width="640" height="480" itemprop="image">
+    <div class="dish-card__badges">
+      {% if dish['is_signature'] %}<span class="tag tag--gold">{{ icon("star", "icon--sm") }} Наше фирменное</span>{% endif %}
+      {% if dish['is_vegetarian'] %}<span class="tag tag--veg">{{ icon("leaf", "icon--sm") }} Вегетарианское</span>{% endif %}
+      {% if dish['is_spicy'] %}<span class="tag tag--spicy">{{ icon("flame", "icon--sm") }} Острое</span>{% endif %}
+    </div>
+    {% if show_favorite %}
+      <div class="dish-card__favorite">
+        {% if current_user %}
+          <form class="js-favorite" method="post" action="{{ url_for('account.favorite_toggle', dish_id=dish['id']) }}" data-dish-id="{{ dish['id'] }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ request.full_path }}">
+            <button class="favorite-btn {{ 'is-active' if dish['id'] in favorites }}" type="submit"
+                    aria-pressed="{{ 'true' if dish['id'] in favorites else 'false' }}"
+                    aria-label="{{ 'Убрать из избранного' if dish['id'] in favorites else 'Добавить в избранное' }}">
+              {{ icon("heart") }}
+            </button>
+          </form>
+        {% else %}
+          <a class="favorite-btn" href="{{ url_for('auth.login', next=request.path) }}" aria-label="Войдите, чтобы добавить блюдо в избранное" title="Войдите, чтобы сохранить блюдо">
+            {{ icon("heart") }}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+  <div class="dish-card__body">
+    <div class="dish-card__meta">
+      <span itemprop="category">{{ dish['category_name'] }}</span>
+      {% if dish['weight'] %}<span>{{ dish['weight'] }}</span>{% endif %}
+    </div>
+    <h3 class="dish-card__name"><a href="{{ url_for('public.dish', slug=dish['slug']) }}" itemprop="name">{{ dish['name'] }}</a></h3>
+    <p class="dish-card__desc" itemprop="description">{{ dish['short_description'] }}</p>
+    <div class="dish-card__footer">
+      <div>
+        <span class="dish-card__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+          <span itemprop="price" content="{{ dish['price'] }}">{{ dish['price']|money }}</span>
+          <meta itemprop="priceCurrency" content="RUB">
+        </span>
+        <span class="dish-card__weight">{{ dish['category_name'] }}</span>
+      </div>
+      <a class="link-arrow" href="{{ url_for('public.dish', slug=dish['slug']) }}" aria-label="Подробнее о блюде «{{ dish['name'] }}»">
+        Подробнее {{ icon("arrow-right", "icon--sm") }}
+      </a>
+    </div>
+  </div>
+</article>
+{%- endmacro %}
+
+
+{% macro hall_card(hall) -%}
+<a class="hall-card" href="{{ url_for('public.hall', slug=hall['slug']) }}">
+  <div class="hall-card__media">
+    <img src="{{ image_url(hall['image']) }}" alt="{{ hall['name'] }} — {{ hall['tagline'] or 'интерьер чайханы' }}" loading="lazy" width="800" height="500">
+  </div>
+  <div class="hall-card__body">
+    <div class="hall-card__top">
+      <div>
+        <h3>{{ hall['name'] }}</h3>
+        <p class="hall-card__tagline">{{ hall['tagline'] }}</p>
+      </div>
+      <span class="hall-card__capacity">{{ icon("users", "icon--sm") }} до {{ hall['capacity'] }}</span>
+    </div>
+    {% if hall['features_list'] %}
+    <div class="hall-card__features">
+      {% for feature in hall['features_list'][:3] %}<span>{{ feature }}</span>{% endfor %}
+    </div>
+    {% endif %}
+    <div class="hall-card__footer">
+      <span>{{ hall['table_count'] }} {{ 'стол' if hall['table_count'] == 1 else ('стола' if hall['table_count'] in (2, 3, 4) else 'столов') }} · {{ hall['seats_total'] }} мест</span>
+      <span class="link-arrow">Смотреть зал {{ icon("arrow-right", "icon--sm") }}</span>
+    </div>
+  </div>
+</a>
+{%- endmacro %}
+
+
+{% macro review_card(review) -%}
+<article class="review-card">
+  <div class="stars" role="img" aria-label="Оценка {{ review['rating'] }} из 5">
+    {% for i in range(1, 6) %}{{ icon("star", "icon--sm") }}{% endfor %}
+  </div>
+  <p class="review-card__text">«{{ review['text'] }}»</p>
+  {% if review['admin_reply'] %}
+    <div class="notice mt-2">
+      {{ icon("chat") }}
+      <div><strong>Ответ ЧайHouse:</strong> {{ review['admin_reply'] }}</div>
+    </div>
+  {% endif %}
+  <div class="review-card__author">
+    <span class="avatar" aria-hidden="true">{{ review['author_name'][:1]|upper }}</span>
+    <div>
+      <strong>{{ review['author_name'] }}</strong>
+      <span class="muted"> · {{ review['created_at']|ru_datetime }}</span>
+    </div>
+  </div>
+</article>
+{%- endmacro %}
+
+
+{% macro pagination_nav(pages) -%}
+{% if pages and pages['pages'] > 1 %}
+<nav class="pagination" aria-label="Пагинация">
+  {% if pages['has_prev'] %}
+    <a href="{{ query_url(page=pages['prev']) }}" aria-label="Предыдущая страница">{{ icon("arrow-left", "icon--sm") }}</a>
+  {% else %}
+    <span class="is-disabled" aria-hidden="true">{{ icon("arrow-left", "icon--sm") }}</span>
+  {% endif %}
+  {% if pages['numbers'] and pages['numbers'][0] > 1 %}
+    <a href="{{ query_url(page=1) }}">1</a>
+    {% if pages['numbers'][0] > 2 %}<span class="is-disabled">…</span>{% endif %}
+  {% endif %}
+  {% for number in pages['numbers'] %}
+    {% if number == pages['page'] %}
+      <span class="is-active" aria-current="page">{{ number }}</span>
+    {% else %}
+      <a href="{{ query_url(page=number) }}">{{ number }}</a>
+    {% endif %}
+  {% endfor %}
+  {% if pages['numbers'] and pages['numbers'][-1] < pages['pages'] %}
+    {% if pages['numbers'][-1] < pages['pages'] - 1 %}<span class="is-disabled">…</span>{% endif %}
+    <a href="{{ query_url(page=pages['pages']) }}">{{ pages['pages'] }}</a>
+  {% endif %}
+  {% if pages['has_next'] %}
+    <a href="{{ query_url(page=pages['next']) }}" aria-label="Следующая страница">{{ icon("arrow-right", "icon--sm") }}</a>
+  {% else %}
+    <span class="is-disabled" aria-hidden="true">{{ icon("arrow-right", "icon--sm") }}</span>
+  {% endif %}
+  <span class="pagination__info">{{ pages['first'] }}–{{ pages['last'] }} из {{ pages['total'] }}</span>
+</nav>
+{% endif %}
+{%- endmacro %}
+
+
+{% macro status_badge(status) -%}
+{% set meta = status_meta(status) %}
+<span class="status-badge status-badge--{{ meta[1] }}">{{ meta[0] }}</span>
+{%- endmacro %}
+
+
+{% macro booking_row(booking, href) -%}
+{% set months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'] %}
+<a class="booking-row" href="{{ href }}">
+  <span class="booking-row__date">
+    <span class="booking-row__day">{{ booking['date'][8:10]|int }}</span>
+    <span class="booking-row__month">{{ months[booking['date'][5:7]|int - 1] }}</span>
+  </span>
+  <span>
+    <span class="booking-row__title">{{ booking['hall_name'] }} · {{ booking['table_name'] }}</span>
+    <span class="booking-row__meta">{{ booking['time'] }} · {{ booking['guests_count'] }} {{ 'гость' if booking['guests_count'] == 1 else ('гостя' if booking['guests_count'] in (2, 3, 4) else 'гостей') }}</span>
+  </span>
+  <span class="booking-row__side">
+    {{ status_badge(booking['status']) }}
+    <span class="booking-row__code">{{ booking['code'] }}</span>
+  </span>
+</a>
+{%- endmacro %}
+
+
+{% macro rating_bars(summary) -%}
+<div class="rating-bars" aria-label="Распределение оценок">
+  {% for star in [5, 4, 3, 2, 1] %}
+    {% set count = summary['distribution'][star] %}
+    {% set percent = (count / summary['count'] * 100) if summary['count'] else 0 %}
+    <div class="rating-bar">
+      <span>{{ star }} <span aria-hidden="true">★</span></span>
+      <svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true">
+        <rect class="rating-bar__track" width="100" height="8" rx="4"></rect>
+        <rect class="rating-bar__fill" width="{{ '%.1f'|format(percent) }}" height="8" rx="4"></rect>
+      </svg>
+      <span>{{ count }}</span>
+    </div>
+  {% endfor %}
+</div>
+{%- endmacro %}

@@ -1,0 +1,195 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon, status_badge %}
+
+{% block admin_content %}
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Админ-панель</p>
+    <h1>Добрый день, {{ current_user['name'].split()[0] }}</h1>
+    <p>Сегодня {{ stats['today_label'] }}. Здесь всё, что требует внимания: новые брони, отзывы и показатели дня.</p>
+  </div>
+  <div class="cluster">
+    <a class="btn btn--primary" href="{{ url_for('admin.bookings', status='pending') }}">{{ icon("calendar") }} Новые брони</a>
+    <a class="btn btn--ghost" href="{{ url_for('admin.menu_new') }}">{{ icon("plus") }} Блюдо</a>
+  </div>
+</div>
+
+<div class="admin-grid">
+  <div class="kpi">
+    <p class="kpi__label">Брони на сегодня</p>
+    <p class="kpi__value">{{ stats['today_total'] }}</p>
+    <p class="kpi__hint">{{ stats['today_guests']|guests }} по заявкам</p>
+  </div>
+  <div class="kpi">
+    <p class="kpi__label">Ждут подтверждения</p>
+    <p class="kpi__value">{{ stats['pending'] }}</p>
+    <p class="kpi__hint">Ответьте гостям в течение 15 минут</p>
+  </div>
+  <div class="kpi">
+    <p class="kpi__label">За 7 дней</p>
+    <p class="kpi__value">{{ stats['week'] }}</p>
+    <p class="kpi__hint">Заявок без отмен</p>
+  </div>
+  <div class="kpi">
+    <p class="kpi__label">Загрузка сегодня</p>
+    <p class="kpi__value">{{ stats['occupancy_today'] }}%</p>
+    <p class="kpi__hint">{{ stats['tables'] }} активных столов</p>
+  </div>
+</div>
+
+<div class="split-2">
+  <div class="panel">
+    <div class="panel__head">
+      <h2>Ждут подтверждения</h2>
+      <a class="link-arrow" href="{{ url_for('admin.bookings', status='pending') }}">Все заявки {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="panel__body panel__body--flush">
+      {% if pending %}
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption class="sr-only">Брони, ожидающие подтверждения</caption>
+            <thead>
+              <tr><th scope="col">Гость</th><th scope="col">Когда</th><th scope="col">Зал</th><th scope="col">Гостей</th><th scope="col"><span class="sr-only">Действие</span></th></tr>
+            </thead>
+            <tbody>
+              {% for booking in pending %}
+                <tr>
+                  <td>
+                    <strong>{{ booking['guest_name'] }}</strong><br>
+                    <span class="muted">{{ booking['code'] }}</span>
+                  </td>
+                  <td class="cell-num">{{ booking['date']|ru_date('short') }}<br>{{ booking['time'] }}</td>
+                  <td>{{ booking['hall_name'] }}<br><span class="muted">{{ booking['table_name'] }}</span></td>
+                  <td class="cell-num">{{ booking['guests_count'] }}</td>
+                  <td>
+                    <div class="cell-actions">
+                      <a class="btn btn--ghost btn--small" href="{{ url_for('admin.booking_detail', booking_id=booking['id']) }}">Открыть</a>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          {{ icon("check") }}
+          <h3>Все заявки обработаны</h3>
+          <p>Новые брони появятся здесь автоматически.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel__head">
+      <h2>Отзывы на модерации</h2>
+      <a class="link-arrow" href="{{ url_for('admin.reviews', status='pending') }}">Все {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="panel__body">
+      {% if reviews %}
+        <div class="stack">
+          {% for review in reviews %}
+            <article class="notification-item">
+              <span class="notification-item__icon">{{ icon("chat") }}</span>
+              <div>
+                <h3>{{ review['author_name'] }} · {{ review['rating'] }} из 5</h3>
+                <p>{{ review['text'][:160] }}{% if review['text']|length > 160 %}…{% endif %}</p>
+                <time datetime="{{ review['created_at'] }}">{{ review['created_at']|ru_datetime }}</time>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+        <a class="btn btn--ghost btn--block mt-3" href="{{ url_for('admin.reviews', status='pending') }}">Перейти к модерации</a>
+      {% else %}
+        <div class="empty-state">
+          {{ icon("star") }}
+          <h3>Новых отзывов нет</h3>
+          <p>Опубликованные отзывы видны на сайте.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="panel mt-3">
+  <div class="panel__head">
+    <h2>Брони на сегодня</h2>
+    <span class="muted">{{ today_bookings|length }} записей · {{ stats['today_guests']|guests }}</span>
+  </div>
+  <div class="panel__body panel__body--flush">
+    {% if today_bookings %}
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption class="sr-only">Брони на сегодня</caption>
+          <thead>
+            <tr><th scope="col">Время</th><th scope="col">Гость</th><th scope="col">Зал / стол</th><th scope="col">Гостей</th><th scope="col">Статус</th><th scope="col"><span class="sr-only">Действие</span></th></tr>
+          </thead>
+          <tbody>
+            {% for booking in today_bookings %}
+              <tr>
+                <td class="cell-num">{{ booking['time'] }}</td>
+                <td>{{ booking['guest_name'] }}<br><span class="muted">{{ booking['guest_phone']|pretty_phone }}</span></td>
+                <td>{{ booking['hall_name'] }} · {{ booking['table_name'] }}</td>
+                <td class="cell-num">{{ booking['guests_count'] }}</td>
+                <td>{{ status_badge(booking['status']) }}</td>
+                <td><div class="cell-actions"><a class="btn btn--ghost btn--small" href="{{ url_for('admin.booking_detail', booking_id=booking['id']) }}">Открыть</a></div></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        {{ icon("calendar") }}
+        <h3>На сегодня броней нет</h3>
+        <p>Заявки появятся здесь, как только гости выберут стол.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="split-2 mt-3">
+  <div class="panel">
+    <div class="panel__head"><h2>Статусы броней</h2></div>
+    <div class="panel__body">
+      <div class="bar-list">
+        {% set total_statuses = status_counts.values()|sum %}
+        {% for key, value in status_counts.items() %}
+          <div class="bar-item">
+            <div class="bar-item__top">
+              <span>{{ status_meta(key)[0] }}</span>
+              <span>{{ value }}</span>
+            </div>
+            <div class="bar-track">
+              <span class="bar-fill {{ 'bar-fill--teal' if key == 'confirmed' }}" data-width="{{ (value / total_statuses * 100) if total_statuses else 0 }}"></span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel__head">
+      <h2>Последние действия</h2>
+      <a class="link-arrow" href="{{ url_for('admin.audit') }}">Журнал {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="panel__body">
+      {% if audit %}
+        <div class="audit-list">
+          {% for entry in audit %}
+            <div class="audit-row">
+              <time datetime="{{ entry['created_at'] }}">{{ entry['created_at']|ru_datetime }}</time>
+              <span>{{ entry['actor_name'] or 'Система' }} · <code>{{ entry['action'] }}</code></span>
+              <span class="muted">{{ entry['entity_type'] or '' }} {{ entry['entity_id'] or '' }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">Журнал пока пуст.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

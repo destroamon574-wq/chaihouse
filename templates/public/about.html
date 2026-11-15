@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link, review_card, rating_bars %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="page-topbar">
+      <nav aria-label="Хлебные крошки">
+        <ol class="breadcrumbs">
+          <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+          <li><span aria-current="page">О чайхане</span></li>
+        </ol>
+      </nav>
+      {{ back_link(url_for('public.home')) }}
+    </div>
+    <div class="page-hero__inner">
+      <div>
+        <p class="eyebrow">Наша история</p>
+        <h1>Чайхана, в которую хочется вернуться</h1>
+        <p>Мы открылись на Ходынском бульваре, чтобы в большом городе появилось место для неспешного разговора, крепкого чая и честной восточной кухни.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container about-teaser">
+    <div class="about-teaser__media">
+      <img class="media-main" src="{{ image_url('img/hall-main.svg') }}" alt="Основной зал ЧайHouse" width="800" height="1000" loading="lazy">
+      <img class="media-small" src="{{ image_url('img/detail-lamp.svg') }}" alt="Латунная лампа с бахромой" width="400" height="300" loading="lazy">
+      <img class="media-small" src="{{ image_url('img/dish-plov.svg') }}" alt="Плов в казане" width="400" height="300" loading="lazy">
+      <span class="about-teaser__stamp">Готовим<br>с 2016 года</span>
+    </div>
+    <div class="about-teaser__body">
+      <p class="eyebrow">Философия</p>
+      <h2>Просто, честно и с уважением к продукту</h2>
+      <p>Мы не пытаемся удивить декорациями. Наша задача — чтобы плов был рассыпчатым, лагман — горячим, чай — крепким, а гостю хотелось остаться ещё на полчаса.</p>
+      <p>Поэтому готовим на живом огне, маринуем мясо сами, замешиваем тесто для мантов и самсы каждое утро. А ещё следим, чтобы в зале было тепло и негромко: восточная музыка не должна мешать разговору.</p>
+      <ul class="about-teaser__points">
+        <li>{{ icon("flame", "icon--sm") }} Плов и шашлык на живом огне</li>
+        <li>{{ icon("chef", "icon--sm") }} Ручная лепка мантов и самсы</li>
+        <li>{{ icon("leaf", "icon--sm") }} Сезонные овощи и свежая зелень</li>
+        <li>{{ icon("chat", "icon--sm") }} Гостям с детьми — стулья и отдельные блюда</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section section--sand">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Принципы</p>
+        <h2>Что для нас важно</h2>
+      </div>
+    </div>
+    <div class="grid grid--3">
+      <article class="review-card">
+        <span class="feature__icon">{{ icon("chef") }}</span>
+        <h3 class="mt-2">Кухня без полуфабрикатов</h3>
+        <p class="muted mt-2">Маринуем, замешиваем тесто и варим бульоны сами. Если блюдо требует времени — готовим заранее, а не ускоряем процесс.</p>
+      </article>
+      <article class="review-card">
+        <span class="feature__icon">{{ icon("users") }}</span>
+        <h3 class="mt-2">Место для всех</h3>
+        <p class="muted mt-2">Столик на двоих, длинный стол на компанию, отдельный зал для праздника. Поможем выбрать под ваш повод.</p>
+      </article>
+      <article class="review-card">
+        <span class="feature__icon">{{ icon("shield") }}</span>
+        <h3 class="mt-2">Понятные правила</h3>
+        <p class="muted mt-2">Бронирование онлайн, прозрачные цены, честные сроки подготовки. Если что-то меняется — предупреждаем заранее.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Отзывы</p>
+        <h2>Гости о ЧайHouse</h2>
+        <p>Средняя оценка — {{ review_summary['avg']|replace('.', ',') }} из 5. Мы публикуем отзывы после модерации и отвечаем на каждый.</p>
+      </div>
+      <a class="section__link" href="{{ url_for('public.reviews_page') }}">Читать все {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="rating-summary mb-3">
+      <div class="rating-summary__score">
+        {{ review_summary['avg']|replace('.', ',') }}
+        <small>{{ review_summary['count'] }} отзывов</small>
+      </div>
+      {{ rating_bars(review_summary) }}
+    </div>
+    <div class="grid grid--3">
+      {% for review in reviews %}{{ review_card(review) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container cta-band__inner">
+    <div>
+      <h2>Приходите знакомиться</h2>
+      <p>Мы на третьем этаже ТРЦ «Авиапарк». Забронируйте стол заранее — так у вас точно будет любимое место.</p>
+    </div>
+    <div class="cta-band__actions">
+      <a class="btn btn--primary" href="{{ url_for('booking.new') }}">{{ icon("calendar") }} Забронировать</a>
+      <a class="btn btn--ghost" href="{{ url_for('public.contacts') }}">{{ icon("pin") }} Контакты</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

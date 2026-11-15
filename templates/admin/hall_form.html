@@ -1,0 +1,120 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon %}
+
+{% set v_name = request.form.get('name', '') if request.method == 'POST' else hall['name'] %}
+{% set v_tagline = request.form.get('tagline', '') if request.method == 'POST' else (hall['tagline'] or '') %}
+{% set v_description = request.form.get('description', '') if request.method == 'POST' else hall['description'] %}
+{% set v_capacity = request.form.get('capacity', '') if request.method == 'POST' else hall['capacity'] %}
+{% set v_min_spend = request.form.get('min_spend', '') if request.method == 'POST' else hall['min_spend'] %}
+{% set v_features = request.form.get('features', '') if request.method == 'POST' else features_text %}
+{% set v_sort = request.form.get('sort_order', '') if request.method == 'POST' else hall['sort_order'] %}
+{% set v_preset = request.form.get('image_preset', '') if request.method == 'POST' else hall['image'] %}
+
+{% block admin_content %}
+<nav aria-label="Хлебные крошки">
+  <ol class="breadcrumbs">
+    <li><a href="{{ url_for('admin.dashboard') }}">Админ-панель</a></li>
+    <li><a href="{{ url_for('admin.halls') }}">Залы</a></li>
+    <li><span aria-current="page">{{ hall['name'] }}</span></li>
+  </ol>
+</nav>
+
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Зал</p>
+    <h1>{{ hall['name'] }}</h1>
+    <p>Измените описание и фотографию. Столы добавляются в разделе «Залы и столы».</p>
+  </div>
+  <a class="btn btn--quiet" href="{{ url_for('admin.halls') }}">{{ icon("arrow-left") }} К залам</a>
+</div>
+
+{% if errors %}
+  <div class="form-error-summary mb-3" role="alert">
+    {% for message in errors.values() %}<p>{{ message }}</p>{% endfor %}
+  </div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="split-2">
+    <div class="panel">
+      <div class="panel__head"><h2>Описание зала</h2></div>
+      <div class="panel__body">
+        <div class="form-grid">
+          <div class="field field--full {{ 'field--error' if errors.get('name') }}">
+            <label for="hall-name">Название</label>
+            <input class="input" type="text" id="hall-name" name="name" value="{{ v_name }}" minlength="2" maxlength="80" required>
+            {% if errors.get('name') %}<span class="field__error" role="alert">{{ errors['name'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('tagline') }}">
+            <label for="hall-tagline">Короткая строка</label>
+            <input class="input" type="text" id="hall-tagline" name="tagline" value="{{ v_tagline }}" maxlength="120" placeholder="Тёплый свет и большие компании">
+            {% if errors.get('tagline') %}<span class="field__error" role="alert">{{ errors['tagline'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('description') }}">
+            <label for="hall-description">Описание</label>
+            <textarea class="textarea" id="hall-description" name="description" rows="6" minlength="20" maxlength="3000" required>{{ v_description }}</textarea>
+            <span class="field__hint">Минимум 20 символов. Показывается на странице зала.</span>
+            {% if errors.get('description') %}<span class="field__error" role="alert">{{ errors['description'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('capacity') }}">
+            <label for="hall-capacity">Вместимость, гостей</label>
+            <input class="input" type="number" id="hall-capacity" name="capacity" value="{{ v_capacity }}" min="1" max="200" required>
+            {% if errors.get('capacity') %}<span class="field__error" role="alert">{{ errors['capacity'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('min_spend') }}">
+            <label for="hall-min-spend">Минимальный чек, ₽</label>
+            <input class="input" type="number" id="hall-min-spend" name="min_spend" value="{{ v_min_spend }}" min="0" max="1000000" step="500">
+            {% if errors.get('min_spend') %}<span class="field__error" role="alert">{{ errors['min_spend'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('features') }}">
+            <label for="hall-features">Особенности</label>
+            <textarea class="textarea" id="hall-features" name="features" rows="4" placeholder="Панорамные окна&#10;Тихое место&#10;Детские стулья">{{ v_features }}</textarea>
+            <span class="field__hint">Каждая особенность — с новой строки или через запятую.</span>
+            {% if errors.get('features') %}<span class="field__error" role="alert">{{ errors['features'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('sort_order') }}">
+            <label for="hall-sort">Сортировка</label>
+            <input class="input" type="number" id="hall-sort" name="sort_order" value="{{ v_sort }}" min="-999" max="999" step="1">
+            {% if errors.get('sort_order') %}<span class="field__error" role="alert">{{ errors['sort_order'] }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Фотография зала</h2></div>
+      <div class="panel__body">
+        <img src="{{ image_url(hall['image']) }}" alt="Текущее изображение зала" width="800" height="500" class="form-image">
+        <div class="field mt-3">
+          <label for="hall-image">Загрузить фотографию</label>
+          <input class="input" type="file" id="hall-image" name="image_file" accept="image/png,image/jpeg,image/webp">
+          <span class="field__hint">PNG, JPEG или WebP, до 3 МБ.</span>
+          {% if errors.get('image') %}<span class="field__error" role="alert">{{ errors['image'] }}</span>{% endif %}
+        </div>
+        <fieldset class="mt-3">
+          <legend class="field__label">Локальные иллюстрации</legend>
+          <div class="image-presets">
+            {% for path, label in presets %}
+              <label class="image-preset">
+                <input type="radio" name="image_preset" value="{{ path }}" {{ 'checked' if v_preset == path }}>
+                <img src="{{ image_url(path) }}" alt="" width="120" height="90" loading="lazy">
+                <span>{{ label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          <label class="checkbox mt-2">
+            <input type="radio" name="image_preset" value="" {{ 'checked' if v_preset == hall['image'] }}>
+            <span>Оставить текущее изображение</span>
+          </label>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions mt-3">
+    <button class="btn btn--primary" type="submit">{{ icon("check") }} Сохранить зал</button>
+    <a class="btn btn--quiet" href="{{ url_for('admin.halls') }}">Отмена</a>
+  </div>
+</form>
+{% endblock %}

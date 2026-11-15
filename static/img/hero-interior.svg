@@ -1,0 +1,271 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Интерьер чайханы ЧайHouse: тёплый свет, резные узоры и бирюзовые диваны">
+  <title>Основной зал ЧайHouse вечером</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1118"/>
+      <stop offset=".55" stop-color="#122630"/>
+      <stop offset="1" stop-color="#1c3133"/>
+    </linearGradient>
+    <linearGradient id="room" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#19120e"/>
+      <stop offset=".55" stop-color="#211711"/>
+      <stop offset="1" stop-color="#0e0a08"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#33241b"/>
+      <stop offset=".5" stop-color="#241810"/>
+      <stop offset="1" stop-color="#120c09"/>
+    </linearGradient>
+    <radialGradient id="warm" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#ffd796" stop-opacity=".9"/>
+      <stop offset=".35" stop-color="#f0a84e" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#f0a84e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lamp" cx=".5" cy=".35" r=".65">
+      <stop offset="0" stop-color="#ffe7b8"/>
+      <stop offset=".5" stop-color="#e9ad58"/>
+      <stop offset="1" stop-color="#8c5523"/>
+    </radialGradient>
+    <radialGradient id="vignette" cx=".5" cy=".45" r=".72">
+      <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".72"/>
+    </radialGradient>
+    <pattern id="lattice" width="132" height="132" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#d2a35a" stroke-width="2" opacity=".55">
+        <path d="M66 4 L94 38 L128 66 L94 94 L66 128 L38 94 L4 66 L38 38 Z"/>
+        <path d="M66 20 L106 66 L66 112 L26 66 Z"/>
+        <path d="M4 66 H128 M66 4 V128"/>
+        <circle cx="66" cy="66" r="10"/>
+      </g>
+    </pattern>
+    <pattern id="suzani" width="140" height="140" patternUnits="userSpaceOnUse">
+      <rect width="140" height="140" fill="#1c5753"/>
+      <g fill="none" stroke="#d8cab0" stroke-width="3" opacity=".55">
+        <path d="M20 40 q30 -34 58 0 q-24 30 -58 0"/>
+        <path d="M82 86 q30 -34 58 0 q-24 30 -58 0"/>
+        <path d="M0 102 q20 -20 40 0 q-18 18 -40 0"/>
+        <path d="M96 24 q16 -16 34 0 q-16 16 -34 0"/>
+        <circle cx="48" cy="44" r="4" fill="#e6d7bc" stroke="none"/>
+        <circle cx="110" cy="90" r="4" fill="#e6d7bc" stroke="none"/>
+      </g>
+    </pattern>
+    <pattern id="burgundy" width="110" height="110" patternUnits="userSpaceOnUse">
+      <rect width="110" height="110" fill="#6f2730"/>
+      <g fill="none" stroke="#e8cdb5" stroke-width="2.4" opacity=".5">
+        <path d="M18 26 q18 -18 36 0 q-16 18 -36 0"/>
+        <path d="M58 68 q18 -18 36 0 q-16 18 -36 0"/>
+        <path d="M8 84 q14 -14 28 0 q-14 14 -28 0"/>
+      </g>
+    </pattern>
+    <pattern id="wood" width="200" height="24" patternUnits="userSpaceOnUse">
+      <rect width="200" height="24" fill="#5b3a24"/>
+      <path d="M0 22 H200" stroke="#301d12" stroke-width="2" opacity=".5"/>
+      <path d="M0 6 H200" stroke="#8b5d3a" stroke-width="1" opacity=".3"/>
+    </pattern>
+    <filter id="blur"><feGaussianBlur stdDeviation="22"/></filter>
+    <filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity=".55"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".055"/></feComponentTransfer>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#room)"/>
+
+  <!-- окна и город -->
+  <g>
+    <rect x="40" y="190" width="500" height="390" fill="url(#sky)"/>
+    <g fill="#f4d597" opacity=".55">
+      <circle cx="110" cy="300" r="3"/><circle cx="160" cy="355" r="2"/><circle cx="235" cy="270" r="2.5"/>
+      <circle cx="300" cy="410" r="2"/><circle cx="370" cy="320" r="3"/><circle cx="450" cy="380" r="2"/>
+      <circle cx="500" cy="260" r="2"/><circle cx="70" cy="450" r="2"/><circle cx="420" cy="475" r="2"/>
+    </g>
+    <g fill="#0b171d" opacity=".8">
+      <rect x="60" y="360" width="90" height="220"/><rect x="175" y="300" width="70" height="280"/>
+      <rect x="270" y="390" width="110" height="190"/><rect x="405" y="330" width="80" height="250"/>
+    </g>
+    <g fill="#f0b86a" opacity=".35">
+      <rect x="72" y="380" width="22" height="16"/><rect x="110" y="410" width="24" height="14"/>
+      <rect x="190" y="330" width="18" height="14"/><rect x="300" y="420" width="26" height="16"/>
+      <rect x="425" y="360" width="20" height="14"/><rect x="455" y="410" width="18" height="12"/>
+    </g>
+    <rect x="40" y="190" width="500" height="390" fill="none" stroke="#3c2c20" stroke-width="18"/>
+    <path d="M104 190 V580 M170 190 V580" stroke="#2b2019" stroke-width="8"/>
+    <!-- шторы -->
+    <path d="M60 140 q60 220 20 470 l-70 0 0 -470Z" fill="#c7b18f" opacity=".82"/>
+    <path d="M95 150 q28 220 8 440" stroke="#9f8a6c" stroke-width="8" fill="none" opacity=".45"/>
+    <path d="M470 145 q-52 230 -14 465 l94 0 0 -465Z" fill="#cbb693" opacity=".82"/>
+    <path d="M505 160 q-24 210 -6 430" stroke="#a38c6c" stroke-width="8" fill="none" opacity=".4"/>
+    <path d="M560 150 q60 200 24 460 l-80 0 0 -460Z" fill="#0d1d2c" opacity=".85"/>
+  </g>
+
+  <!-- потолочные панели -->
+  <g opacity=".72">
+    <path d="M0 0 H1600 L1500 170 L980 120 L520 150 L90 115 Z" fill="#16100c"/>
+    <g fill="url(#lattice)" opacity=".55">
+      <path d="M90 0 L350 0 L320 118 L120 96 Z"/>
+      <path d="M390 0 L700 0 L680 112 L365 116 Z"/>
+      <path d="M740 0 L1040 0 L1030 112 L720 112 Z"/>
+      <path d="M1080 0 L1360 0 L1390 120 L1070 112 Z"/>
+      <path d="M1400 0 L1600 0 L1600 125 L1420 122 Z"/>
+    </g>
+    <path d="M0 168 H1600" stroke="#a97c3f" stroke-width="2" opacity=".35"/>
+  </g>
+
+  <!-- бар и стена справа -->
+  <g>
+    <rect x="1000" y="260" width="600" height="360" fill="#17100c"/>
+    <rect x="1000" y="260" width="600" height="28" fill="#3d2a1c"/>
+    <g fill="#2a1d14" stroke="#8e6735" stroke-width="2">
+      <rect x="1040" y="318" width="120" height="150"/>
+      <rect x="1180" y="318" width="120" height="150"/>
+      <rect x="1320" y="318" width="120" height="150"/>
+      <rect x="1460" y="318" width="100" height="150"/>
+    </g>
+    <g fill="#d7a44e" opacity=".5">
+      <circle cx="1100" cy="370" r="16"/><circle cx="1240" cy="370" r="16"/>
+      <circle cx="1380" cy="370" r="16"/><circle cx="1510" cy="370" r="16"/>
+    </g>
+    <g fill="#3f2b1c">
+      <rect x="1030" y="492" width="540" height="14"/>
+      <rect x="1040" y="506" width="12" height="90"/><rect x="1550" y="506" width="12" height="90"/>
+    </g>
+    <!-- полки с посудой -->
+    <g opacity=".8">
+      <path d="M1030 330 H1580" stroke="#7a5730" stroke-width="5"/>
+      <g fill="#d9c3a3">
+        <ellipse cx="1080" cy="320" rx="16" ry="8"/><ellipse cx="1130" cy="318" rx="20" ry="10"/>
+        <ellipse cx="1210" cy="320" rx="14" ry="8"/><ellipse cx="1260" cy="318" rx="18" ry="9"/>
+        <ellipse cx="1410" cy="318" rx="20" ry="9"/><ellipse cx="1490" cy="320" rx="16" ry="8"/>
+      </g>
+    </g>
+    <!-- вывеска -->
+    <g transform="translate(1310 205)">
+      <circle cx="0" cy="0" r="56" fill="#20120d" stroke="#e05b2a" stroke-width="6"/>
+      <circle cx="0" cy="0" r="43" fill="none" stroke="#f3b45f" stroke-width="2"/>
+      <text x="0" y="8" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#f8e6cb" letter-spacing="1.5">ЧАЙHOUSE</text>
+      <text x="0" y="27" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#e2a25f" letter-spacing="4">ЧАЙХАНА</text>
+    </g>
+    <g filter="url(#blur8)" opacity=".55">
+      <circle cx="1310" cy="205" r="85" fill="#e9763c"/>
+    </g>
+  </g>
+
+  <!-- центральные светильники -->
+  <g>
+    <g transform="translate(690 0)">
+      <path d="M0 0 V120" stroke="#4a3524" stroke-width="4"/>
+      <path d="M-108 190 q108 -120 216 0Z" fill="url(#lamp)" filter="url(#shadow)"/>
+      <path d="M-112 190 H112" stroke="#e7bb72" stroke-width="7"/>
+      <g stroke="#d9a24c" stroke-width="2" opacity=".8">
+        <path d="M-108 194 V235"/><path d="M-90 194 V242"/><path d="M-72 194 V248"/><path d="M-54 194 V252"/>
+        <path d="M-36 194 V255"/><path d="M-18 194 V257"/><path d="M0 194 V258"/><path d="M18 194 V257"/>
+        <path d="M36 194 V255"/><path d="M54 194 V252"/><path d="M72 194 V248"/><path d="M90 194 V242"/><path d="M108 194 V235"/>
+      </g>
+      <circle cx="0" cy="195" r="190" fill="url(#warm)" opacity=".55"/>
+    </g>
+    <g transform="translate(1080 0) scale(.78)">
+      <path d="M0 0 V160" stroke="#4a3524" stroke-width="4"/>
+      <path d="M-108 230 q108 -120 216 0Z" fill="url(#lamp)" filter="url(#shadow)"/>
+      <path d="M-112 230 H112" stroke="#e7bb72" stroke-width="7"/>
+      <g stroke="#d9a24c" stroke-width="2" opacity=".8">
+        <path d="M-96 234 V270"/><path d="M-72 234 V276"/><path d="M-48 234 V280"/><path d="M-24 234 V282"/>
+        <path d="M0 234 V284"/><path d="M24 234 V282"/><path d="M48 234 V280"/><path d="M72 234 V276"/><path d="M96 234 V270"/>
+      </g>
+      <circle cx="0" cy="235" r="170" fill="url(#warm)" opacity=".45"/>
+    </g>
+    <g transform="translate(390 0) scale(.62)">
+      <path d="M0 0 V210" stroke="#4a3524" stroke-width="4"/>
+      <path d="M-96 290 q96 -108 192 0Z" fill="url(#lamp)"/>
+      <path d="M-100 290 H100" stroke="#e7bb72" stroke-width="8"/>
+      <circle cx="0" cy="292" r="160" fill="url(#warm)" opacity=".4"/>
+    </g>
+  </g>
+
+  <!-- диваны и столы -->
+  <g filter="url(#shadow)">
+    <g transform="translate(120 620)">
+      <rect x="0" y="0" width="360" height="150" rx="30" fill="url(#suzani)"/>
+      <rect x="18" y="-70" width="324" height="96" rx="26" fill="url(#suzani)"/>
+      <rect x="18" y="-70" width="324" height="20" rx="10" fill="#2e6b63" opacity=".8"/>
+      <rect x="20" y="112" width="16" height="38" fill="#2b1b12"/>
+      <rect x="324" y="112" width="16" height="38" fill="#2b1b12"/>
+      <g>
+        <rect x="42" y="-42" width="82" height="62" rx="14" fill="#6d2932" opacity=".95"/>
+        <rect x="136" y="-48" width="82" height="68" rx="14" fill="#d8c7ad" opacity=".9"/>
+        <rect x="230" y="-42" width="80" height="62" rx="14" fill="url(#burgundy)"/>
+      </g>
+    </g>
+    <g transform="translate(540 690)">
+      <rect x="0" y="0" width="390" height="90" rx="14" fill="url(#wood)"/>
+      <rect x="30" y="10" width="120" height="62" rx="6" fill="#3b2a1f"/>
+      <rect x="160" y="10" width="120" height="62" rx="6" fill="#3b2a1f"/>
+      <rect x="290" y="10" width="70" height="62" rx="6" fill="#3b2a1f"/>
+      <rect x="40" y="90" width="18" height="100" fill="#24170f"/>
+      <rect x="330" y="90" width="18" height="100" fill="#24170f"/>
+    </g>
+    <g transform="translate(1020 680)">
+      <rect x="0" y="0" width="330" height="140" rx="28" fill="#c8b18c"/>
+      <rect x="24" y="-60" width="282" height="84" rx="24" fill="#d8c3a2"/>
+      <path d="M24 -12 q140 26 282 0" stroke="#ae9674" stroke-width="5" fill="none" opacity=".5"/>
+      <rect x="20" y="120" width="14" height="42" fill="#2b1b12"/>
+      <rect x="296" y="120" width="14" height="42" fill="#2b1b12"/>
+      <rect x="30" y="-38" width="64" height="52" rx="10" fill="url(#burgundy)" transform="rotate(-8 62 -12)"/>
+      <rect x="238" y="-40" width="64" height="52" rx="10" fill="url(#suzani)" transform="rotate(8 270 -14)"/>
+    </g>
+  </g>
+
+  <!-- стулья на переднем плане -->
+  <g filter="url(#shadow)">
+    <g transform="translate(830 690)">
+      <rect x="0" y="0" width="180" height="120" rx="26" fill="url(#burgundy)"/>
+      <rect x="12" y="26" width="156" height="90" rx="20" fill="url(#burgundy)"/>
+      <rect x="20" y="118" width="14" height="90" fill="#26170f"/>
+      <rect x="146" y="118" width="14" height="90" fill="#26170f"/>
+    </g>
+    <g transform="translate(40 760)">
+      <rect x="0" y="0" width="250" height="150" rx="34" fill="#c9b28f"/>
+      <rect x="16" y="-58" width="218" height="84" rx="24" fill="#d7c3a5"/>
+      <rect x="20" y="140" width="14" height="70" fill="#26170f"/>
+      <rect x="216" y="140" width="14" height="70" fill="#26170f"/>
+    </g>
+  </g>
+
+  <!-- передний стол -->
+  <g>
+    <ellipse cx="800" cy="860" rx="600" ry="80" fill="#0a0605" opacity=".5" filter="url(#blur)"/>
+    <rect x="80" y="800" width="1440" height="150" rx="24" fill="#5b3a24"/>
+    <rect x="80" y="800" width="1440" height="18" fill="#8b5d3a" opacity=".55"/>
+    <g fill="#31221a">
+      <rect x="180" y="820" width="220" height="92" rx="6"/>
+      <rect x="440" y="820" width="220" height="92" rx="6"/>
+      <rect x="700" y="820" width="220" height="92" rx="6"/>
+      <rect x="960" y="820" width="220" height="92" rx="6"/>
+      <rect x="1220" y="820" width="180" height="92" rx="6"/>
+    </g>
+    <g transform="translate(600 800)">
+      <path d="M-62 0 q0 62 62 62 q62 0 62 -62 q-62 16 -124 0" fill="#e9dcc8" opacity=".9"/>
+      <ellipse cx="0" cy="0" rx="62" ry="18" fill="#f7eedf" opacity=".9"/>
+      <ellipse cx="0" cy="2" rx="48" ry="11" fill="#8a4a2b" opacity=".55"/>
+      <path d="M34 -110 L-8 0" stroke="#f3e6d1" stroke-width="8" opacity=".8"/>
+      <path d="M34 -110 l-8 -26" stroke="#f3e6d1" stroke-width="7" opacity=".8"/>
+    </g>
+    <g transform="translate(1040 830)">
+      <path d="M0 0 v-120" stroke="#e8dcc8" stroke-width="5" opacity=".6"/>
+      <path d="M-30 -120 h60 l-8 -40 h-44Z" fill="#e8dcc8" opacity=".5"/>
+    </g>
+  </g>
+
+  <!-- пол -->
+  <g opacity=".85">
+    <path d="M0 940 H1600 V1000 H0Z" fill="url(#floor)"/>
+    <path d="M300 950 L120 1000 M700 950 L640 1000 M1000 950 L1080 1000 M1350 950 L1460 1000" stroke="#5a3c28" stroke-width="2" opacity=".5"/>
+  </g>
+
+  <rect width="1600" height="1000" fill="url(#vignette)"/>
+  <rect width="1600" height="1000" filter="url(#grain)" opacity=".65"/>
+</svg>

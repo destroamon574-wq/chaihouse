@@ -1,0 +1,27 @@
+{% extends "account/layout.html" %}
+{% from "components/ui.html" import icon, dish_card %}
+
+{% block account_content %}
+<div class="dashboard-head">
+  <div>
+    <p class="eyebrow">Сохранённое</p>
+    <h1>Избранные блюда</h1>
+    <p class="muted mt-1">То, что вы отметили сердечком. Список привязан к аккаунту.</p>
+  </div>
+  <a class="btn btn--ghost" href="{{ url_for('public.menu') }}">{{ icon("utensils") }} В меню</a>
+</div>
+
+{% if dishes %}
+  {% set favorite_ids = dishes|map(attribute='id')|list %}
+  <div class="grid grid--3">
+    {% for dish in dishes %}{{ dish_card(dish, favorite_ids) }}{% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    {{ icon("heart") }}
+    <h3>В избранном пока пусто</h3>
+    <p>Отмечайте блюда сердечком в меню — они появятся здесь, чтобы потом было проще выбрать.</p>
+    <a class="btn btn--primary mt-3" href="{{ url_for('public.menu') }}">Перейти в меню</a>
+  </div>
+{% endif %}
+{% endblock %}

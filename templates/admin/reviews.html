@@ -1,0 +1,77 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon, pagination_nav %}
+
+{% set status_labels = {'pending': 'На модерации', 'published': 'Опубликован', 'rejected': 'Отклонён'} %}
+{% set status_classes = {'pending': 'warning', 'published': 'success', 'rejected': 'danger'} %}
+
+{% block admin_content %}
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Отзывы</p>
+    <h1>Модерация отзывов</h1>
+    <p>Опубликованные отзывы видны на сайте. На отзыв можно ответить от имени ЧайHouse — ответ появится под текстом.</p>
+  </div>
+  <a class="btn btn--ghost" href="{{ url_for('public.reviews_page') }}">{{ icon("eye") }} Отзывы на сайте</a>
+</div>
+
+<div class="chip-row mb-3" role="group" aria-label="Статус отзывов">
+  <a class="chip {{ 'is-active' if status == 'pending' }}" href="{{ url_for('admin.reviews', status='pending') }}">На модерации</a>
+  <a class="chip {{ 'is-active' if status == 'published' }}" href="{{ url_for('admin.reviews', status='published') }}">Опубликованные</a>
+  <a class="chip {{ 'is-active' if status == 'rejected' }}" href="{{ url_for('admin.reviews', status='rejected') }}">Отклонённые</a>
+  <a class="chip {{ 'is-active' if status == 'all' }}" href="{{ url_for('admin.reviews', status='all') }}">Все</a>
+</div>
+
+{% if reviews %}
+  <div class="stack">
+    {% for review in reviews %}
+      <article class="panel">
+        <div class="panel__head">
+          <div>
+            <h2>{{ review['author_name'] }}</h2>
+            <p class="muted">{{ review['created_at']|ru_datetime }} · {{ review['rating'] }} из 5</p>
+          </div>
+          <span class="status-badge status-badge--{{ status_classes.get(review['status'], 'muted') }}">{{ status_labels.get(review['status'], review['status']) }}</span>
+        </div>
+        <div class="panel__body">
+          <p>{{ review['text'] }}</p>
+          {% if review['admin_reply'] %}
+            <div class="notice mt-3">
+              {{ icon("chat") }}
+              <div><strong>Ответ:</strong> {{ review['admin_reply'] }}</div>
+            </div>
+          {% endif %}
+
+          <form class="mt-3" method="post" action="{{ url_for('admin.review_moderate', review_id=review['id']) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ request.full_path }}">
+            <div class="field">
+              <label for="review-reply-{{ review['id'] }}">Ответ гостю <span class="muted">(необязательно)</span></label>
+              <textarea class="textarea" id="review-reply-{{ review['id'] }}" name="reply" rows="3" maxlength="500" placeholder="Спасибо за отзыв!">{{ review['admin_reply'] or '' }}</textarea>
+            </div>
+            <div class="form-actions mt-2">
+              {% if review['status'] != 'published' %}
+                <button class="btn btn--primary btn--small" type="submit" name="action" value="publish">{{ icon("check", "icon--sm") }} Опубликовать</button>
+              {% endif %}
+              {% if review['status'] != 'rejected' %}
+                <button class="btn btn--danger btn--small" type="submit" name="action" value="reject" data-confirm="Отклонить отзыв? Он не будет виден на сайте.">{{ icon("x", "icon--sm") }} Отклонить</button>
+              {% endif %}
+              {% if review['status'] != 'pending' %}
+                <button class="btn btn--quiet btn--small" type="submit" name="action" value="pending">Вернуть на модерацию</button>
+              {% endif %}
+              <button class="btn btn--ghost btn--small" type="submit" name="action" value="save">Сохранить ответ</button>
+            </div>
+          </form>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+  {{ pagination_nav(pages) }}
+{% else %}
+  <div class="empty-state">
+    {{ icon("star") }}
+    <h3>Отзывов в этом разделе нет</h3>
+    <p>Новые отзывы гостей появятся здесь после отправки и будут ждать модерации.</p>
+    <a class="btn btn--ghost mt-3" href="{{ url_for('admin.reviews', status='all') }}">Показать все отзывы</a>
+  </div>
+{% endif %}
+{% endblock %}

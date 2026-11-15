@@ -1,0 +1,88 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon %}
+
+{% block admin_content %}
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Залы</p>
+    <h1>Залы и столы</h1>
+    <p>Управляйте вместимостью, описанием и доступностью столов. Скрытый зал исчезает с сайта и из бронирования.</p>
+  </div>
+  <a class="btn btn--ghost" href="{{ url_for('public.halls') }}">{{ icon("eye") }} Залы на сайте</a>
+</div>
+
+<div class="grid grid--2">
+  {% for hall in halls %}
+    <div class="panel">
+      <div class="panel__head">
+        <h2>{{ hall['name'] }}</h2>
+        <span class="status-badge status-badge--{{ 'success' if hall['is_active'] else 'muted' }}">{{ 'Активен' if hall['is_active'] else 'Скрыт' }}</span>
+      </div>
+      <div class="panel__body">
+        <img src="{{ image_url(hall['image']) }}" alt="{{ hall['name'] }}" width="800" height="500" class="form-image">
+        <dl class="detail-list mt-3">
+          <div><dt>Вместимость</dt><dd>{{ hall['capacity'] }} гостей</dd></div>
+          <div><dt>Столов</dt><dd>{{ hall['table_count'] }} · {{ hall['seats_total'] }} мест</dd></div>
+          <div><dt>Минимальный чек</dt><dd>{{ hall['min_spend']|money }}</dd></div>
+          <div><dt>Сортировка</dt><dd>{{ hall['sort_order'] }}</dd></div>
+        </dl>
+        <div class="cluster mt-3">
+          <a class="btn btn--ghost btn--small" href="{{ url_for('admin.hall_edit', hall_id=hall['id']) }}">{{ icon("edit", "icon--sm") }} Изменить</a>
+          <form method="post" action="{{ url_for('admin.hall_toggle', hall_id=hall['id']) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn--quiet btn--small" type="submit">{{ 'Скрыть' if hall['is_active'] else 'Открыть' }}</button>
+          </form>
+        </div>
+
+        <form class="inline-form mt-3" method="post" action="{{ url_for('admin.table_add', hall_id=hall['id']) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="field mb-0">
+            <label class="sr-only" for="table-name-{{ hall['id'] }}">Название стола</label>
+            <input class="input" type="text" id="table-name-{{ hall['id'] }}" name="name" placeholder="Стол 9" maxlength="40" required>
+          </div>
+          <div class="field mb-0">
+            <label class="sr-only" for="table-seats-{{ hall['id'] }}">Мест</label>
+            <input class="input" type="number" id="table-seats-{{ hall['id'] }}" name="seats" placeholder="4" min="1" max="30" required>
+          </div>
+          <button class="btn btn--primary btn--small" type="submit">{{ icon("plus", "icon--sm") }} Стол</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="panel mt-3">
+  <div class="panel__head">
+    <h2>Все столы</h2>
+    <span class="muted">{{ tables|length }} записей</span>
+  </div>
+  <div class="panel__body panel__body--flush">
+    <div class="table-wrap">
+      <table class="data-table">
+        <caption class="sr-only">Столы во всех залах</caption>
+        <thead>
+          <tr><th scope="col">Зал</th><th scope="col">Стол</th><th scope="col">Мест</th><th scope="col">Статус</th><th scope="col"><span class="sr-only">Действие</span></th></tr>
+        </thead>
+        <tbody>
+          {% for table in tables %}
+            <tr>
+              <td>{{ table['hall_name'] }}</td>
+              <td><strong>{{ table['name'] }}</strong></td>
+              <td class="cell-num">{{ table['seats'] }}</td>
+              <td><span class="status-badge status-badge--{{ 'success' if table['is_active'] else 'muted' }}">{{ 'Активен' if table['is_active'] else 'Выключен' }}</span></td>
+              <td>
+                <div class="cell-actions">
+                  <form method="post" action="{{ url_for('admin.table_toggle', table_id=table['id']) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn--quiet btn--small" type="submit">{{ 'Выключить' if table['is_active'] else 'Включить' }}</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

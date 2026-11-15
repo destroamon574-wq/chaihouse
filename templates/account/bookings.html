@@ -1,0 +1,46 @@
+{% extends "account/layout.html" %}
+{% from "components/ui.html" import icon, booking_row %}
+
+{% block account_content %}
+<div class="dashboard-head">
+  <div>
+    <p class="eyebrow">История и планы</p>
+    <h1>Мои брони</h1>
+    <p class="muted mt-1">Все брони, которые вы оформили на сайте. Здесь же можно отменить активную.</p>
+  </div>
+  <a class="btn btn--primary" href="{{ url_for('booking.new') }}">{{ icon("calendar") }} Новая бронь</a>
+</div>
+
+<div class="chip-row mb-3" role="group" aria-label="Период броней">
+  <a class="chip {{ 'is-active' if scope == 'upcoming' }}" href="{{ url_for('account.bookings', scope='upcoming') }}">Предстоящие</a>
+  <a class="chip {{ 'is-active' if scope == 'history' }}" href="{{ url_for('account.bookings', scope='history') }}">Прошедшие</a>
+  <a class="chip {{ 'is-active' if scope == 'all' }}" href="{{ url_for('account.bookings', scope='all') }}">Все брони</a>
+</div>
+
+<div class="chip-row mb-3" role="group" aria-label="Фильтр по статусу">
+  <a class="chip {{ 'is-active' if not active_status }}" href="{{ url_for('account.bookings', scope=scope) }}">Любой статус</a>
+  {% for key, meta in booking_statuses.items() %}
+    <a class="chip {{ 'is-active' if active_status == key }}" href="{{ url_for('account.bookings', scope=scope, status=key) }}">{{ meta[0] }}</a>
+  {% endfor %}
+</div>
+
+{% if bookings %}
+  <div class="booking-list">
+    {% for booking in bookings %}
+      {{ booking_row(booking, url_for('account.booking_detail', code=booking['code'])) }}
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    {{ icon("calendar") }}
+    <h3>Здесь пока пусто</h3>
+    <p>В этом разделе нет броней. Создайте новую — выберите зал, дату и удобное время.</p>
+    <a class="btn btn--primary mt-3" href="{{ url_for('booking.new') }}">Забронировать стол</a>
+  </div>
+{% endif %}
+
+<div class="notice mt-4">
+  {{ icon("info") }}
+  <div>Не нашли бронь? Возможно, она оформлена без входа в аккаунт. Найдите её по коду и телефону на странице <a href="{{ url_for('booking.lookup') }}">«Найти бронь»</a>.</div>
+</div>
+{% endblock %}

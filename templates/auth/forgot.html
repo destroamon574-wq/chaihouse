@@ -1,0 +1,39 @@
+{% extends "auth/layout.html" %}
+{% block title %}Восстановление пароля — ЧайHouse{% endblock %}
+
+{% block auth_content %}
+<p class="eyebrow">Восстановление доступа</p>
+<h1>Забыли пароль?</h1>
+<p class="auth-card__sub">Укажите email, на который зарегистрирован аккаунт. Мы отправим ссылку для сброса пароля.</p>
+
+{% if reset_url %}
+  <div class="notice notice--warning mb-3">
+    {{ icon("info") }}
+    <div>
+      <strong>Демо-режим:</strong> письма не отправляются. Ссылка для сброса пароля:
+      <a href="{{ reset_url }}">{{ reset_url }}</a>
+    </div>
+  </div>
+{% endif %}
+
+<form method="post" action="{{ url_for('auth.forgot_password') }}" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="field">
+    <label for="forgot-email">Email</label>
+    <input class="input" type="email" id="forgot-email" name="email" value="{{ email }}" autocomplete="email" inputmode="email" maxlength="254" required autofocus>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn--primary btn--block" type="submit">{{ icon("mail") }} Отправить ссылку</button>
+  </div>
+</form>
+
+<div class="auth-card__links">
+  <a href="{{ url_for('auth.login') }}">{{ icon("arrow-left", "icon--sm") }} Вернуться ко входу</a>
+  <a href="{{ url_for('auth.register') }}">Создать аккаунт</a>
+</div>
+
+<div class="demo-note">
+  В демонстрационном режиме ссылка появляется прямо на этой странице.
+  В рабочем окружении письмо отправляет почтовый сервис.
+</div>
+{% endblock %}

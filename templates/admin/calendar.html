@@ -1,0 +1,60 @@
+{% extends "admin/layout.html" %}
+{% from "components/ui.html" import icon, status_badge %}
+
+{% block admin_content %}
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Админ-панель</p>
+    <h1>Календарь загрузки</h1>
+    <p>Неделя {{ grid['monday']|ru_date }} — {{ (grid['days'][-1].iso)|ru_date }}. За неделю: {{ grid['total_bookings'] }} {{ 'бронь' if grid['total_bookings'] == 1 else ('брони' if grid['total_bookings'] in (2, 3, 4) else 'броней') }} · {{ grid['total_guests'] }} гостей.</p>
+  </div>
+  <div class="cluster">
+    <a class="btn btn--ghost" href="{{ url_for('admin.calendar', date=grid['prev']) }}">{{ icon("arrow-left") }} Предыдущая</a>
+    <a class="btn btn--ghost" href="{{ url_for('admin.calendar') }}">Текущая неделя</a>
+    <a class="btn btn--primary" href="{{ url_for('admin.calendar', date=grid['next']) }}">Следующая {{ icon("arrow-right") }}</a>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table calendar-grid">
+    <caption class="sr-only">Брони недели по залам и дням</caption>
+    <thead>
+      <tr>
+        <th scope="col">Зал</th>
+        {% for day in grid['days'] %}
+          <th scope="col" class="{{ 'calendar-today' if day['is_today'] }}">
+            {{ day['weekday'] }}, {{ day['label'] }}
+            {% if day['is_today'] %}<span class="tag tag--plain">сегодня</span>{% endif %}
+            <span class="muted calendar-cell__count">{{ day['totals']['bookings'] }} · {{ day['totals']['guests'] }} чел.</span>
+          </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in grid['grid'] %}
+        <tr>
+          <th scope="row">
+            <a href="{{ url_for('public.hall', slug=row['hall']['slug']) }}">{{ row['hall']['name'] }}</a>
+          </th>
+          {% for cell in row['cells'] %}
+            <td class="calendar-cell {{ 'calendar-cell--empty' if not cell['count'] }}">
+              {% for booking in cell['items'] %}
+                <a class="calendar-booking calendar-booking--{{ booking['status'] }}"
+                   href="{{ url_for('admin.booking_detail', booking_id=booking['id']) }}">
+                  <strong>{{ booking['time'] }}</strong>
+                  <span>{{ booking['guest_name'] }} · {{ booking['guests_count'] }} чел.</span>
+                  <span class="muted">{{ booking['table_name'] }} · {{ booking['code'] }}</span>
+                </a>
+              {% else %}
+                <span class="muted">—</span>
+              {% endfor %}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<p class="muted mt-2">Пустые часы — свободные столы. Цвет карточки: оранжевый — ожидает подтверждения, зелёный — подтверждена, серый — завершена. Нажмите на бронь, чтобы открыть детали.</p>
+{% endblock %}

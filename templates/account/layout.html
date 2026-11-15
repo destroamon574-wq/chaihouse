@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon %}
+
+{% block body_class %}page-account{% endblock %}
+
+{% block content %}
+<section class="section section--tight">
+  <div class="container">
+    <div class="account-layout">
+      <nav class="account-nav" aria-label="Личный кабинет">
+        <a href="{{ url_for('account.dashboard') }}" {% if request.endpoint == 'account.dashboard' %}aria-current="page"{% endif %}>{{ icon("user") }} Обзор</a>
+        <a href="{{ url_for('account.bookings') }}" {% if request.endpoint in ('account.bookings', 'account.booking_detail') %}aria-current="page"{% endif %}>{{ icon("calendar") }} Мои брони</a>
+        <a href="{{ url_for('account.favorites') }}" {% if request.endpoint == 'account.favorites' %}aria-current="page"{% endif %}>{{ icon("heart") }} Избранное</a>
+        <a href="{{ url_for('account.notifications') }}" {% if request.endpoint == 'account.notifications' %}aria-current="page"{% endif %}>
+          {{ icon("bell") }} Уведомления
+          {% if unread_notifications %}<span class="badge-dot">{{ unread_notifications }}</span>{% endif %}
+        </a>
+        <a href="{{ url_for('account.settings') }}" {% if request.endpoint == 'account.settings' %}aria-current="page"{% endif %}>{{ icon("settings") }} Настройки</a>
+        <a class="is-danger" href="{{ url_for('account.delete') }}" {% if request.endpoint == 'account.delete' %}aria-current="page"{% endif %}>{{ icon("trash") }} Удалить аккаунт</a>
+      </nav>
+
+      <div class="account-content">
+        {% block account_content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

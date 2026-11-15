@@ -1,0 +1,100 @@
+{% extends "owner/layout.html" %}
+{% from "components/ui.html" import icon %}
+
+{% block owner_content %}
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Доступы</p>
+    <h1>Пользователи</h1>
+    <p>Назначайте администраторов из числа гостей. Роль владельца изменить нельзя, собственную роль — тоже.</p>
+  </div>
+  <div class="cluster">
+    <span class="tag tag--plain">Гостей: {{ stats.get('guest', 0) }}</span>
+    <span class="tag tag--plain">Админов: {{ stats.get('admin', 0) }}</span>
+  </div>
+</div>
+
+<form class="admin-filters" method="get" action="{{ url_for('owner.users') }}" role="search">
+  <div class="field">
+    <label for="users-q">Поиск</label>
+    <input class="input" type="search" id="users-q" name="q" value="{{ q }}" placeholder="Имя, email или телефон" maxlength="80">
+  </div>
+  <div class="field">
+    <label for="users-role">Роль</label>
+    <select class="select" id="users-role" name="role">
+      <option value="">Все роли</option>
+      <option value="guest" {{ 'selected' if role == 'guest' }}>Гость</option>
+      <option value="admin" {{ 'selected' if role == 'admin' }}>Администратор</option>
+      <option value="owner" {{ 'selected' if role == 'owner' }}>Владелец</option>
+    </select>
+  </div>
+  <button class="btn btn--primary" type="submit">{{ icon("search") }} Найти</button>
+  {% if q or role %}<a class="btn btn--quiet" href="{{ url_for('owner.users') }}">Сбросить</a>{% endif %}
+</form>
+
+<div class="panel">
+  <div class="panel__head">
+    <h2>{{ users|length }} пользователей</h2>
+    <span class="muted">Смена роли завершает старые сессии пользователя</span>
+  </div>
+  <div class="panel__body panel__body--flush">
+    {% if users %}
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption class="sr-only">Пользователи и роли</caption>
+          <thead>
+            <tr><th scope="col">Пользователь</th><th scope="col">Контакты</th><th scope="col">Роль</th><th scope="col">Создан</th><th scope="col"><span class="sr-only">Действие</span></th></tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+              <tr>
+                <td>
+                  <strong>{{ user['name'] }}</strong>
+                  {% if user['id'] == current_user['id'] %}<br><span class="muted">это вы</span>{% endif %}
+                </td>
+                <td>
+                  <a href="mailto:{{ user['email'] }}">{{ user['email'] }}</a><br>
+                  <span class="muted">{{ user['phone']|pretty_phone if user['phone'] else 'телефон не указан' }}</span>
+                </td>
+                <td>
+                  <span class="status-badge status-badge--{{ 'warning' if user['role'] == 'owner' else ('info' if user['role'] == 'admin' else 'muted') }}">{{ role_labels.get(user['role'], user['role']) }}</span>
+                </td>
+                <td class="cell-num">{{ user['created_at']|ru_datetime }}</td>
+                <td>
+                  <div class="cell-actions">
+                    {% if user['role'] != 'owner' and user['id'] != current_user['id'] %}
+                      <form class="inline-form" method="post" action="{{ url_for('owner.user_role', user_id=user['id']) }}" data-confirm="Изменить роль пользователя {{ user['name'] }}?">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="next" value="{{ request.full_path }}">
+                        <label class="sr-only" for="role-{{ user['id'] }}">Новая роль</label>
+                        <select class="select" id="role-{{ user['id'] }}" name="role">
+                          <option value="guest" {{ 'selected' if user['role'] == 'guest' }}>Гость</option>
+                          <option value="admin" {{ 'selected' if user['role'] == 'admin' }}>Администратор</option>
+                        </select>
+                        <button class="btn btn--ghost btn--small" type="submit">Сохранить</button>
+                      </form>
+                    {% else %}
+                      <span class="muted">—</span>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        {{ icon("users") }}
+        <h3>Пользователи не найдены</h3>
+        <p>Измените поисковый запрос или фильтр роли.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="notice mt-3">
+  {{ icon("shield") }}
+  <div>Администраторы видят брони и контент, но не управляют ролями и настройками заведения. Все изменения попадают в журнал действий.</div>
+</div>
+{% endblock %}

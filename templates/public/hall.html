@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link, review_card %}
+
+{% block content %}
+<section class="section section--tight">
+  <div class="container">
+    <div class="page-topbar">
+      <nav aria-label="Хлебные крошки">
+        <ol class="breadcrumbs">
+          <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+          <li><a href="{{ url_for('public.halls') }}">Залы и банкеты</a></li>
+          <li><span aria-current="page">{{ hall['name'] }}</span></li>
+        </ol>
+      </nav>
+      {{ back_link(url_for('public.halls')) }}
+    </div>
+
+    <div class="dish-detail">
+      <div class="dish-detail__media">
+        <img src="{{ image_url(hall['image']) }}" alt="{{ hall['name'] }} — {{ hall['tagline'] or 'интерьер чайханы' }}" width="900" height="560">
+      </div>
+      <div class="dish-detail__body">
+        <p class="eyebrow">Зал</p>
+        <h1>{{ hall['name'] }}</h1>
+        <p class="lead">{{ hall['tagline'] }}</p>
+        <div class="prose mt-2">
+          <p>{{ hall['description'] }}</p>
+        </div>
+
+        <dl class="dish-detail__facts">
+          <div><dt>Вместимость</dt><dd>до {{ hall['capacity'] }} гостей</dd></div>
+          <div><dt>Столов</dt><dd>{{ hall['tables']|length }}</dd></div>
+          <div><dt>Мест</dt><dd>{{ hall['seats_total'] }}</dd></div>
+        </dl>
+
+        {% if hall['min_spend'] %}
+          <div class="notice notice--warning mb-2">
+            {{ icon("info") }}
+            <div>Минимальный чек для этого зала — <strong>{{ hall['min_spend']|money }}</strong>. Поможем собрать меню под ваш бюджет.</div>
+          </div>
+        {% endif %}
+
+        {% if hall['features_list'] %}
+          <div class="chip-row mb-3">
+            {% for feature in hall['features_list'] %}<span class="tag tag--plain">{{ feature }}</span>{% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="cluster">
+          <a class="btn btn--primary" href="{{ url_for('booking.new', hall=hall['slug']) }}">{{ icon("calendar") }} Забронировать зал</a>
+          <a class="btn btn--ghost" href="{{ url_for('public.halls') }}">{{ icon("arrow-left") }} Все залы</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--sand section--tight">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Столы</p>
+        <h2>Что есть в зале</h2>
+        <p>Столы разной вместимости. При бронировании можно выбрать конкретный стол или доверить выбор нам — подберём под количество гостей.</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th scope="col">Стол</th><th scope="col">Мест</th><th scope="col">Статус</th><th scope="col"></th></tr>
+        </thead>
+        <tbody>
+          {% for table in hall['tables'] %}
+            <tr>
+              <td><strong>{{ table['name'] }}</strong></td>
+              <td>{{ table['seats'] }}</td>
+              <td><span class="status-badge status-badge--success">Доступен</span></td>
+              <td class="cell-actions">
+                <a class="btn btn--ghost btn--small" href="{{ url_for('booking.new', hall=hall['slug'], table_id=table['id']) }}">Забронировать</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{% if hall_reviews %}
+<section class="section section--tight">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">Отзывы</p>
+        <h2>Гости об этом зале</h2>
+        <p>Отзывы с броней в «{{ hall['name'] }}». Все отзывы — на
+          <a href="{{ url_for('public.reviews_page') }}">странице отзывов</a>.</p>
+      </div>
+      <a class="section__link" href="{{ url_for('public.reviews_page') }}">Все отзывы {{ icon("arrow-right", "icon--sm") }}</a>
+    </div>
+    <div class="grid grid--3">
+      {% for review in hall_reviews %}{{ review_card(review) }}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "components/ui.html" import icon, back_link %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="page-topbar">
+      <nav aria-label="Хлебные крошки">
+        <ol class="breadcrumbs">
+          <li><a href="{{ url_for('public.home') }}">Главная</a></li>
+          <li><span aria-current="page">Галерея</span></li>
+        </ol>
+      </nav>
+      {{ back_link(url_for('public.home')) }}
+    </div>
+    <div class="page-hero__inner">
+      <div>
+        <p class="eyebrow">Атмосфера</p>
+        <h1>Галерея ЧайHouse</h1>
+        <p>Тёплый свет латунных ламп, резные узоры, бирюзовые диваны, сервировка и блюда восточной кухни. Нажмите на фотографию, чтобы рассмотреть детали.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="chip-row mb-3" role="group" aria-label="Категории галереи">
+      <a class="chip {{ 'is-active' if not active_category }}" href="{{ url_for('public.gallery') }}">Все фотографии</a>
+      {% for key, label in categories.items() %}
+        <a class="chip {{ 'is-active' if active_category == key }}" href="{{ url_for('public.gallery', category=key) }}">{{ label }}</a>
+      {% endfor %}
+    </div>
+
+    {% if gallery %}
+      <div class="gallery-grid">
+        {% for item in gallery %}
+          <button class="gallery-item" type="button" data-lightbox data-src="{{ image_url(item['image']) }}" data-caption="{{ item['title'] }}">
+            <img src="{{ image_url(item['image']) }}" alt="{{ item['alt'] }}" width="800" height="600" loading="lazy">
+            <span class="gallery-item__caption">{{ item['title'] }}</span>
+          </button>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        {{ icon("eye") }}
+        <h3>В этой категории пока пусто</h3>
+        <p>Мы уже готовим новые фотографии. Пока посмотрите другие разделы галереи.</p>
+        <a class="btn btn--ghost mt-3" href="{{ url_for('public.gallery') }}">Показать все фотографии</a>
+      </div>
+    {% endif %}
+
+    <div class="notice mt-4">
+      {{ icon("info") }}
+      <div>
+        Все изображения в демо-проекте — локальные иллюстрации. Загрузить настоящие фотографии
+        интерьера и блюд можно через админ-панель: раздел «Галерея».
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "auth/layout.html" %}
+{% block title %}Новый пароль — ЧайHouse{% endblock %}
+
+{% block auth_content %}
+{% if invalid %}
+  <p class="eyebrow">Ссылка недействительна</p>
+  <h1>Не получилось сбросить пароль</h1>
+  <p class="auth-card__sub">Ссылка истекла или уже была использована. Запросите новую — это займёт минуту.</p>
+  <div class="notice notice--danger mb-3">
+    {{ icon("alert") }}
+    <div>Если вы несколько раз запрашивали сброс, действует только последняя ссылка.</div>
+  </div>
+  <a class="btn btn--primary btn--block" href="{{ url_for('auth.forgot_password') }}">{{ icon("mail") }} Запросить новую ссылку</a>
+  <div class="auth-card__links">
+    <a href="{{ url_for('auth.login') }}">Вернуться ко входу</a>
+  </div>
+{% else %}
+  <p class="eyebrow">Новый пароль</p>
+  <h1>Придумайте пароль</h1>
+  <p class="auth-card__sub">После сохранения все активные сессии завершатся. Войдите заново с новым паролем.</p>
+
+  {% if errors %}
+    <div class="form-error-summary mb-3" role="alert">
+      {% for message in errors.values() %}<p>{{ message }}</p>{% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('auth.reset_password', token=token) }}" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="field {{ 'field--error' if errors.get('password') }}">
+      <label for="reset-password">Новый пароль</label>
+      <input class="input" type="password" id="reset-password" name="password" autocomplete="new-password" minlength="8" maxlength="128" required autofocus>
+      <span class="field__hint">Минимум 8 символов, хотя бы одна буква и одна цифра.</span>
+      {% if errors.get('password') %}<span class="field__error" role="alert">{{ errors['password'] }}</span>{% endif %}
+    </div>
+    <div class="field {{ 'field--error' if errors.get('password2') }}">
+      <label for="reset-password2">Повторите пароль</label>
+      <input class="input" type="password" id="reset-password2" name="password2" autocomplete="new-password" minlength="8" maxlength="128" required>
+      {% if errors.get('password2') %}<span class="field__error" role="alert">{{ errors['password2'] }}</span>{% endif %}
+    </div>
+    <div class="form-actions">
+      <button class="btn btn--primary btn--block" type="submit">{{ icon("lock") }} Сохранить пароль</button>
+    </div>
+  </form>
+
+  <div class="auth-card__links">
+    <a href="{{ url_for('auth.login') }}">Вернуться ко входу</a>
+  </div>
+{% endif %}
+{% endblock %}

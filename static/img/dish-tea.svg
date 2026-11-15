@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Восточный чай в чайнике и пиалах">
+  <title>Восточный чай в чайнике и пиалах</title>
+  
+  
+  <defs>
+    <linearGradient id="table" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#432d1d"/>
+      <stop offset=".55" stop-color="#2a1b12"/>
+      <stop offset="1" stop-color="#190f09"/>
+    </linearGradient>
+    <radialGradient id="light" cx=".38" cy=".26" r=".75">
+      <stop offset="0" stop-color="#ffd79a" stop-opacity=".32"/>
+      <stop offset=".55" stop-color="#c9833e" stop-opacity=".10"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".08"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#table)"/>
+  <g opacity=".5">
+    <path d="M0 40 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 92 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 144 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 196 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 248 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 300 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 352 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 404 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 456 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 508 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/><path d="M0 560 H800" stroke="#0f0906" stroke-width="1" opacity=".7"/>
+    <path d="M0 56 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 108 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 160 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 212 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 264 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 316 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 368 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 420 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 472 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 524 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/><path d="M0 576 H800" stroke="#8b5b34" stroke-width="1" opacity=".16"/>
+  </g>
+  <rect width="800" height="600" fill="url(#light)"/>
+  <circle cx="770" cy="97" r="12" fill="#e6b35f" opacity="0.097"/>
+<circle cx="133" cy="187" r="22" fill="#e6b35f" opacity="0.121"/>
+<circle cx="57" cy="230" r="17" fill="#e6b35f" opacity="0.129"/>
+<circle cx="135" cy="84" r="14" fill="#e6b35f" opacity="0.077"/>
+<circle cx="624" cy="250" r="17" fill="#e6b35f" opacity="0.051"/>
+<circle cx="354" cy="191" r="14" fill="#e6b35f" opacity="0.073"/>
+<circle cx="672" cy="285" r="19" fill="#e6b35f" opacity="0.07"/>
+<circle cx="241" cy="144" r="5" fill="#e6b35f" opacity="0.05"/>
+<circle cx="115" cy="117" r="12" fill="#e6b35f" opacity="0.099"/>
+<circle cx="320" cy="176" r="26" fill="#e6b35f" opacity="0.056"/>
+<circle cx="668" cy="80" r="4" fill="#e6b35f" opacity="0.057"/>
+<circle cx="269" cy="132" r="22" fill="#e6b35f" opacity="0.054"/>
+<circle cx="43" cy="173" r="12" fill="#e6b35f" opacity="0.044"/>
+<circle cx="692" cy="191" r="23" fill="#e6b35f" opacity="0.102"/>
+<circle cx="186" cy="160" r="21" fill="#e6b35f" opacity="0.113"/>
+<circle cx="190" cy="104" r="16" fill="#e6b35f" opacity="0.123"/>
+  <rect width="800" height="600" filter="url(#grain)" opacity=".55"/>
+
+  <ellipse cx="390" cy="400" rx="300" ry="120" fill="#000" opacity=".32" filter="url(#shadow)"/>
+  <g transform="translate(360 330)">
+    <path d="M-120 -40 q20 -60 120 -60 q100 0 120 60 q18 70 -120 70 q-138 0 -120 -70" fill="#cfa65e"/>
+    <path d="M-108 -36 q18 -48 108 -48 q90 0 108 48 q12 52 -108 52 q-120 0 -108 -52" fill="#e1bd76"/>
+    <path d="M-84 -84 q84 -36 168 0" fill="none" stroke="#f3d79b" stroke-width="6" opacity=".7"/>
+    <path d="M120 -22 q74 -4 64 42 q-8 34 -70 18" fill="none" stroke="#cfa65e" stroke-width="18"/>
+    <path d="M-120 -18 q-58 0 -54 34 q4 28 54 24" fill="none" stroke="#cfa65e" stroke-width="16"/>
+    <path d="M-34 -116 q34 -26 68 0" fill="none" stroke="#cfa65e" stroke-width="10"/>
+    <circle cx="0" cy="-130" r="16" fill="#b23a2c"/>
+    <path d="M-100 20 q100 42 200 0" fill="none" stroke="#7a4f23" stroke-width="6" opacity=".4"/>
+  </g>
+  <g transform="translate(610 380)">
+    <ellipse cx="0" cy="40" rx="64" ry="18" fill="#000" opacity=".25" filter="url(#soft)"/>
+    <path d="M-52 0 q0 50 52 50 q52 0 52 -50 q-52 14 -104 0" fill="#efe3cf"/>
+    <ellipse cx="0" cy="0" rx="52" ry="17" fill="#f8efde"/>
+    <ellipse cx="0" cy="2" rx="40" ry="11" fill="#a95a24"/>
+    <path d="M-34 4 q34 14 68 0" stroke="#e3b36b" stroke-width="3" fill="none"/>
+  </g>
+  <g transform="translate(150 400) scale(.8)">
+    <ellipse cx="0" cy="34" rx="54" ry="14" fill="#000" opacity=".22" filter="url(#soft)"/>
+    <path d="M-44 0 q0 44 44 44 q44 0 44 -44 q-44 12 -88 0" fill="#efe3cf"/>
+    <ellipse cx="0" cy="0" rx="44" ry="14" fill="#f8efde"/>
+    <ellipse cx="0" cy="2" rx="34" ry="9" fill="#a95a24"/>
+  </g>
+  <g>
+    <circle cx="600" cy="260" r="22" fill="#d9822b"/><circle cx="630" cy="276" r="16" fill="#c56a1f"/>
+    <circle cx="575" cy="284" r="14" fill="#e0953e"/><circle cx="615" cy="300" r="12" fill="#b85b1a"/>
+    <path d="M600 240 q4 -18 18 -24" stroke="#6f8b43" stroke-width="5" fill="none"/>
+  </g>
+  
+  <g fill="none" stroke="#fff5df" stroke-width="5" stroke-linecap="round" opacity=".27">
+    <path d="M336 210 C316 164 356 146 338 98">
+      <animate attributeName="opacity" values=".15;.35;.15" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M384 204 C404 160 366 134 386 86">
+      <animate attributeName="opacity" values=".3;.12;.3" dur="6s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <g fill="none" stroke="#fff5df" stroke-width="5" stroke-linecap="round" opacity=".27">
+    <path d="M586 300 C566 254 606 236 588 188">
+      <animate attributeName="opacity" values=".15;.35;.15" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M634 294 C654 250 616 224 636 176">
+      <animate attributeName="opacity" values=".3;.12;.3" dur="6s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+</svg>

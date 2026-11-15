@@ -1,0 +1,145 @@
+{% extends "owner/layout.html" %}
+{% from "components/ui.html" import icon %}
+
+{% block owner_content %}
+<div class="admin-head">
+  <div>
+    <p class="eyebrow">Настройки</p>
+    <h1>Заведение и контакты</h1>
+    <p>Эти данные показываются в шапке, подвале, контактах и письмах-подтверждениях. Изменения сразу видны на сайте.</p>
+  </div>
+  <a class="btn btn--ghost" href="{{ url_for('public.contacts') }}">{{ icon("eye") }} Страница контактов</a>
+</div>
+
+{% if errors %}
+  <div class="form-error-summary mb-3" role="alert">
+    {% for message in errors.values() %}<p>{{ message }}</p>{% endfor %}
+  </div>
+{% endif %}
+
+<form method="post" action="{{ url_for('owner.settings') }}" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="split-2">
+    <div class="panel">
+      <div class="panel__head"><h2>Основное</h2></div>
+      <div class="panel__body">
+        <div class="form-grid">
+          <div class="field field--full {{ 'field--error' if errors.get('restaurant_name') }}">
+            <label for="settings-name">Название</label>
+            <input class="input" type="text" id="settings-name" name="restaurant_name" value="{{ form.get('restaurant_name', '') }}" maxlength="80" required>
+            {% if errors.get('restaurant_name') %}<span class="field__error" role="alert">{{ errors['restaurant_name'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('tagline') }}">
+            <label for="settings-tagline">Слоган</label>
+            <input class="input" type="text" id="settings-tagline" name="tagline" value="{{ form.get('tagline', '') }}" maxlength="160">
+            {% if errors.get('tagline') %}<span class="field__error" role="alert">{{ errors['tagline'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('address') }}">
+            <label for="settings-address">Адрес</label>
+            <input class="input" type="text" id="settings-address" name="address" value="{{ form.get('address', '') }}" maxlength="220">
+            {% if errors.get('address') %}<span class="field__error" role="alert">{{ errors['address'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('address_short') }}">
+            <label for="settings-address-short">Короткий адрес</label>
+            <input class="input" type="text" id="settings-address-short" name="address_short" value="{{ form.get('address_short', '') }}" maxlength="120">
+            {% if errors.get('address_short') %}<span class="field__error" role="alert">{{ errors['address_short'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('phone') }}">
+            <label for="settings-phone">Телефон</label>
+            <input class="input" type="tel" id="settings-phone" name="phone" value="{{ form.get('phone', '') }}" maxlength="40">
+            {% if errors.get('phone') %}<span class="field__error" role="alert">{{ errors['phone'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('email') }}">
+            <label for="settings-email">Email</label>
+            <input class="input" type="email" id="settings-email" name="email" value="{{ form.get('email', '') }}" maxlength="120">
+            {% if errors.get('email') %}<span class="field__error" role="alert">{{ errors['email'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('hours') }}">
+            <label for="settings-hours">Часы работы</label>
+            <input class="input" type="text" id="settings-hours" name="hours" value="{{ form.get('hours', '') }}" maxlength="80">
+            {% if errors.get('hours') %}<span class="field__error" role="alert">{{ errors['hours'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('booking_note') }}">
+            <label for="settings-note">Примечание к брони</label>
+            <textarea class="textarea" id="settings-note" name="booking_note" rows="3" maxlength="300">{{ form.get('booking_note', '') }}</textarea>
+            {% if errors.get('booking_note') %}<span class="field__error" role="alert">{{ errors['booking_note'] }}</span>{% endif %}
+          </div>
+          <div class="field field--full {{ 'field--error' if errors.get('legal_name') }}">
+            <label for="settings-legal">Юридическое название</label>
+            <input class="input" type="text" id="settings-legal" name="legal_name" value="{{ form.get('legal_name', '') }}" maxlength="120">
+            {% if errors.get('legal_name') %}<span class="field__error" role="alert">{{ errors['legal_name'] }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Бронирование и карта</h2></div>
+      <div class="panel__body">
+        <div class="form-grid">
+          <div class="field {{ 'field--error' if errors.get('avg_check') }}">
+            <label for="settings-avg-check">Средний чек, ₽</label>
+            <input class="input" type="number" id="settings-avg-check" name="avg_check" value="{{ form.get('avg_check', '') }}" min="0" max="100000" step="100">
+            {% if errors.get('avg_check') %}<span class="field__error" role="alert">{{ errors['avg_check'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('max_guests') }}">
+            <label for="settings-max-guests">Максимум гостей в брони</label>
+            <input class="input" type="number" id="settings-max-guests" name="max_guests" value="{{ form.get('max_guests', '') }}" min="1" max="40" step="1">
+            {% if errors.get('max_guests') %}<span class="field__error" role="alert">{{ errors['max_guests'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('lat') }}">
+            <label for="settings-lat">Широта</label>
+            <input class="input" type="text" id="settings-lat" name="lat" value="{{ form.get('lat', '') }}" inputmode="decimal" placeholder="55.790622">
+            {% if errors.get('lat') %}<span class="field__error" role="alert">{{ errors['lat'] }}</span>{% endif %}
+          </div>
+          <div class="field {{ 'field--error' if errors.get('lng') }}">
+            <label for="settings-lng">Долгота</label>
+            <input class="input" type="text" id="settings-lng" name="lng" value="{{ form.get('lng', '') }}" inputmode="decimal" placeholder="37.532186">
+            {% if errors.get('lng') %}<span class="field__error" role="alert">{{ errors['lng'] }}</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="notice mt-3">
+          {{ icon("compass") }}
+          <div>Координаты используются для расчёта расстояния в браузере гостя. Маршрут открывается в Яндекс Картах, поэтому проверьте адрес.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel mt-3">
+    <div class="panel__head"><h2>Уведомления о бронях</h2></div>
+    <div class="panel__body">
+      <div class="form-grid">
+        <div class="field field--full">
+          <label for="settings-tg-token">Telegram-токен бота</label>
+          <input class="input" type="text" id="settings-tg-token" name="telegram_bot_token"
+                 value="{{ form.get('telegram_bot_token', '') }}" maxlength="80"
+                 placeholder="123456:AAExample-token-from-BotFather">
+          <span class="muted">Получите у @BotFather, затем добавьте бота в чат ресторана.</span>
+        </div>
+        <div class="field field--full">
+          <label for="settings-tg-chat">Telegram ID чата</label>
+          <input class="input" type="text" id="settings-tg-chat" name="telegram_chat_id"
+                 value="{{ form.get('telegram_chat_id', '') }}" maxlength="40" placeholder="-1001234567890">
+          <span class="muted">ID группы или канала, куда приходят новые брони. Узнать можно у @userinfobot.</span>
+        </div>
+      </div>
+      <div class="notice mt-3">
+        {{ icon("bell") }}
+        <div>Когда поля заполнены, о каждой новой брони приходит мгновенное сообщение в Telegram. О статусе брони гости получают письмо, если для отправки почты настроен SMTP (переменные SMTP_* в <code>.env</code>).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions mt-3">
+    <button class="btn btn--primary" type="submit">{{ icon("check") }} Сохранить настройки</button>
+    <a class="btn btn--quiet" href="{{ url_for('owner.dashboard') }}">Отмена</a>
+  </div>
+</form>
+
+<div class="notice notice--warning mt-3">
+  {{ icon("lock") }}
+  <div>Секретные параметры — ключ сессии, путь к базе и режим демо — задаются в <code>.env</code> и не редактируются через сайт.</div>
+</div>
+{% endblock %}

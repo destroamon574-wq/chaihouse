@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Светлая веранда ЧайHouse с панорамными окнами и растениями">
+  <title>Веранда ЧайHouse</title>
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#efe3d0"/><stop offset="1" stop-color="#d8c4a8"/>
+    </linearGradient>
+    <linearGradient id="day" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cfe3df"/><stop offset=".55" stop-color="#e9e3c9"/><stop offset="1" stop-color="#c8b996"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b9946c"/><stop offset="1" stop-color="#7e5d40"/>
+    </linearGradient>
+    <radialGradient id="sun" cx=".3" cy=".2" r=".7">
+      <stop offset="0" stop-color="#fff6d9" stop-opacity=".85"/><stop offset="1" stop-color="#fff6d9" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="leaf" width="90" height="90" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#5d7f4b" stroke-width="2" opacity=".35">
+        <path d="M10 70 q20 -40 46 -50 q-4 40 -46 50"/>
+        <path d="M60 20 q18 -14 32 0 q-14 20 -32 0"/>
+      </g>
+    </pattern>
+    <pattern id="suz2" width="130" height="130" patternUnits="userSpaceOnUse">
+      <rect width="130" height="130" fill="#2d6b63"/>
+      <g fill="none" stroke="#eadcc4" stroke-width="3" opacity=".5">
+        <path d="M18 40 q28 -30 54 0 q-26 26 -54 0"/>
+        <path d="M70 86 q26 -28 50 0 q-24 24 -50 0"/>
+        <circle cx="46" cy="44" r="4" fill="#eadcc4" stroke="none"/>
+      </g>
+    </pattern>
+    <pattern id="rattan" width="26" height="26" patternUnits="userSpaceOnUse">
+      <rect width="26" height="26" fill="#d7b27a"/>
+      <path d="M0 0 L26 26 M26 0 L0 26" stroke="#a77c48" stroke-width="2" opacity=".55"/>
+      <path d="M0 13 H26 M13 0 V26" stroke="#b98b54" stroke-width="1" opacity=".5"/>
+    </pattern>
+    <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#5a3f27" flood-opacity=".28"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="10"/></filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".045"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="1200" height="800" fill="url(#wall)"/>
+
+  <!-- window wall -->
+  <g>
+    <rect x="60" y="80" width="900" height="440" fill="url(#day)"/>
+    <rect x="60" y="80" width="900" height="440" fill="url(#sun)"/>
+    <g fill="#5e7f5e" opacity=".55">
+      <circle cx="160" cy="330" r="70"/><circle cx="260" cy="360" r="90"/><circle cx="360" cy="320" r="60"/>
+      <circle cx="760" cy="340" r="80"/><circle cx="880" cy="300" r="60"/>
+    </g>
+    <g fill="#fff6dc" opacity=".65">
+      <circle cx="200" cy="250" r="4"/><circle cx="420" cy="220" r="3"/><circle cx="680" cy="260" r="4"/>
+      <circle cx="820" cy="210" r="3"/><circle cx="540" cy="350" r="3"/>
+    </g>
+    <g stroke="#6f5237" stroke-width="16" fill="none">
+      <rect x="60" y="80" width="900" height="440"/>
+      <path d="M285 80 V520 M510 80 V520 M735 80 V520 M60 300 H960"/>
+    </g>
+    <!-- curtains -->
+    <path d="M30 60 q60 210 28 480 l-58 0 0 -480Z" fill="#f4ead8" opacity=".88"/>
+    <path d="M66 70 q30 200 12 460" stroke="#d7c4a7" stroke-width="7" fill="none" opacity=".6"/>
+    <path d="M880 60 q-46 220 -16 480 l96 0 0 -480Z" fill="#f2e7d3" opacity=".9"/>
+    <path d="M920 74 q-24 200 -8 456" stroke="#d4c0a2" stroke-width="7" fill="none" opacity=".6"/>
+  </g>
+
+  <!-- side wall and shelves -->
+  <g>
+    <rect x="960" y="80" width="240" height="520" fill="#d3bfa2"/>
+    <rect x="960" y="80" width="240" height="520" fill="url(#leaf)" opacity=".6"/>
+    <g fill="#6d4b31">
+      <rect x="990" y="200" width="180" height="12"/>
+      <rect x="990" y="310" width="180" height="12"/>
+      <rect x="990" y="420" width="180" height="12"/>
+    </g>
+    <g fill="#e6d6bd">
+      <ellipse cx="1030" cy="190" rx="18" ry="10"/><ellipse cx="1080" cy="188" rx="14" ry="8"/>
+      <ellipse cx="1140" cy="190" rx="20" ry="10"/><ellipse cx="1050" cy="300" rx="16" ry="9"/>
+      <ellipse cx="1120" cy="298" rx="18" ry="9"/>
+    </g>
+    <g transform="translate(1080 520)">
+      <path d="M-80 80 q0 -120 80 -160 q80 40 80 160Z" fill="#4f7242"/>
+      <g stroke="#365331" stroke-width="4" fill="none">
+        <path d="M0 80 V-40"/><path d="M-20 20 q-50 -20 -60 -60"/><path d="M20 30 q50 -30 58 -70"/>
+        <path d="M-10 -20 q-40 -10 -46 -40"/><path d="M14 -14 q34 -16 40 -44"/>
+      </g>
+    </g>
+    <g transform="translate(1010 610)">
+      <path d="M-50 40 q0 -70 50 -100 q50 30 50 100Z" fill="#5d7f4b"/>
+      <path d="M0 40 V-40" stroke="#365331" stroke-width="4"/>
+    </g>
+  </g>
+
+  <!-- ceiling lamps -->
+  <g>
+    <g transform="translate(240 80)">
+      <path d="M0 0 V60" stroke="#6d4b31" stroke-width="4"/>
+      <path d="M-72 130 q72 -86 144 0Z" fill="url(#rattan)" filter="url(#shadow)"/>
+      <path d="M-76 130 H76" stroke="#8d6335" stroke-width="5"/>
+      <circle cx="0" cy="130" r="115" fill="#ffe9b4" opacity=".14" filter="url(#soft)"/>
+    </g>
+    <g transform="translate(560 60) scale(.85)">
+      <path d="M0 0 V70" stroke="#6d4b31" stroke-width="4"/>
+      <path d="M-70 140 q70 -84 140 0Z" fill="url(#rattan)" filter="url(#shadow)"/>
+      <path d="M-74 140 H74" stroke="#8d6335" stroke-width="5"/>
+      <circle cx="0" cy="140" r="110" fill="#ffe9b4" opacity=".13" filter="url(#soft)"/>
+    </g>
+    <g transform="translate(850 70) scale(.7)">
+      <path d="M0 0 V70" stroke="#6d4b31" stroke-width="4"/>
+      <path d="M-68 150 q68 -80 136 0Z" fill="url(#rattan)" filter="url(#shadow)"/>
+      <path d="M-72 150 H72" stroke="#8d6335" stroke-width="5"/>
+    </g>
+  </g>
+
+  <!-- sofas and tables -->
+  <g filter="url(#shadow)">
+    <g transform="translate(50 540)">
+      <rect x="0" y="0" width="310" height="120" rx="24" fill="url(#suz2)"/>
+      <rect x="14" y="-54" width="282" height="76" rx="20" fill="url(#suz2)"/>
+      <rect x="22" y="-34" width="60" height="46" rx="10" fill="#d9c5a8"/>
+      <rect x="94" y="-36" width="60" height="48" rx="10" fill="#a44d3a"/>
+      <rect x="228" y="-34" width="60" height="46" rx="10" fill="#e7d6bd"/>
+    </g>
+    <g transform="translate(430 555)">
+      <rect x="0" y="0" width="310" height="120" rx="24" fill="#d8c4a6"/>
+      <rect x="14" y="-54" width="282" height="76" rx="20" fill="#e4d2b7"/>
+      <rect x="22" y="-34" width="60" height="46" rx="10" fill="url(#suz2)"/>
+      <rect x="228" y="-34" width="60" height="46" rx="10" fill="#a44d3a"/>
+    </g>
+    <g transform="translate(810 545)">
+      <rect x="0" y="0" width="290" height="118" rx="24" fill="url(#suz2)"/>
+      <rect x="14" y="-52" width="262" height="74" rx="20" fill="url(#suz2)"/>
+      <rect x="24" y="-32" width="58" height="44" rx="10" fill="#e6d5bb"/>
+    </g>
+  </g>
+
+  <g>
+    <g transform="translate(115 665)">
+      <rect x="0" y="0" width="240" height="56" rx="9" fill="#c09a6b"/>
+      <rect x="16" y="8" width="82" height="40" rx="4" fill="#5c3d28"/>
+      <rect x="112" y="8" width="82" height="40" rx="4" fill="#5c3d28"/>
+      <rect x="30" y="56" width="12" height="58" fill="#6e4a2e"/>
+      <rect x="198" y="56" width="12" height="58" fill="#6e4a2e"/>
+      <path d="M60 30 q20 -20 40 0" stroke="#f4e7ce" stroke-width="3" fill="none" opacity=".8"/>
+    </g>
+    <g transform="translate(490 675)">
+      <rect x="0" y="0" width="240" height="54" rx="9" fill="#c09a6b"/>
+      <rect x="16" y="8" width="82" height="38" rx="4" fill="#5c3d28"/>
+      <rect x="112" y="8" width="82" height="38" rx="4" fill="#5c3d28"/>
+      <rect x="30" y="54" width="12" height="58" fill="#6e4a2e"/>
+      <rect x="198" y="54" width="12" height="58" fill="#6e4a2e"/>
+    </g>
+    <g transform="translate(855 668)">
+      <rect x="0" y="0" width="230" height="54" rx="9" fill="#c09a6b"/>
+      <rect x="14" y="8" width="78" height="38" rx="4" fill="#5c3d28"/>
+      <rect x="106" y="8" width="78" height="38" rx="4" fill="#5c3d28"/>
+      <rect x="28" y="54" width="12" height="56" fill="#6e4a2e"/>
+      <rect x="190" y="54" width="12" height="56" fill="#6e4a2e"/>
+    </g>
+  </g>
+
+  <!-- floor and plants foreground -->
+  <path d="M0 740 H1200 V800 H0Z" fill="url(#floor)"/>
+  <g>
+    <path d="M0 740 H1200" stroke="#8d6a48" stroke-width="4" opacity=".6"/>
+    <g transform="translate(60 760)">
+      <path d="M-70 40 q0 -110 70 -150 q70 40 70 150Z" fill="#4d7242"/>
+      <g stroke="#355232" stroke-width="5" fill="none">
+        <path d="M0 40 V-100"/><path d="M-20 -20 q-50 -20 -60 -60"/><path d="M20 -10 q50 -26 60 -70"/>
+      </g>
+    </g>
+    <g transform="translate(1120 765)">
+      <path d="M-60 36 q0 -90 60 -130 q60 40 60 130Z" fill="#5d8049"/>
+      <path d="M0 36 V-86" stroke="#355232" stroke-width="5"/>
+    </g>
+  </g>
+
+  <rect width="1200" height="800" filter="url(#grain)" opacity=".55"/>
+</svg>

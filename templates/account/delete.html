@@ -1,0 +1,57 @@
+{% extends "account/layout.html" %}
+{% from "components/ui.html" import icon, back_link %}
+
+{% block account_content %}
+<div class="page-topbar">
+  <nav aria-label="Хлебные крошки">
+    <ol class="breadcrumbs">
+      <li><a href="{{ url_for('account.dashboard') }}">Кабинет</a></li>
+      <li><span aria-current="page">Удаление аккаунта</span></li>
+    </ol>
+  </nav>
+  {{ back_link(url_for('account.settings')) }}
+</div>
+
+<div class="dashboard-head">
+  <div>
+    <p class="eyebrow">Необратимое действие</p>
+    <h1>Удалить аккаунт</h1>
+    <p class="muted mt-1">Аккаунт и вход будут удалены, а персональные данные в бронях и отзывах — обезличены.</p>
+  </div>
+</div>
+
+<div class="notice notice--danger mb-3">
+  {{ icon("alert") }}
+  <div>
+    <strong>Что произойдёт:</strong> профиль, избранное и уведомления удалятся. Брони останутся
+    в истории ресторана без ваших имени, телефона и email. Восстановить аккаунт после удаления нельзя.
+  </div>
+</div>
+
+<section class="form-panel">
+  <h2>Подтверждение</h2>
+  <p class="muted mb-3">Перед удалением можно скачать копию данных. Для подтверждения введите текущий пароль.</p>
+
+  {% if errors %}
+    <div class="form-error-summary mb-3" role="alert">
+      {% for message in errors.values() %}<p>{{ message }}</p>{% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('account.delete') }}" data-confirm="Удалить аккаунт навсегда? Это действие нельзя отменить.">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="field {{ 'field--error' if errors.get('password') }}">
+      <label for="delete-password">Текущий пароль</label>
+      <input class="input" type="password" id="delete-password" name="password" autocomplete="current-password" required>
+      {% if errors.get('password') %}<span class="field__error" role="alert">{{ errors['password'] }}</span>{% endif %}
+    </div>
+    <div class="form-actions">
+      <button class="btn btn--danger" type="submit">{{ icon("trash") }} Удалить аккаунт навсегда</button>
+      <a class="btn btn--quiet" href="{{ url_for('account.settings') }}">Отмена</a>
+    </div>
+  </form>
+
+  <hr class="divider">
+  <a class="link-arrow" href="{{ url_for('account.export_data') }}">{{ icon("download", "icon--sm") }} Сначала скачать мои данные</a>
+</section>
+{% endblock %}
