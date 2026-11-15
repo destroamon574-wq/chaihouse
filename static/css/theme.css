@@ -38,3 +38,15 @@ button {
   border: 0 solid transparent;
   background: transparent;
 }
+
+/* Тёмная тема: переключатель добавляет класс `dark` на <html> (static/js/theme.js).
+   База сайта и так тёмная (--bg: #100b08), поэтому в тёмном режиме перекрашиваем
+   светлые «песочные» острова legacy-дизайна через переменные app.css. */
+html.dark {
+  --sand: #171310;
+  --sand-2: #1d1815;
+  --sand-deep: #241d17;
+  --ink-on-sand: #f4ebdd;
+  --muted-on-sand: #aa9a86;
+  --line-sand: rgba(244, 235, 221, 0.14);
+}
