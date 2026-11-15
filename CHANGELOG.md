@@ -1,5 +1,24 @@
 # История изменений
 
+## 1.2.0 — 2026-11-15
+
+Современный фронтенд-стек и дизайн-система.
+
+### Добавлено
+
+- **Новый базовый шаблон** (`templates/base.html`): Tailwind CSS (Play CDN) с конфигурацией `darkMode: 'class'` и палитрой бренда (charcoal/sand/brass/terra), шрифты Inter + Manrope, Alpine.js, HTMX, Lucide Icons, Toastify.
+- **Компоненты `templates/components/`**: `navbar.html` (мобильное меню, дропдаун аккаунта, переключатель темы — Alpine), `footer.html`, макросы `buttons.html` (`btn_primary/secondary/ghost/danger/btn_submit_loading`), `cards.html` (`card/stat_card/link_card/section_head`), `fields.html` (поля форм с состояниями ошибок).
+- **Переключатель тёмной темы** в навбаре: сохранение в `localStorage`, системная тема по умолчанию, применение до первой отрисовки (`static/js/theme.js`) — без «мигания».
+- **Flash-сообщения → Toastify**: серверные flash конвертируются в тосты (`static/js/ui-init.js`), серверный fallback-блок сохраняется для работы без JS.
+- **Состояние загрузки кнопок**: спиннер + «Отправляем…» при отправке форм (макрос `btn_submit_loading`).
+- **Дизайн-стандарт** `docs/DESIGN.md`: правила визуального стиля (минимализм, shadow-sm/md, rounded-xl/2xl, p-6/gap-6), микро-взаимодействий (transition-all duration-200), Mobile-First адаптивности, тёмной темы и уведомлений — обязательны для новых страниц и модулей.
+
+### Техническое
+
+- CSP обновлена под CDN: inline-скрипты только с nonce (`g.script_nonce`, `secrets.token_urlsafe(16)`), разрешены `cdn.tailwindcss.com` и `cdn.jsdelivr.net`; `'unsafe-eval'` в `script-src` — требование CDN-сборки Alpine (альтернатива — `@alpinejs/csp`, см. `docs/DESIGN.md`); `'unsafe-inline'` в `style-src` — требование Tailwind Play CDN. Запрет `unsafe-inline` в `script-src` сохранён.
+- Preflight у Tailwind отключён на время миграции (`corePlugins: { preflight: false }`) — legacy CSS (`static/css/app.css`) не пострадал, все 53 шаблона работают.
+- Тесты CSP обновлены под nonce-подход (`tests/test_security.py`, `tests/test_public.py`).
+
 ## 1.1.0 — 2026-11-12
 
 Улучшения для удобства бизнеса.

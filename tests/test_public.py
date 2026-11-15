@@ -132,8 +132,11 @@ def test_security_headers_on_public_page(client):
     headers = client.get("/").headers
     csp = headers["Content-Security-Policy"]
     assert "default-src 'self'" in csp
-    assert "script-src 'self'" in csp
-    assert "unsafe-inline" not in csp
+    # inline-скрипты разрешены только с nonce; 'unsafe-inline' допустим лишь в style-src
+    # (Tailwind Play CDN компилирует CSS в рантайме) — в script-src его быть не должно
+    script_src = next((part.strip() for part in csp.split(";") if part.strip().startswith("script-src")), "")
+    assert "unsafe-inline" not in script_src
+    assert "'nonce-" in script_src
     assert headers["X-Content-Type-Options"] == "nosniff"
     assert headers["X-Frame-Options"] == "DENY"
     assert headers["Referrer-Policy"] == "strict-origin-when-cross-origin"

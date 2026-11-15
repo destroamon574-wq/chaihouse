@@ -2,8 +2,18 @@
 from __future__ import annotations
 
 import io
+import re
 
 from conftest import csrf_for, extract_csrf, login
+
+
+def _csp_directive(csp: str, name: str) -> str:
+    """Возвращает директиву CSP по имени (например, script-src)."""
+    for part in csp.split(";"):
+        parts = part.strip().split()
+        if parts and parts[0] == name:
+            return " ".join(parts)
+    return ""
 
 
 def _row(app, sql: str, params=()):
@@ -76,7 +86,9 @@ def test_security_headers_on_private_pages(client):
     login(client, "owner@chaihouse.ru", "Owner#2026")
     response = client.get("/owner/")
     csp = response.headers["Content-Security-Policy"]
-    assert "unsafe-inline" not in csp
+    # inline-скрипты запрещены: разрешён только nonce (см. app.py)
+    assert "'unsafe-inline'" not in _csp_directive(csp, "script-src")
+    assert re.search(r"script-src[^;]*'nonce-", csp), "script-src должен использовать nonce"
     assert "frame-ancestors 'none'" in csp
     assert response.headers["X-Frame-Options"] == "DENY"
     assert response.headers["X-Content-Type-Options"] == "nosniff"

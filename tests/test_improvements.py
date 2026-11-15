@@ -78,7 +78,7 @@ def test_admin_calendar_renders_week(client):
 
 
 def test_admin_calendar_shows_booking(client, app):
-    _make_booking(app, code="CH-GRID01")
+    _make_booking(app, code="CH-GRID01", days_ahead=0)
     assert login(client, "admin@chaihouse.ru", "Admin#2026").status_code == 302
     response = client.get("/admin/calendar")
     assert "CH-GRID01" in response.get_data(as_text=True)

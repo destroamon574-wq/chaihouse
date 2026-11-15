@@ -1,0 +1,66 @@
+{# Компонент: поля формы. Правила docs/DESIGN.md:
+   — rounded-xl, transition-all duration-200, focus:ring-2 focus:ring-teal-500;
+   — состояние ошибки: красная рамка + текст ошибки (role="alert");
+   — мобильный вид по умолчанию, расширение через md:/lg: — в разметке форм. #}
+
+{% macro field_input(name, label, value='', type='text', placeholder='', required=False, error='', hint='', id=None, maxlength=None, extra='') -%}
+  {% set field_id = id or ('f-' ~ name) %}
+  <div class="flex flex-col gap-1.5 {{ extra }}">
+    <label for="{{ field_id }}" class="text-sm font-medium text-charcoal-900 dark:text-gray-200">{{ label }}</label>
+    <input class="w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-charcoal-900 shadow-sm transition-all duration-200
+                  placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1
+                  dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500
+                  {{ 'border-terra-500 focus:ring-terra-500' if error else 'border-gray-200 focus:border-teal-500 dark:border-gray-700' }}"
+           type="{{ type }}" id="{{ field_id }}" name="{{ name }}" value="{{ value }}"
+           {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+           {% if required %}required{% endif %}
+           {% if maxlength %}maxlength="{{ maxlength }}"{% endif %}>
+    {% if error %}<span class="text-xs font-medium text-terra-600 dark:text-terra-400" role="alert">{{ error }}</span>
+    {% elif hint %}<span class="text-xs text-gray-400 dark:text-gray-500">{{ hint }}</span>{% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro field_textarea(name, label, value='', rows=3, placeholder='', required=False, error='', hint='', id=None, maxlength=None, extra='') -%}
+  {% set field_id = id or ('f-' ~ name) %}
+  <div class="flex flex-col gap-1.5 {{ extra }}">
+    <label for="{{ field_id }}" class="text-sm font-medium text-charcoal-900 dark:text-gray-200">{{ label }}</label>
+    <textarea class="w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-charcoal-900 shadow-sm transition-all duration-200
+                    placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1
+                    dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500
+                    {{ 'border-terra-500 focus:ring-terra-500' if error else 'border-gray-200 focus:border-teal-500 dark:border-gray-700' }}"
+              id="{{ field_id }}" name="{{ name }}" rows="{{ rows }}"
+              {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+              {% if required %}required{% endif %}
+              {% if maxlength %}maxlength="{{ maxlength }}"{% endif %}>{{ value }}</textarea>
+    {% if error %}<span class="text-xs font-medium text-terra-600 dark:text-terra-400" role="alert">{{ error }}</span>
+    {% elif hint %}<span class="text-xs text-gray-400 dark:text-gray-500">{{ hint }}</span>{% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro field_select(name, label, options, selected='', required=False, error='', hint='', id=None, extra='') -%}
+  {% set field_id = id or ('f-' ~ name) %}
+  <div class="flex flex-col gap-1.5 {{ extra }}">
+    <label for="{{ field_id }}" class="text-sm font-medium text-charcoal-900 dark:text-gray-200">{{ label }}</label>
+    <select class="w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-charcoal-900 shadow-sm transition-all duration-200
+                   focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1
+                   dark:bg-gray-900 dark:text-gray-100
+                   {{ 'border-terra-500 focus:ring-terra-500' if error else 'border-gray-200 focus:border-teal-500 dark:border-gray-700' }}"
+            id="{{ field_id }}" name="{{ name }}" {% if required %}required{% endif %}>
+      {% for value, text in options %}
+        <option value="{{ value }}" {{ 'selected' if value == selected }}>{{ text }}</option>
+      {% endfor %}
+    </select>
+    {% if error %}<span class="text-xs font-medium text-terra-600 dark:text-terra-400" role="alert">{{ error }}</span>
+    {% elif hint %}<span class="text-xs text-gray-400 dark:text-gray-500">{{ hint }}</span>{% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro field_checkbox(name, label, checked=False, required=False, error='', extra='') -%}
+  <div class="flex items-start gap-3 {{ extra }}">
+    <input class="mt-0.5 h-5 w-5 rounded-lg border-gray-300 text-teal-600 shadow-sm transition-all duration-200
+                  focus:ring-2 focus:ring-teal-500 dark:border-gray-700 dark:bg-gray-900"
+           type="checkbox" id="f-{{ name }}" name="{{ name }}" value="1" {% if checked %}checked{% endif %} {% if required %}required{% endif %}>
+    <label for="f-{{ name }}" class="text-sm text-gray-700 dark:text-gray-300">{{ label }}</label>
+    {% if error %}<span class="sr-only" role="alert">{{ error }}</span>{% endif %}
+  </div>
+{%- endmacro %}

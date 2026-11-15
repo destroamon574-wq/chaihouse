@@ -1,0 +1,65 @@
+{# Компонент: кнопки. Правила docs/DESIGN.md:
+   — transition-all duration-200 на каждой кнопке;
+   — rounded-xl, shadow-sm → hover:shadow-md;
+   — focus-visible:ring-2 для доступности;
+   — варианты: primary / secondary / ghost / danger / gold. #}
+
+{% macro btn_primary(label, href=None, type=None, extra='') -%}
+  {% set tag = 'a' if href else 'button' %}
+  <{{ tag }} {% if href %}href="{{ href }}"{% else %}type="{{ type or 'submit' }}"{% endif %}
+    class="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm
+           transition-all duration-200 hover:bg-teal-700 hover:shadow-md active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-60
+           dark:bg-teal-500 dark:text-gray-950 dark:hover:bg-teal-400 {{ extra }}">
+    {{ label }}
+  </{{ tag }}>
+{%- endmacro %}
+
+{% macro btn_secondary(label, href=None, type=None, extra='') -%}
+  {% set tag = 'a' if href else 'button' %}
+  <{{ tag }} {% if href %}href="{{ href }}"{% else %}type="{{ type or 'submit' }}"{% endif %}
+    class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-charcoal-900 shadow-sm
+           transition-all duration-200 hover:bg-sand-100 hover:shadow-md active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-60
+           dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800 {{ extra }}">
+    {{ label }}
+  </{{ tag }}>
+{%- endmacro %}
+
+{% macro btn_ghost(label, href=None, type=None, extra='') -%}
+  {% set tag = 'a' if href else 'button' %}
+  <{{ tag }} {% if href %}href="{{ href }}"{% else %}type="{{ type or 'submit' }}"{% endif %}
+    class="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-gray-600
+           transition-all duration-200 hover:bg-sand-100 hover:text-charcoal-900 active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-60
+           dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white {{ extra }}">
+    {{ label }}
+  </{{ tag }}>
+{%- endmacro %}
+
+{% macro btn_danger(label, href=None, type=None, extra='') -%}
+  {% set tag = 'a' if href else 'button' %}
+  <{{ tag }} {% if href %}href="{{ href }}"{% else %}type="{{ type or 'submit' }}"{% endif %}
+    class="inline-flex items-center justify-center gap-2 rounded-xl bg-terra-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm
+           transition-all duration-200 hover:bg-terra-600 hover:shadow-md active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terra-500 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-60 {{ extra }}">
+    {{ label }}
+  </{{ tag }}>
+{%- endmacro %}
+
+{# Кнопка с индикатором загрузки: добавляет spinner при submit (см. static/js/ui-init.js) #}
+{% macro btn_submit_loading(label, extra='') -%}
+  <button type="submit" data-loading-btn
+    class="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm
+           transition-all duration-200 hover:bg-teal-700 hover:shadow-md active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2
+           disabled:cursor-wait disabled:opacity-70
+           dark:bg-teal-500 dark:text-gray-950 dark:hover:bg-teal-400 {{ extra }}">
+    <span data-loading-spinner class="hidden h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true"></span>
+    <span data-loading-label>{{ label }}</span>
+  </button>
+{%- endmacro %}

@@ -1,6 +1,7 @@
 """Точка входа приложения «ЧайHouse»."""
 from __future__ import annotations
 
+import secrets
 from pathlib import Path
 
 from flask import Flask, g, jsonify, render_template, request
@@ -114,13 +115,22 @@ def _context() -> dict:
     user = g.get("user")
     context["unread_notifications"] = unread_count(user["id"]) if user else 0
     context["body_class"] = ""
+    # Nonce для inline-скриптов (Tailwind-конфиг): каждый запрос — новый nonce.
+    if "script_nonce" not in g:
+        g.script_nonce = secrets.token_urlsafe(16)
+    context["script_nonce"] = g.script_nonce
     return context
 
 
 def _security_headers(response):
+    nonce = g.get("script_nonce", "")
+    nonce_part = f" 'nonce-{nonce}'" if nonce else ""
     csp = (
         "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; "
-        "img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; "
+        "img-src 'self' data:; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
+        f"script-src 'self'{nonce_part} 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; "
+        "font-src 'self' https://fonts.gstatic.com; "
         "connect-src 'self'; form-action 'self'; manifest-src 'self'"
     )
     response.headers.setdefault("Content-Security-Policy", csp)
