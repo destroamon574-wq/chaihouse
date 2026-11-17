@@ -1,26 +1,26 @@
 {# Компонент: шапка сайта. Alpine для мобильного меню, дропдауна аккаунта и переключения темы.
-   Соблюдает правила docs/DESIGN.md: sticky, shadow-sm/md, rounded-xl, transition-all duration-200, mobile-first.
-   Плашка всегда тёмная (charcoal) — сочетается с hero-секцией главной страницы;
-   акценты — терракота (CTA) и песочный текст, как в остальном сайте. #}
+   Стиль — фирменный legacy-дизайн (см. app.css .site-header/.main-nav/.btn):
+   тёмная угольная плашка rgba(14,10,7,.9) + blur, Georgia-логотип, pill-кнопки,
+   песочный текст, золото на текущей странице, терракотовый CTA. #}
 <header x-data="headerState()" id="site-header"
-        class="sticky top-0 z-50 border-b border-white/10 bg-charcoal-900/95 text-sand-100 shadow-sm backdrop-blur transition-all duration-200"
-        :class="scrolled ? 'shadow-md' : 'shadow-sm'">
-  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        class="sticky top-0 z-50 border-b border-[color:var(--line)] bg-[#0e0a07]/90 text-[color:var(--ink)] shadow-sm backdrop-blur-md transition-all duration-200"
+        :class="scrolled ? 'shadow-lg bg-[#0c0806]/95' : 'shadow-sm bg-[#0e0a07]/90'">
+  <div class="mx-auto flex h-[72px] max-w-6xl items-center justify-between gap-5 px-4 sm:px-6 lg:px-8">
 
-    {# Логотип #}
+    {# Логотип (как .brand: Georgia 1.38rem + uppercase-подпись с трекингом) #}
     <a href="{{ url_for('public.home') }}" aria-label="ЧайHouse — на главную"
-       class="flex shrink-0 items-center gap-3 transition-all duration-200 hover:opacity-90">
-      <img src="{{ url_for('static', filename='img/logo-mark.svg') }}" alt="" width="40" height="40"
-           class="h-10 w-10 rounded-xl">
-      <span class="flex flex-col leading-tight">
-        <span class="font-display text-lg font-bold tracking-tight text-sand-100">ЧайHouse</span>
-        <span class="text-xs text-sand-200/60">Чайхана · Москва</span>
+       class="flex flex-none items-center gap-3 text-[color:var(--ink)] transition-opacity duration-200 hover:opacity-90">
+      <img src="{{ url_for('static', filename='img/logo-mark.svg') }}" alt="" width="44" height="44"
+           class="h-11 w-11 flex-none">
+      <span class="flex flex-col leading-none">
+        <span class="font-display text-[1.38rem] tracking-[0.01em]">ЧайHouse</span>
+        <span class="mt-[5px] text-[0.58rem] uppercase tracking-[0.28em] text-[color:var(--muted)]">Чайхана · Москва</span>
       </span>
     </a>
 
-    {# Десктопная навигация #}
+    {# Десктопная навигация (как .main-nav: pill-ссылки, золото на текущей) #}
     <nav class="hidden lg:block" aria-label="Основная навигация">
-      <ul class="flex items-center gap-1">
+      <ul class="flex items-center gap-1.5">
         {% for label, endpoint, endpoints in [
           ('Меню', 'public.menu', ('public.menu', 'public.dish')),
           ('Залы', 'public.halls', ('public.halls', 'public.hall')),
@@ -31,8 +31,8 @@
         ] %}
           <li>
             <a href="{{ url_for(endpoint) }}"
-               class="rounded-xl px-3 py-2 text-sm font-medium text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white
-                      {{ 'bg-white/10 text-white' if request.endpoint in endpoints else '' }}"
+               class="relative inline-flex min-h-[44px] items-center rounded-full px-3 text-[0.9rem] font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]
+                      {{ 'bg-white/5 text-[color:var(--ink)] after:absolute after:inset-x-3.5 after:bottom-1.5 after:h-px after:bg-[color:var(--gold)]' if request.endpoint in endpoints else '' }}"
                {% if request.endpoint in endpoints %}aria-current="page"{% endif %}>{{ label }}</a>
           </li>
         {% endfor %}
@@ -44,43 +44,44 @@
 
       {# Переключатель темы #}
       <button type="button" @click="toggleTheme()"
-              class="inline-flex h-10 w-10 items-center justify-center rounded-xl text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white"
+              class="inline-flex h-11 w-11 items-center justify-center rounded-full text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]"
               aria-label="Переключить тёмную тему" :aria-pressed="dark ? 'true' : 'false'">
         <svg x-show="!dark" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
         <svg x-show="dark" x-cloak class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       </button>
 
+      {# CTA — как .btn: pill, min-height 48px, фирменная терракота #}
       <a href="{{ url_for('booking.new') }}"
-         class="hidden rounded-xl bg-terra-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-terra-400 hover:shadow-md focus-visible:ring-2 focus-visible:ring-terra-400 focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal-900 sm:inline-flex">
+         class="hidden min-h-[48px] items-center rounded-full bg-[color:var(--terracotta)] px-6 text-[0.95rem] font-semibold text-[#fff7ec] shadow-[0_14px_30px_rgba(180,85,47,0.28)] transition-all duration-200 hover:-translate-y-px hover:bg-[color:var(--terracotta-bright)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0e0a07] sm:inline-flex">
         Забронировать
       </a>
 
       {% if current_user %}
         {# Колокольчик #}
         <a href="{{ url_for('account.notifications') }}" aria-label="Уведомления{% if unread_notifications %}: непрочитанных {{ unread_notifications }}{% endif %}"
-           class="relative inline-flex h-10 w-10 items-center justify-center rounded-xl text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white">
+           class="relative inline-flex h-11 w-11 items-center justify-center rounded-full text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path stroke-linecap="round" d="M10 19a2 2 0 0 0 4 0"/></svg>
           {% if unread_notifications %}
-            <span class="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-terra-500 px-1 text-[11px] font-bold text-white shadow-sm">{{ unread_notifications }}</span>
+            <span class="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[color:var(--terracotta)] px-1 text-[11px] font-bold text-white shadow-sm">{{ unread_notifications }}</span>
           {% endif %}
         </a>
 
         {# Меню аккаунта (Alpine) #}
         <div class="relative" x-data="{ open: false }" @click.outside="open = false" @keydown.escape.window="open = false">
           <button type="button" @click="open = !open" :aria-expanded="open ? 'true' : 'false'"
-                  class="flex items-center gap-2 rounded-xl py-1.5 pl-1.5 pr-2 transition-all duration-200 hover:bg-white/10">
-            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-terra-500 text-sm font-bold text-white" aria-hidden="true">{{ current_user['name'][:1]|upper }}</span>
-            <span class="hidden text-sm font-medium text-sand-100 md:inline">{{ current_user['name'].split()[0] }}</span>
-            <svg class="h-4 w-4 text-sand-200/60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                  class="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-2 transition-colors duration-200 hover:bg-white/5">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--terracotta)] text-sm font-bold text-[#fff7ec]" aria-hidden="true">{{ current_user['name'][:1]|upper }}</span>
+            <span class="hidden text-sm font-medium text-[color:var(--ink)] md:inline">{{ current_user['name'].split()[0] }}</span>
+            <svg class="h-4 w-4 text-[color:var(--muted)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
             <span class="sr-only">Меню аккаунта</span>
           </button>
           <div x-show="open" x-cloak
                x-transition:enter="transition-all duration-200 ease-out" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
                x-transition:leave="transition-all duration-200 ease-in" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 -translate-y-1"
-               class="absolute right-0 mt-2 w-60 rounded-2xl border border-white/10 bg-charcoal-800 p-2 shadow-lg" role="menu">
-            <div class="border-b border-white/10 px-3 py-2">
-              <p class="truncate text-sm font-semibold text-sand-100">{{ current_user['name'] }}</p>
-              <p class="text-xs text-sand-200/60">{{ role_labels.get(current_user['role'], current_user['role']) }}</p>
+               class="absolute right-0 mt-2 w-60 rounded-2xl border border-[color:var(--line)] bg-[color:var(--surface)] p-2 shadow-xl" role="menu">
+            <div class="border-b border-[color:var(--line)] px-3 py-2">
+              <p class="truncate text-sm font-semibold text-[color:var(--ink)]">{{ current_user['name'] }}</p>
+              <p class="text-xs text-[color:var(--muted)]">{{ role_labels.get(current_user['role'], current_user['role']) }}</p>
             </div>
             {% for label, href, icon_path in [
               ('Личный кабинет', url_for('account.dashboard'), 'M4 21c0-4 3.6-6 8-6s8 2 8 6M4 21h16M12 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z'),
@@ -89,32 +90,32 @@
               ('Настройки', url_for('account.settings'), 'M12 3h.01M5 8h14M5 16h14'),
             ] %}
               <a href="{{ href }}" role="menuitem"
-                 class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white">{{ label }}</a>
+                 class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]">{{ label }}</a>
             {% endfor %}
             {% if current_user['role'] in ('admin', 'owner') %}
               <a href="{{ url_for('admin.dashboard') }}" role="menuitem"
-                 class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white">Админ-панель</a>
+                 class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]">Админ-панель</a>
             {% endif %}
             {% if current_user['role'] == 'owner' %}
               <a href="{{ url_for('owner.dashboard') }}" role="menuitem"
-                 class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white">Кабинет владельца</a>
+                 class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]">Кабинет владельца</a>
             {% endif %}
-            <form method="post" action="{{ url_for('auth.logout') }}" class="border-t border-white/10 pt-1">
+            <form method="post" action="{{ url_for('auth.logout') }}" class="border-t border-[color:var(--line)] pt-1">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button type="submit" role="menuitem"
-                      class="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-terra-400 transition-all duration-200 hover:bg-terra-500/10">Выйти</button>
+                      class="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-[color:var(--terracotta-bright)] transition-colors duration-200 hover:bg-[color:var(--terracotta)]/10">Выйти</button>
             </form>
           </div>
         </div>
       {% else %}
         <a href="{{ url_for('auth.login', next=request.path) }}"
-           class="hidden rounded-xl border border-white/15 px-4 py-2 text-sm font-medium text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white md:inline-flex">Войти</a>
+           class="hidden min-h-[44px] items-center rounded-full border border-[color:var(--line-strong)] px-5 text-[0.9rem] font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)] md:inline-flex">Войти</a>
       {% endif %}
 
       {# Кнопка мобильного меню #}
       <button type="button" @click="mobileOpen = !mobileOpen" :aria-expanded="mobileOpen ? 'true' : 'false'"
               aria-controls="mobile-nav" aria-label="Открыть меню"
-              class="inline-flex h-10 w-10 items-center justify-center rounded-xl text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white lg:hidden">
+              class="inline-flex h-11 w-11 items-center justify-center rounded-full text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)] lg:hidden">
         <svg x-show="!mobileOpen" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
         <svg x-show="mobileOpen" x-cloak class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="m6 6 12 12M18 6 6 18"/></svg>
       </button>
@@ -125,7 +126,7 @@
   <nav x-show="mobileOpen" x-cloak id="mobile-nav" aria-label="Мобильная навигация"
        x-transition:enter="transition-all duration-200 ease-out" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
        x-transition:leave="transition-all duration-200 ease-in" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 -translate-y-2"
-       class="border-t border-white/10 bg-charcoal-900 px-4 pb-6 pt-3 shadow-md lg:hidden">
+       class="border-t border-[color:var(--line)] bg-[#0c0806] px-4 pb-6 pt-3 shadow-lg lg:hidden">
     <ul class="flex flex-col gap-1">
       {% for label, endpoint in [
         ('Главная', 'public.home'), ('Меню', 'public.menu'), ('Залы и банкеты', 'public.halls'),
@@ -133,20 +134,20 @@
         ('Отзывы', 'public.reviews_page'), ('Контакты', 'public.contacts'),
       ] %}
         <li><a href="{{ url_for(endpoint) }}" @click="mobileOpen = false"
-               class="block rounded-xl px-4 py-2.5 text-base font-medium text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white">{{ label }}</a></li>
+               class="block rounded-full px-4 py-2.5 text-base font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]">{{ label }}</a></li>
       {% endfor %}
     </ul>
     <div class="mt-4 flex flex-col gap-2">
       <a href="{{ url_for('booking.new') }}" @click="mobileOpen = false"
-         class="rounded-xl bg-terra-500 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-terra-400">Забронировать стол</a>
+         class="min-h-[48px] rounded-full bg-[color:var(--terracotta)] px-4 py-2.5 text-center text-[0.95rem] font-semibold text-[#fff7ec] shadow-[0_14px_30px_rgba(180,85,47,0.28)] transition-colors duration-200 hover:bg-[color:var(--terracotta-bright)]">Забронировать стол</a>
       {% if current_user %}
         <a href="{{ url_for('account.dashboard') }}" @click="mobileOpen = false"
-           class="rounded-xl border border-white/15 px-4 py-2.5 text-center text-sm font-medium text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white">Личный кабинет</a>
+           class="min-h-[48px] rounded-full border border-[color:var(--line-strong)] px-4 py-2.5 text-center text-[0.9rem] font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]">Личный кабинет</a>
       {% else %}
         <a href="{{ url_for('auth.login', next=request.path) }}" @click="mobileOpen = false"
-           class="rounded-xl border border-white/15 px-4 py-2.5 text-center text-sm font-medium text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white">Войти</a>
+           class="min-h-[48px] rounded-full border border-[color:var(--line-strong)] px-4 py-2.5 text-center text-[0.9rem] font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]">Войти</a>
         <a href="{{ url_for('auth.register') }}" @click="mobileOpen = false"
-           class="rounded-xl border border-white/15 px-4 py-2.5 text-center text-sm font-medium text-sand-200 transition-all duration-200 hover:bg-white/10 hover:text-white">Зарегистрироваться</a>
+           class="min-h-[48px] rounded-full border border-[color:var(--line-strong)] px-4 py-2.5 text-center text-[0.9rem] font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-white/5 hover:text-[color:var(--ink)]">Зарегистрироваться</a>
       {% endif %}
     </div>
   </nav>

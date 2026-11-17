@@ -141,8 +141,8 @@ def _security_headers(response):
     csp = (
         "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; "
         "img-src 'self' data:; "
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
-        f"script-src 'self'{nonce_part} 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; "
+        "style-src 'self' https://fonts.googleapis.com; "
+        f"script-src 'self'{nonce_part} 'unsafe-eval'; "  # unsafe-eval: Alpine вычисляет выражения через Function()
         "font-src 'self' https://fonts.gstatic.com; "
         "connect-src 'self'; form-action 'self'; manifest-src 'self'"
     )

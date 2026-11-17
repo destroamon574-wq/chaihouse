@@ -1,0 +1,6 @@
+/* Входной файл для сборки Tailwind (standalone CLI):
+   tools\tailwindcss.exe -i static/css/tailwind.input.css -o static/css/tailwind.css --minify
+   Preflight отключён в tailwind.config.js — legacy app.css задаёт базу сам. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

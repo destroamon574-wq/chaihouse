@@ -1,5 +1,34 @@
 # История изменений
 
+## 1.3.0 — 2026-11-17
+
+Единый визуальный язык и полный отказ от CDN (цель — «10/10»).
+
+### Добавлено
+
+- **Единый визуальный язык**: шапка и футер переведены на фирменный стиль legacy-дизайна —
+  Georgia в заголовках и логотипе (Manrope удалён), pill-кнопки (`rounded-full`,
+  `min-height` 44/48px), песочный текст `--ink-soft`, золотая линия на текущей
+  странице навигации, терракотовый CTA, футер на `#0a0705` с латунными hover-акцентами.
+- **Tailwind компилируется локально**: standalone CLI v3.4.17 (`tools/tailwindcss.exe`),
+  конфиг `tailwind.config.js` (darkMode 'class', preflight выключен, палитра бренда),
+  собранный `static/css/tailwind.css` (~19 КБ минифицированных) вместо Play CDN.
+- **Скрипты vendored**: Alpine, HTMX, Lucide, Toastify хостятся локально
+  (`static/vendor/`) — сайт работает без интернета (кроме Google Fonts).
+- **HTMX-конфиг**: `includeIndicatorStyles=false` (мета-конфиг в `base.html`),
+  индикаторные стили перенесены в `theme.css` — htmx больше не вставляет свой `<style>`.
+
+### Изменено
+
+- **CSP ужесточён** (`app.py`): `style-src` без `unsafe-inline`; `script-src` —
+  `'self'` + nonce + `unsafe-eval` (нужен Alpine для вычисления выражений);
+  внешние hosts остались только у Google Fonts. Inline-конфиг Tailwind из `base.html` удалён.
+- Заголовки `h1–h6` и `.font-display` — Georgia (совпадает с legacy `--font-display`).
+
+### Техническое
+
+- Сборка Tailwind: `tools\tailwindcss.exe -i static/css/tailwind.input.css -o static/css/tailwind.css --minify` (после правки шаблонов/классов).
+
 ## 1.2.0 — 2026-11-15
 
 Современный фронтенд-стек и дизайн-система.

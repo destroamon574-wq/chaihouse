@@ -25,38 +25,22 @@
   {# ---- Фронтенд-стек (см. docs/DESIGN.md) ---- #}
   {# 1. Тема до первой отрисовки: без этого возможен «скачок» светлой/тёмной темы #}
   <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-  {# 2. Шрифты: Inter (текст) + Manrope (заголовки, .font-display) #}
+  {# 2. Шрифты: Inter (текст); заголовки — Georgia (системный, var(--font-display) в app.css) #}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap">
-  {# 3. Tailwind CSS (Play CDN): darkMode 'class', кастомные цвета бренда, preflight отключён на время миграции #}
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script nonce="{{ script_nonce }}">
-    tailwind.config = {
-      darkMode: "class",
-      corePlugins: { preflight: false },
-      theme: {
-        extend: {
-          colors: {
-            charcoal: { 500: "#4a4032", 600: "#3a3228", 700: "#2b251d", 800: "#211c16", 900: "#171310" },
-            sand: { 50: "#faf6ef", 100: "#f3ecdf", 200: "#e7dcc7", 300: "#d9c9a8" },
-            brass: { 400: "#d3a44a", 500: "#c08b2d", 600: "#a37422", 700: "#7d5a1a" },
-            terra: { 400: "#d0705a", 500: "#c4573a", 600: "#a8462e", 700: "#873523" },
-          },
-          fontFamily: {
-            sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-            display: ["Manrope", "Inter", "sans-serif"],
-          },
-        },
-      },
-    };
-  </script>
-  {# 4. HTMX: динамические фрагменты без перезагрузки страниц #}
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" defer></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  {# 3. Tailwind CSS: скомпилированный standalone-CLI (darkMode 'class', preflight отключён).
+      Сборка: tools\tailwindcss.exe -i static/css/tailwind.input.css -o static/css/tailwind.css --minify #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
+  {# 4. HTMX: динамические фрагменты без перезагрузки страниц.
+      includeIndicatorStyles=false: htmx не вставляет свой <style> (нарушал бы строгий CSP),
+      индикаторные стили добавлены вручную в static/css/theme.css. #}
+  <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
+  <script src="{{ url_for('static', filename='vendor/htmx.min.js') }}" defer></script>
   {# 5. Alpine.js: интерактив (мобильное меню, дропдауны, табы, модалки) #}
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js" defer></script>
+  <script src="{{ url_for('static', filename='vendor/alpine.min.js') }}" defer></script>
   {# 6. Toastify: flash-сообщения → тосты (конвертацию делает static/js/ui-init.js) #}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/toastify.min.css') }}">
 
   {# ---- Стили проекта ---- #}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
@@ -100,8 +84,8 @@
   </dialog>
 
   {# Порядок defer сохраняется: иконки → тосты и состояния загрузки #}
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js" defer></script>
+  <script src="{{ url_for('static', filename='vendor/toastify.min.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='vendor/lucide.min.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/ui-init.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
   {% block scripts %}{% endblock %}

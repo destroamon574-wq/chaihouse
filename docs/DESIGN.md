@@ -7,21 +7,25 @@
 
 | Инструмент | Назначение | Подключение |
 |---|---|---|
-| Tailwind CSS | Стилизация (утилиты, тёмная тема, кастомные цвета бренда) | CDN `cdn.tailwindcss.com` + inline-конфиг (nonce) в `base.html` |
+| Tailwind CSS | Стилизация (утилиты, тёмная тема, кастомные цвета бренда) | Скомпилированный CSS: `tools\tailwindcss.exe` (standalone CLI v3.4) + `tailwind.config.js` в корне; исходник `static/css/tailwind.input.css` |
 | Inter | Основной текст сайта | Google Fonts, грузится в `base.html` |
-| Manrope | Заголовки (утилита `font-display`, все `h1–h6` автоматически) | Google Fonts, грузится в `base.html` |
-| Alpine.js | Интерактив: модальные окна, дропдауны, табы, мобильное меню | CDN jsDelivr (`defer`) |
-| HTMX | Динамическое обновление фрагментов страницы без перезагрузки | CDN jsDelivr (`defer`) |
-| Lucide | Векторные иконки (`<i data-lucide="icon-name">`) | CDN jsDelivr; инициализация в `static/js/ui-init.js` |
-| Toastify-js | Всплывающие уведомления вместо `alert()` | CDN jsDelivr; конвертация Flask flash в `static/js/ui-init.js` |
+| Georgia | Заголовки (утилита `font-display`, все `h1–h6` автоматически) — фирменный шрифт legacy-дизайна | Системный, `fontFamily.display` в `tailwind.config.js` |
+| Alpine.js | Интерактив: модальные окна, дропдауны, табы, мобильное меню | Локальный `static/vendor/alpine.min.js` (`defer`) |
+| HTMX | Динамическое обновление фрагментов страницы без перезагрузки | Локальный `static/vendor/htmx.min.js` (`defer`); `htmx-config` в `base.html` отключает автопоставку `<style>` |
+| Lucide | Векторные иконки (`<i data-lucide="icon-name">`) | Локальный `static/vendor/lucide.min.js`; инициализация в `static/js/ui-init.js` |
+| Toastify-js | Всплывающие уведомления вместо `alert()` | Локальный `static/vendor/toastify.min.js/.css`; конвертация Flask flash в `static/js/ui-init.js` |
 
 CSP-примечание: inline-скрипты разрешены **только с nonce** (`script_nonce`
 генерируется в `app.py` на каждый запрос). `unsafe-inline` в `script-src` запрещён.
-`'unsafe-eval'` в `script-src` разрешён — он требуется стандартной CDN-сборке
+`'unsafe-eval'` в `script-src` разрешён — он требуется стандартной сборке
 Alpine.js для вычисления выражений (`x-data`, `@click` и т.п.). Альтернатива —
 CSP-сборка `@alpinejs/csp`, но она не поддерживает inline-выражения и потребует
 переписать все компоненты на JS-функции (можно сделать при усилении безопасности).
-`unsafe-inline` в `style-src` нужен для Tailwind Play CDN — компилирует CSS в рантайме.
+`unsafe-inline` в `style-src` **запрещён** — Play CDN удалён, CSS компилируется заранее;
+внешние hosts в CSP — только Google Fonts (`fonts.googleapis.com` / `fonts.gstatic.com`).
+
+Сборка Tailwind (после правки шаблонов/классов):
+`tools\tailwindcss.exe -i static/css/tailwind.input.css -o static/css/tailwind.css --minify`
 
 ## 2. Визуальный стиль — современный минимализм
 
@@ -29,7 +33,7 @@ CSP-сборка `@alpinejs/csp`, но она не поддерживает inli
 - **Кнопки и поля ввода**: `rounded-xl`.
 - **Воздух**: внутренние отступы `p-6`, сетки — `gap-6`, секции — `py-12`–`py-20`.
 - **Тени**: только `shadow-sm`/`shadow-md`/`shadow-lg` (дропдауны/модалки). Никаких резких теней.
-- **Типографика**: заголовки — Manrope (`font-display`, `tracking-tight`), текст — Inter. Палитра текста: `charcoal-900` (светлая) / `gray-100` (тёмная), вторичный — `gray-500`.
+- **Типографика**: заголовки — Georgia (`font-display`, фирменный засечковый шрифт legacy-дизайна), текст — Inter. Палитра текста: `charcoal-900` (светлая) / `gray-100` (тёмная), вторичный — `gray-500`.
 - **Цвета бренда** (Tailwind-конфиг в `base.html`):
   - `terra-500/600` — основной акцент (CTA, кнопки, focus-состояния);
   - `charcoal-*` — текст и тёмные поверхности;
