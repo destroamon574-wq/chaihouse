@@ -12,3 +12,4 @@ instance/backups/
 .DS_Store
 Thumbs.db
 node_modules/
+tools/
