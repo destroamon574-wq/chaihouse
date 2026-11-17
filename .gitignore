@@ -13,3 +13,5 @@ instance/backups/
 Thumbs.db
 node_modules/
 tools/
+.idea/
+ИНСТРУКЦИЯ_ГИТХАБ.md
