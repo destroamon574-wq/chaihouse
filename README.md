@@ -13,6 +13,13 @@
 - pytest + Flask test client
 - Pillow — только для генерации OG-обложки (в рантайме не требуется)
 
+### Фронтенд
+
+- **Tailwind CSS v3.4** — скомпилированный CSS (standalone CLI, без Play CDN): `tailwind.config.js` в корне, тёмная тема `darkMode: 'class'`, палитра бренда (charcoal / sand / brass / terra)
+- **Alpine.js, HTMX, Lucide, Toastify** — захостованы локально в `static/vendor/` (сайт работает без интернета)
+- **Единая дизайн-система** — `docs/DESIGN.md`: типографика (Georgia + Inter), pill-кнопки, микро-взаимодействия, тёмная тема для всего сайта
+- **CSP без `unsafe-inline`** — inline-скрипты только с per-request nonce, стили только из внешних файлов
+
 ## Быстрый старт (терминал)
 
 ```powershell
