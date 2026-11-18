@@ -1,0 +1,21 @@
+# Деплой на Render (бесплатный план, HTTPS из коробки).
+# Документация: docs/DEPLOY.md
+services:
+  - type: web
+    name: chaihouse
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: waitress-serve --port=$PORT --call app:create_app
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: FLASK_ENV
+        value: production
+      - key: DEMO_MODE
+        value: "1"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SITE_URL
+        sync: false

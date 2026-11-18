@@ -34,6 +34,13 @@ def create_app(test_config: dict | None = None) -> Flask:
     if test_config:
         app.config.update(test_config)
 
+    # За обратным прокси (Render/Railway/nginx) HTTPS-терминация происходит на прокси:
+    # ProxyFix возвращает корректные scheme/host/ip, иначе SESSION_COOKIE_SECURE и HSTS не работают.
+    if app.config["PRODUCTION"]:
+        from werkzeug.middleware.proxy_fix import ProxyFix
+
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
     Path(app.config["UPLOAD_DIR"]).mkdir(parents=True, exist_ok=True)
 
     init_database(app)
